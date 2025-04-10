@@ -1,0 +1,47 @@
+Warning: Invalid value for prop `disabled` on <button> tag. Either remove it from the element, or pass a string or number value to keep it in the DOM. For details, see https://reactjs.org/link/attribute-behavior 
+    at button
+    at _c (https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/src/components/ui/button.tsx:47:11)
+    at https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=706fde43:52:11
+    at https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=706fde43:33:11
+    at https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-CPFL7ZFD.js?v=706fde43:41:13
+    at https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=706fde43:52:11
+    at https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-DKHUMOWT.js?v=706fde43:33:11
+    at https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-CPFL7ZFD.js?v=706fde43:41:13
+    at https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-NBIVFTP4.js?v=706fde43:1980:13
+    at https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-popover.js?v=706fde43:113:13
+    at Provider (https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-LSQNWB54.js?v=706fde43:38:15)
+    at Provider (https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-NBIVFTP4.js?v=706fde43:1915:15)
+    at Popper (https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-NBIVFTP4.js?v=706fde43:1972:11)
+    at Popover (https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-popover.js?v=706fde43:62:5)
+    at div
+    at DatePicker (https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/src/components/ui/date-picker.tsx:30:3)
+    at div
+    at div
+    at div
+    at div
+    at _c9 (https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/src/components/ui/card.tsx:114:12)
+    at div
+    at _c (https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/src/components/ui/card.tsx:20:11)
+    at div
+    at div
+    at div
+    at div
+    at main
+    at div
+    at BookingPage (https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/src/pages/booking-page.tsx:43:18)
+    at Route (https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=706fde43:323:16)
+    at ProtectedRoute (https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/src/lib/protected-route.tsx:23:3)
+    at Switch (https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=706fde43:379:17)
+    at Router
+    at AuthProvider (https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/src/hooks/use-auth.tsx:26:32)
+    at QueryClientProvider (https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=706fde43:2805:3)
+    at App
+printWarning @ chunk-RPCDYKBN.js?v=706fde43:521Understand this error
+/api/bookings:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this error
+/api/bookings:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)Understand this error

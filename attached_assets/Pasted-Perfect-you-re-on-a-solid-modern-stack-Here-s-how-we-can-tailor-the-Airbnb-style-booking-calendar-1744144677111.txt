@@ -1,0 +1,138 @@
+Perfect — you're on a solid modern stack. Here's how we can tailor the Airbnb-style booking calendar logic to your setup using:
+
+React + TypeScript (Vite)
+
+TanStack Query
+
+Drizzle ORM + PostgreSQL
+
+🔧 Step-by-Step Breakdown for Your Stack
+1. Database Schema with Drizzle (PostgreSQL)
+ts
+Copy
+Edit
+// drizzle/schema.ts
+
+import { pgTable, serial, varchar, date, integer, uuid } from "drizzle-orm/pg-core";
+
+export const cars = pgTable("cars", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }),
+  pricePerDay: integer("price_per_day"),
+});
+
+export const bookings = pgTable("bookings", {
+  id: serial("id").primaryKey(),
+  carId: integer("car_id").references(() => cars.id),
+  userId: uuid("user_id"),
+  startDate: date("start_date"),
+  endDate: date("end_date"), // exclusive
+});
+2. Express Route to Check Availability and Book
+ts
+Copy
+Edit
+// routes/bookings.ts
+
+import { eq, and, or } from "drizzle-orm";
+import { db } from "../drizzle/db";
+import { bookings } from "../drizzle/schema";
+import express from "express";
+
+const router = express.Router();
+
+router.post("/book", async (req, res) => {
+  const { carId, userId, startDate, endDate } = req.body;
+
+  // check for overlaps
+  const overlaps = await db
+    .select()
+    .from(bookings)
+    .where(
+      and(
+        eq(bookings.carId, carId),
+        or(
+          and(
+            bookings.startDate.lte(new Date(endDate)),
+            bookings.endDate.gt(new Date(startDate))
+          )
+        )
+      )
+    );
+
+  if (overlaps.length > 0) {
+    return res.status(400).json({ message: "Dates not available" });
+  }
+
+  // Insert booking
+  await db.insert(bookings).values({
+    carId,
+    userId,
+    startDate: new Date(startDate),
+    endDate: new Date(endDate),
+  });
+
+  res.status(201).json({ message: "Booking confirmed" });
+});
+
+export default router;
+3. Frontend Booking Calendar (React + Shadcn + TanStack Query)
+tsx
+Copy
+Edit
+// components/BookingCalendar.tsx
+import { DateRange } from "react-day-picker";
+import { useQuery } from "@tanstack/react-query";
+import { addDays, eachDayOfInterval, parseISO } from "date-fns";
+
+type Booking = { startDate: string; endDate: string };
+
+const getBookedDates = (bookings: Booking[]) => {
+  return bookings.flatMap(({ startDate, endDate }) =>
+    eachDayOfInterval({
+      start: parseISO(startDate),
+      end: addDays(parseISO(endDate), -1),
+    })
+  );
+};
+
+export default function BookingCalendar({ carId }: { carId: number }) {
+  const { data: bookings } = useQuery({
+    queryKey: ["bookings", carId],
+    queryFn: async () => {
+      const res = await fetch(`/api/cars/${carId}/bookings`);
+      return res.json();
+    },
+  });
+
+  const disabledDates = bookings ? getBookedDates(bookings) : [];
+
+  return (
+    <div className="p-4">
+      <DatePicker
+        mode="range"
+        numberOfMonths={2}
+        disabled={(date) => disabledDates.some((d) => d.toDateString() === date.toDateString())}
+        // onSelect={handleBookingSelect}
+      />
+    </div>
+  );
+}
+4. Backend Route to Get Bookings for a Car
+ts
+Copy
+Edit
+// routes/cars.ts
+
+router.get("/:carId/bookings", async (req, res) => {
+  const carId = parseInt(req.params.carId);
+  const carBookings = await db
+    .select({
+      startDate: bookings.startDate,
+      endDate: bookings.endDate,
+    })
+    .from(bookings)
+    .where(eq(bookings.carId, carId));
+
+  res.json(carBookings);
+});

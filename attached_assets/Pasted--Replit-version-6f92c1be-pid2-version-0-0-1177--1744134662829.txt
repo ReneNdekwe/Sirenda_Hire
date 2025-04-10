@@ -1,0 +1,852 @@
+ Replit version 6f92c1be, pid2 version 0.0.1177
+ 
+      /////////////////////
+   ///////////////////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////        Curious and driven?
+  ///////////////@@@@@@@///////        Work with us!
+  ///////////////@@@@@@@///////
+  ///////////////@@@@@@@///////        https://join.replit.com/hack.with.us
+  ////////@@@@@@@//////////////
+  ////////@@@@@@@//////////////
+  ////////@@@@@@#//////////////
+   ///////////////////////////
+      /////////////////////
+      
+ [LaunchDarkly] LaunchDarkly client initialized
+ [TikTok Pixel] - Invalid pixel ID
+Issue: The pixel ID is invalid. This could prevent your pixel from receiving data.
+Suggestion: Please go to Events Manager and find the correct pixel ID.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ stallwart: failed ping 1
+ stallwart: failed ping 2
+ stallwart: failed ping 1
+ stallwart: failed ping 2
+ stallwart: failed ping 3
+ stallwart: failed ping 4
+FitnessWellnessTracker:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+ stallwart: failed ping 1
+ stallwart: failed ping 2
+m.stripe.network/inn…ams__[version]=v3:1 Uncaught (in promise) undefined
+ WebSocket is already in CLOSING or CLOSED state.
+send @ 7752-b1a728595ab222d9.js:1
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+ Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-5ffa6141f5de058d.js:1
+ Unrecognized feature: 'battery'.
+_ @ framework-5ffa6141f5de058d.js:1
+ Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-5ffa6141f5de058d.js:1
+ Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-5ffa6141f5de058d.js:1
+ Unrecognized feature: 'layout-animations'.
+_ @ framework-5ffa6141f5de058d.js:1
+ Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-5ffa6141f5de058d.js:1
+ Unrecognized feature: 'navigation-override'.
+_ @ framework-5ffa6141f5de058d.js:1
+ Unrecognized feature: 'oversized-images'.
+_ @ framework-5ffa6141f5de058d.js:1
+ Unrecognized feature: 'publickey-credentials'.
+_ @ framework-5ffa6141f5de058d.js:1
+ Unrecognized feature: 'speaker-selection'.
+_ @ framework-5ffa6141f5de058d.js:1
+ Unrecognized feature: 'unoptimized-images'.
+_ @ framework-5ffa6141f5de058d.js:1
+ Unrecognized feature: 'unsized-media'.
+_ @ framework-5ffa6141f5de058d.js:1
+ Unrecognized feature: 'pointer-lock'.
+_ @ framework-5ffa6141f5de058d.js:1
+ Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-5ffa6141f5de058d.js:1
+ Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-5ffa6141f5de058d.js:1
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_TIMED_OUT
+events.launchdarkly.com/events/diagnostic/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_TIMED_OUT
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+events.launchdarkly.com/events/bulk/62b35a865152ab14c5942820:1  Failed to load resource: net::ERR_TIMED_OUT
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ stallwart: failed ping 1
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ 
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 promptUserReconnect listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:44548)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 cursor listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:43306)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 removeCursor listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:43423)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 fileSavedChanged listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:43550)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 error listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:44846)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 fsError listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:45032)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 transparentReconnect listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:45903)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 changes listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:47887)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+ stallwart: failed ping 1
+ stallwart: failed ping 1
+ stallwart: failed ping 2
+ stallwart: failed ping 3
+ stallwart: failed ping 1
+ stallwart: failed ping 1
+ stallwart: failed ping 2
+ stallwart: failed ping 3
+ stallwart: failed ping 1
+ stallwart: failed ping 1
+ Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 commitComplete listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:42799)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 fileDirty listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:42932)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 fileClean listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:43060)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 commitStart listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:43190)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 promptUserReconnect listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:44548)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 cursor listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:43306)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 removeCursor listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:43423)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 fileSavedChanged listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:43550)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 error listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:44846)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 fsError listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:45032)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 transparentReconnect listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:45903)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 MaxListenersExceededWarning: Possible EventEmitter memory leak detected. 11 changes listeners added. Use emitter.setMaxListeners() to increase limit
+    at f (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:83996)
+    at c.addListener (https://cdn.replit.com/_next/static/chunks/3922-08a38ac31379da79.js:1:86530)
+    at h (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:47887)
+    at Object.watchTextFile (https://cdn.replit.com/_next/static/chunks/4170-98e2c011b1ebe3ae.js:1:48848)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993840
+    at Array.map (<anonymous>)
+    at https://cdn.replit.com/_next/static/chunks/2124-7a3170ef708a7c40.js:1:993815
+    at oO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:125455)
+    at uB (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:154513)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152899
+    at uO (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:152965)
+    at u_ (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:137583)
+    at r6 (https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:86243)
+    at https://cdn.replit.com/_next/static/chunks/framework-5ffa6141f5de058d.js:1:134946
+(anonymous) @ _app-ef155827e38adbb4.js:13
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//booking/5' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//vehicles' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//booking/8' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/api/bookings:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)
+fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/api/bookings:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)
+fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/api/bookings:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//vehicles' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//booking/3' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/api/bookings:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)
+fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/api/bookings:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)
+fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/api/bookings:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//vehicles' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//booking/2' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//vehicles/2' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//vehicles' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//vehicles/10' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+_app-ef155827e38adbb4.js:13 Invalid href 'https://fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev//booking/10?pickupDate=2025-04-08&returnDate=2025-04-09' passed to next/router in page: '/replEnvironmentDesktop'. Repeated forward-slashes (//) or backslashes \ are not valid in the href.
+(anonymous) @ _app-ef155827e38adbb4.js:13
+fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/api/bookings:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)
+fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/api/bookings:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)
+fcacd15e-f12b-4abb-846d-bb28d2204a1b-00-2dw5akovalnc1.janeway.replit.dev/api/bookings:1 
+            
+            
+           Failed to load resource: the server responded with a status of 400 (Bad Request)
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.
+stallwart.build.js:1 stallwart: failed ping 1
+stallwart.build.js:1 stallwart: failed ping 2
+stallwart.build.js:1 stallwart: failed ping 3
+stallwart.build.js:1 stallwart: failed ping 4
+stallwart.build.js:1 stallwart: failed ping 5
+stallwart.build.js:1 stallwart: session stalled
+
+                
+          
+          
+          
+         Chrome is moving towards a new experience that allows users to choose to browse without third-party cookies.

@@ -1,0 +1,76 @@
+/* Turo-inspired font styling - using Inter as the closest to Basis Grotesque Pro */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 1.2;
+  background: linear-gradient(to left, #00A1DE 0%, #FAD201 33%, #ffffff 66%, #00A1DE 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: moveGradient 4s linear infinite;
+}
+
+@keyframes moveGradient {
+  0% {
+    background-position: 200% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    @apply antialiased bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+    font-weight: 600;
+  }
+
+  button, input, select, textarea {
+    font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  }
+  
+  /* Custom heading styles to match Turo */
+  .headline-1 {
+    font-weight: 700;
+    font-size: 2.25rem;
+    line-height: 1.2;
+    letter-spacing: -0.03em;
+  }
+  
+  .headline-2 {
+    font-weight: 600;
+    font-size: 1.875rem;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+  }
+  
+  .headline-3 {
+    font-weight: 600;
+    font-size: 1.5rem;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  
+  /* Button and link styles */
+  .btn-turo {
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+}
