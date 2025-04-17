@@ -1,9 +1,8 @@
-import { drizzle } from 'drizzle-orm/neon-http';
-import { neon, neonConfig } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 import * as schema from '../shared/schema';
 
-// Required for Edge runtime compatibility
-neonConfig.fetchConnectionCache = true;
+import { CONFIG } from './config';
 
-const sql = neon(process.env.DATABASE_URL!);
-export const db = drizzle(sql, { schema });
+const client = postgres(CONFIG.DATABASE_URL);
+export const db = drizzle(client, { schema });

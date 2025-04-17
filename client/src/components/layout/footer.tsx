@@ -6,11 +6,15 @@ export default function Footer() {
   
   return (
     <footer className="bg-white border-t border-gray-100">
-      <div className="container mx-auto px-4 py-3">
-        <div className="flex flex-col md:flex-row justify-between items-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div className="w-full max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center mb-2 md:mb-0">
-            <CarFront className="h-4 w-4 text-primary mr-1.5" />
-            <span className="text-gray-900 font-medium text-sm">Car Rental Platform</span>
+          <img
+  src="/uploads/Favicon.png"
+  alt="Sirenda Hire"
+  style={{ height: "12px", width: "auto" }}
+/>
+            <span className="text-gray-900 font-medium text-sm">Sirenda Inc</span>
           </div>
           
           <div className="flex items-center">

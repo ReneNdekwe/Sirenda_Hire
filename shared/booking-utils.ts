@@ -1,0 +1,156 @@
+import { addDays, differenceInDays, isWithinInterval } from 'date-fns';
+import { db } from '../server/db';
+import { bookings, vehicles } from './schema';
+import { and, eq, or, between, lte, gte } from 'drizzle-orm';
+
+
+export async function isVehicleAvailable(
+  vehicleId: number,
+  pickupDate: Date,
+  returnDate: Date
+): Promise<boolean> {
+  // Convert dates to ISO strings for database comparison
+  const pickupStr = pickupDate.toISOString().split('T')[0];
+  const returnStr = returnDate.toISOString().split('T')[0];
+
+  // Get all conflicting bookings
+  const conflictingBookings = await db
+    .select()
+    .from(bookings)
+    .where(
+      and(
+        eq(bookings.vehicleId, vehicleId),
+        or(
+          // New booking starts during an existing booking
+          between(bookings.pickupDate, pickupStr, returnStr),
+          // New booking ends during an existing booking
+          between(bookings.returnDate, pickupStr, returnStr),
+          // New booking completely encompasses an existing booking
+          and(
+            lte(bookings.pickupDate, pickupStr),
+            gte(bookings.returnDate, returnStr)
+          )
+        ),
+        eq(bookings.status, 'confirmed')
+      )
+    );
+
+  return conflictingBookings.length === 0;
+}
+
+export function calculateTotalPrice(
+  pricePerDay: number,
+  pickupDate: Date,
+  returnDate: Date,
+  includeInsurance: boolean = false
+): {
+  basePrice: number;
+  serviceFee: number;
+  insurance: number;
+  totalPrice: number;
+} {
+  // Calculate number of days
+  const days = differenceInDays(returnDate, pickupDate) + 1; // Include both start and end days
+  const basePriceTotal = pricePerDay * days;
+  const serviceFee = Math.round(basePriceTotal * 0.1); // 10% service fee
+  const insurance = includeInsurance ? Math.round(basePriceTotal * 0.05) : 0; // 5% insurance fee if included
+
+  return {
+    basePrice: basePriceTotal,
+    serviceFee,
+    insurance,
+    totalPrice: basePriceTotal + serviceFee + insurance
+  };
+}
+
+export async function createBookingRequest(
+  vehicleId: number,
+  userId: number,
+  pickupDate: Date,
+  returnDate: Date
+): Promise<number | null> {
+  // Check vehicle availability
+  const isAvailable = await isVehicleAvailable(vehicleId, pickupDate, returnDate);
+  if (!isAvailable) {
+    return null;
+  }
+
+  // Get vehicle price
+  const vehicle = await db
+    .select()
+    .from(vehicles)
+    .where(eq(vehicles.id, vehicleId))
+    .limit(1);
+
+  if (!vehicle.length) {
+    return null;
+  }
+
+  // Calculate price
+  const totalPrice = vehicle[0].pricePerDay * differenceInDays(returnDate, pickupDate);
+
+  // Convert dates to ISO strings for database
+  const pickupStr = pickupDate.toISOString().split('T')[0];
+  const returnStr = returnDate.toISOString().split('T')[0];
+
+  // Create booking
+  const [booking] = await db
+    .insert(bookings)
+    .values({
+      vehicleId,
+      userId,
+      pickupDate: pickupStr,
+      returnDate: returnStr,
+      totalPrice,
+      status: 'pending',
+    })
+    .returning({ id: bookings.id });
+
+  return booking.id;
+}
+
+/**
+ * Updates the status of a booking.
+ * 
+ * @param bookingId The ID of the booking to update.
+ * @param newStatus The new status of the booking.
+ * @returns A promise that resolves to true if the update was successful, false otherwise.
+ */
+export async function updateBookingStatus(
+  bookingId: number,
+  newStatus: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+): Promise<boolean> {
+  try {
+    await db
+      .update(bookings)
+      .set({
+        status: newStatus
+      })
+      .where(eq(bookings.id, bookingId));
+    return true;
+  } catch (error) {
+    console.error('Error updating booking status:', error);
+    return false;
+  }
+}
+
+export async function updatePaymentStatus(
+  bookingId: number,
+  newStatus: 'pending' | 'authorized' | 'captured' | 'refunded' | 'failed',
+  paymentIntentId?: string
+): Promise<boolean> {
+  try {
+    await db
+      .update(bookings)
+      .set({
+        status: newStatus,
+        paymentIntentId,
+        updatedAt: new Date()
+      })
+      .where(eq(bookings.id, bookingId));
+    return true;
+  } catch (error) {
+    console.error('Error updating payment status:', error);
+    return false;
+  }
+}

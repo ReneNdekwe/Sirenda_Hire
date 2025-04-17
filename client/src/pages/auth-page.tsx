@@ -38,6 +38,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2, CarFront } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -151,7 +152,7 @@ export default function AuthPage() {
                   <CardDescription>
                     {activeTab === "login"
                       ? "Sign in to your account to continue"
-                      : "Join DriveLuxe and start your journey"}
+                      : "Join Sirenda and start your journey"}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -279,7 +280,7 @@ export default function AuthPage() {
                                 <FormItem>
                                   <FormLabel>Phone (Optional)</FormLabel>
                                   <FormControl>
-                                    <Input placeholder="Enter your phone number" {...field} />
+                                    <Input placeholder="Enter your phone number" {...field} value={field.value ?? ""} />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
@@ -323,7 +324,7 @@ export default function AuthPage() {
                                 <FormItem>
                                   <FormLabel>Company Name</FormLabel>
                                   <FormControl>
-                                    <Input placeholder="Enter your company name" {...field} />
+                                    <Input placeholder="Enter your company name" {...field} value={field.value ?? ""} />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>
@@ -389,24 +390,23 @@ export default function AuthPage() {
 
             <div className="lg:order-1 text-center lg:text-left">
               <div className="flex items-center justify-center lg:justify-start mb-6">
-                <CarFront className="h-10 w-10 text-primary mr-2" />
-                <h1 className="text-3xl font-bold text-primary">DriveLuxe</h1>
+                <h1 className="text-3xl font-bold text-primary">Sirenda</h1>
               </div>
               <h2 className="text-3xl font-bold mb-4">
                 {activeTab === "login"
-                  ? "Welcome Back to DriveLuxe"
+                  ? "Welcome Back to Sirenda"
                   : "Join Our Premium Car Rental Platform"}
               </h2>
               <p className="text-gray-600 mb-6">
                 {activeTab === "login"
                   ? "Access your account to manage your bookings, find premium vehicles, and enjoy exclusive offers."
-                  : "Create an account to start renting luxury vehicles or showcase your premium car fleet to thousands of customers."}
+                  : "Create an account to start renting your vehicles or showcase your premium car fleet to thousands of customers."}
               </p>
               <div className="bg-gray-100 p-6 rounded-lg">
                 <h3 className="font-semibold text-lg mb-3">
                   {activeTab === "login"
-                    ? "Benefits of Your DriveLuxe Account"
-                    : "Why Join DriveLuxe?"}
+                    ? "Benefits of Your Sirenda Account"
+                    : "Why Join Sirenda?"}
                 </h3>
                 <ul className="space-y-2">
                   <li className="flex items-start">

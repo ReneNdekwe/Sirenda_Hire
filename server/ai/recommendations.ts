@@ -3,7 +3,9 @@ import { Vehicle, User, Category, Booking } from "@shared/schema";
 
 // Initialize OpenAI client
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+import { CONFIG } from '../config';
+
+const openai = new OpenAI({ apiKey: CONFIG.OPENAI_API_KEY });
 
 // Define the recommendation result type
 export interface RecommendationResult {
@@ -32,8 +34,8 @@ export async function generateVehicleRecommendations(
       userType: user.userType,
       bookingHistory: userBookings.map(booking => ({
         vehicleId: booking.vehicleId,
-        startDate: booking.pickupDate,
-        endDate: booking.returnDate,
+        pickupDate: booking.pickupDate,
+        returnDate: booking.returnDate,
         status: booking.status
       })),
       // Include additional user preferences if we had them

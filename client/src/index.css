@@ -3,28 +3,6 @@
 @tailwind components;
 @tailwind utilities;
 
-.hero-title {
-  font-size: 3.5rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  line-height: 1.2;
-  background: linear-gradient(to left, #00A1DE 0%, #FAD201 33%, #ffffff 66%, #00A1DE 100%);
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: moveGradient 4s linear infinite;
-}
-
-@keyframes moveGradient {
-  0% {
-    background-position: 200% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
 @layer base {
   * {
     @apply border-border;

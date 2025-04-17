@@ -2,6 +2,30 @@ import { pgTable, text, serial, integer, boolean, jsonb, timestamp, date } from 
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Booking status enum
+export const BookingStatus = {
+  REQUESTED: 'requested',
+  PENDING_APPROVAL: 'pending_approval',
+  CONFIRMED: 'confirmed',
+  ACTIVE: 'active',
+  COMPLETED: 'completed',
+  REJECTED: 'rejected',
+  CANCELLED: 'cancelled'
+} as const;
+
+export type BookingStatusType = typeof BookingStatus[keyof typeof BookingStatus];
+
+// Payment status enum
+export const PaymentStatus = {
+  PENDING: 'pending',
+  AUTHORIZED: 'authorized',
+  PAID: 'paid',
+  FAILED: 'failed',
+  REFUNDED: 'refunded'
+} as const;
+
+export type PaymentStatusType = typeof PaymentStatus[keyof typeof PaymentStatus];
+
 // User schema (for both clients and rental companies)
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -41,12 +65,6 @@ export const insertUserSchema = createInsertSchema(users).pick({
   city: true,
   state: true,
   zipCode: true,
-  registrationDate: true,
-  subscriptionStatus: true,
-  trialEndsAt: true,
-  subscriptionEndsAt: true,
-  stripeCustomerId: true,
-  stripeSubscriptionId: true,
 });
 
 // Vehicle categories
@@ -117,18 +135,11 @@ export const bookings = pgTable("bookings", {
   pickupDate: date("pickup_date").notNull(),
   returnDate: date("return_date").notNull(),
   totalPrice: integer("total_price").notNull(),
-  status: text("status").notNull().default("pending"), // 'pending', 'confirmed', 'completed', 'cancelled'
+  status: text("status").notNull().default('pending'),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertBookingSchema = createInsertSchema(bookings).pick({
-  vehicleId: true,
-  userId: true,
-  pickupDate: true,
-  returnDate: true,
-  totalPrice: true,
-  status: true,
-});
+export const insertBookingSchema = createInsertSchema(bookings);
 
 // Reviews
 export const reviews = pgTable("reviews", {
@@ -172,3 +183,5 @@ export const loginSchema = z.object({
 });
 
 export type LoginData = z.infer<typeof loginSchema>;
+
+

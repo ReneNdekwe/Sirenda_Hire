@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { CarFront, Search, Menu, X, User, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
@@ -20,14 +20,17 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="bg-white sticky top-0 z-50 border-b border-gray-100">
-      <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-        <Link href="/">
-          <div className="flex items-center space-x-2 cursor-pointer">
-            <CarFront className="h-8 w-8 text-primary" />
-            <span className="font-medium text-xl text-gray-900">CarRental</span>
-          </div>
-        </Link>
+    <header className="relative isolate overflow-hidden pt-6 pb-4 bg-gradient-to-br from-[#ff80b5] to-[#9089fc]">
+      <div className="absolute inset-0 -z-10 bg-white/90 backdrop-blur-xl"></div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 h-10 flex items-center justify-between">
+        <div className="w-full max-w-6xl mx-auto flex items-center justify-between">
+        <Link href="/home">
+        <img
+  src="/uploads/Logo.png"
+  alt="Sirenda Hire"
+  style={{ height: "16px", width: "auto" }}
+/>
+</Link>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
@@ -257,6 +260,7 @@ export default function Header() {
             </div>
           </SheetContent>
         </Sheet>
+        </div>
       </div>
     </header>
   );
