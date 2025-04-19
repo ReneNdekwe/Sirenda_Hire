@@ -1,4 +1,4 @@
-import { addDays, differenceInDays, isWithinInterval } from 'date-fns';
+import { differenceInDays, isWithinInterval } from 'date-fns';
 import { db } from '../server/db';
 import { bookings, vehicles } from './schema';
 import { and, eq, or, between, lte, gte } from 'drizzle-orm';
@@ -13,29 +13,38 @@ export async function isVehicleAvailable(
   const pickupStr = pickupDate.toISOString().split('T')[0];
   const returnStr = returnDate.toISOString().split('T')[0];
 
-  // Get all conflicting bookings
-  const conflictingBookings = await db
+  // Get all non-cancelled bookings for the vehicle
+  const existingBookings = await db
     .select()
     .from(bookings)
     .where(
       and(
         eq(bookings.vehicleId, vehicleId),
-        or(
-          // New booking starts during an existing booking
-          between(bookings.pickupDate, pickupStr, returnStr),
-          // New booking ends during an existing booking
-          between(bookings.returnDate, pickupStr, returnStr),
-          // New booking completely encompasses an existing booking
-          and(
-            lte(bookings.pickupDate, pickupStr),
-            gte(bookings.returnDate, returnStr)
-          )
-        ),
         eq(bookings.status, 'confirmed')
       )
     );
 
-  return conflictingBookings.length === 0;
+  // Check for date conflicts
+  const hasConflict = existingBookings.some(booking => {
+    const existingPickup = new Date(booking.pickupDate);
+    const existingReturn = new Date(booking.returnDate);
+
+    // Normalize all dates to start of day for comparison
+    existingPickup.setHours(0, 0, 0, 0);
+    existingReturn.setHours(0, 0, 0, 0);
+    const newPickup = new Date(pickupStr);
+    const newReturn = new Date(returnStr);
+    newPickup.setHours(0, 0, 0, 0);
+    newReturn.setHours(0, 0, 0, 0);
+
+    // Check for any overlap
+    return (
+      (newPickup <= existingReturn && newReturn >= existingPickup) ||
+      (existingPickup <= newReturn && existingReturn >= newPickup)
+    );
+  });
+
+  return !hasConflict;
 }
 
 export function calculateTotalPrice(

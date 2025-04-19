@@ -52,6 +52,12 @@ export default function VehicleDetailsPage() {
     queryKey: [`/api/vehicles/${vehicleId}`],
   });
 
+  // Fetch vehicle availability
+  const { data: bookedDates } = useQuery<Array<{ start: string; end: string }>>({
+    queryKey: [`/api/vehicles/${vehicleId}/availability`],
+    enabled: !!vehicleId,
+  });
+
   // Fetch vehicle reviews
   const { data: reviews, isLoading: isLoadingReviews } = useQuery<Review[]>({
     queryKey: [`/api/reviews/${vehicleId}`],
@@ -97,6 +103,22 @@ export default function VehicleDetailsPage() {
     if (date && (!returnDate || returnDate <= date)) {
       setReturnDate(addDays(date, 1));
     }
+  };
+
+  const isDateBooked = (date: Date) => {
+    if (!bookedDates) return false;
+
+    const checkDate = new Date(date);
+    checkDate.setHours(0, 0, 0, 0);
+
+    return bookedDates.some(booking => {
+      const start = new Date(booking.start);
+      const end = new Date(booking.end);
+      start.setHours(0, 0, 0, 0);
+      end.setHours(0, 0, 0, 0);
+
+      return checkDate >= start && checkDate <= end;
+    });
   };
 
   return (
@@ -404,6 +426,7 @@ export default function VehicleDetailsPage() {
                             date={pickupDate}
                             setDate={handlePickupDateChange}
                             placeholder="Select date"
+                            bookedDates={bookedDates}
                           />
                         </div>
 
@@ -414,6 +437,7 @@ export default function VehicleDetailsPage() {
                             setDate={setReturnDate}
                             placeholder="Select date"
                             fromDate={pickupDate}
+                            bookedDates={bookedDates}
                           />
                         </div>
                       </div>

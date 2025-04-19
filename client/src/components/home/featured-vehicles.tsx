@@ -106,9 +106,9 @@ function VehicleCardAirbnb({ vehicle }: { vehicle: Vehicle }) {
     <Link href={`/vehicles/${vehicle.id}`}>
       <a className="group block">
         <div className="aspect-[4/3] relative overflow-hidden rounded-xl mb-2">
-          {vehicle.imageUrls && vehicle.imageUrls[0] ? (
+          {Array.isArray(vehicle.imageUrls) && vehicle.imageUrls[0] ? (
             <img
-              src={vehicle.imageUrls[0] as string}
+              src={vehicle.imageUrls[0]}
               alt={`${vehicle.brand} ${vehicle.model}`}
               className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
             />

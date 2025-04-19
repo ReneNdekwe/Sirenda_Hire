@@ -5,7 +5,8 @@ import { setupAuth } from "./auth";
 import { 
   insertVehicleSchema, 
   insertBookingSchema, 
-  insertReviewSchema 
+  insertReviewSchema,
+  Booking
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -240,14 +241,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId: req.user.id
       });
       
-      // Check if vehicle exists and is available
+      // Check if vehicle exists
       const vehicle = await storage.getVehicle(bookingData.vehicleId);
       if (!vehicle) {
         return res.status(404).json({ message: "Vehicle not found" });
-      }
-      
-      if (!vehicle.availability) {
-        return res.status(400).json({ message: "Vehicle is not available" });
       }
 
       // Validate dates
@@ -265,7 +262,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Return date must be after pickup date" });
       }
 
-      // Simple date validation - just check if dates overlap
+      // Check for date conflicts
       const existingBookings = await storage.getBookingsByVehicle(bookingData.vehicleId);
       const activeBookings = existingBookings.filter(booking => 
         booking.status !== 'cancelled' && booking.status !== 'completed'
@@ -644,6 +641,142 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: "Error checking subscriptions",
         error: error instanceof Error ? error.message : "Unknown error"
       });
+    }
+  });
+
+  // Rental company booking management routes
+  app.get("/api/rental-company/bookings", async (req, res) => {
+    if (!req.isAuthenticated() || req.user?.userType !== 'company') {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      // Get all vehicles owned by the rental company
+      const vehicles = await storage.getVehiclesByOwner(req.user.id);
+      const vehicleIds = vehicles.map(v => v.id);
+
+      // Get all bookings for these vehicles
+      const bookings = await Promise.all(
+        vehicleIds.map(vehicleId => storage.getBookingsByVehicle(vehicleId))
+      );
+
+      // Flatten and sort bookings
+      const allBookings = bookings.flat().sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      });
+
+      res.json(allBookings);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching bookings" });
+    }
+  });
+
+  app.put("/api/rental-company/bookings/:id/status", async (req, res) => {
+    if (!req.isAuthenticated() || req.user?.userType !== 'company') {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const bookingId = parseInt(req.params.id);
+    const { status } = req.body;
+
+    if (!status || !['confirmed', 'rejected'].includes(status)) {
+      return res.status(400).json({ message: "Invalid status" });
+    }
+
+    try {
+      // Get the booking
+      const booking = await storage.getBooking(bookingId);
+      if (!booking) {
+        return res.status(404).json({ message: "Booking not found" });
+      }
+
+      // Verify the rental company owns the vehicle
+      const vehicle = await storage.getVehicle(booking.vehicleId);
+      if (!vehicle || vehicle.ownerId !== req.user.id) {
+        return res.status(403).json({ message: "Not authorized to update this booking" });
+      }
+
+      // Update the booking status
+      const updatedBooking = await storage.updateBookingStatus(bookingId, status);
+      res.json(updatedBooking);
+    } catch (error) {
+      res.status(500).json({ message: "Error updating booking status" });
+    }
+  });
+
+  // Analytics endpoint
+  app.get("/api/analytics", async (req, res) => {
+    try {
+      if (!req.user || req.user.userType !== "company") {
+        return res.status(403).json({ error: "Only rental companies can access analytics" });
+      }
+
+      const bookings = await storage.getBookingsByOwner(req.user.id);
+      const vehicles = await storage.getVehiclesByOwner(req.user.id);
+
+      // Calculate analytics
+      const totalRevenue = bookings.reduce((sum: number, booking: Booking) => {
+        if (booking.status === "completed") {
+          return sum + booking.totalPrice;
+        }
+        return sum;
+      }, 0);
+
+      // Calculate booking trend (percentage change from last month)
+      const lastMonth = new Date();
+      lastMonth.setMonth(lastMonth.getMonth() - 1);
+      const previousMonth = new Date(lastMonth);
+      previousMonth.setMonth(previousMonth.getMonth() - 1);
+
+      const currentMonthBookings = bookings.filter((b: Booking) => {
+        if (!b.createdAt) return false;
+        const date = new Date(b.createdAt);
+        return date >= lastMonth;
+      }).length;
+
+      const previousMonthBookings = bookings.filter((b: Booking) => {
+        if (!b.createdAt) return false;
+        const date = new Date(b.createdAt);
+        return date < lastMonth && date >= previousMonth;
+      }).length;
+
+      const bookingTrend = previousMonthBookings > 0 
+        ? Math.round(((currentMonthBookings - previousMonthBookings) / previousMonthBookings) * 100)
+        : 0;
+
+      // Calculate revenue trend
+      const currentMonthRevenue = bookings
+        .filter((b: Booking) => {
+          if (!b.createdAt) return false;
+          const date = new Date(b.createdAt);
+          return date >= lastMonth && b.status === "completed";
+        })
+        .reduce((sum: number, booking: Booking) => sum + booking.totalPrice, 0);
+
+      const previousMonthRevenue = bookings
+        .filter((b: Booking) => {
+          if (!b.createdAt) return false;
+          const date = new Date(b.createdAt);
+          return date < lastMonth && date >= previousMonth && b.status === "completed";
+        })
+        .reduce((sum: number, booking: Booking) => sum + booking.totalPrice, 0);
+
+      const revenueTrend = previousMonthRevenue > 0
+        ? Math.round(((currentMonthRevenue - previousMonthRevenue) / previousMonthRevenue) * 100)
+        : 0;
+
+      return res.json({
+        totalRevenue,
+        bookingTrend,
+        revenueTrend,
+        totalVehicles: vehicles.length,
+        activeBookings: bookings.filter((b: Booking) => b.status === "confirmed").length,
+      });
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+      return res.status(500).json({ error: "Failed to fetch analytics" });
     }
   });
 

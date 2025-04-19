@@ -14,9 +14,10 @@ export default function Footer() {
   alt="Sirenda Hire"
   style={{ height: "12px", width: "auto" }}
 />
-            <span className="text-gray-900 font-medium text-sm">Sirenda Inc</span>
           </div>
-          
+          <div className="container text-center text-gray-500 text-sm">
+          © {new Date().getFullYear()} Sirenda. All rights reserved.
+        </div>
           <div className="flex items-center">
             <div className="flex space-x-3 mr-4">
               <a href="#" className="text-gray-400 hover:text-primary transition-colors">
@@ -29,8 +30,6 @@ export default function Footer() {
                 <Instagram className="h-4 w-4" />
               </a>
             </div>
-            
-            <span className="text-gray-500 text-xs">© {currentYear}</span>
           </div>
         </div>
       </div>

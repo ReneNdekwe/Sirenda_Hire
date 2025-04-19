@@ -8,6 +8,15 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
 import { Skeleton } from "@/components/ui/skeleton";
 
+
+{/* AI Recommendations for logged-in clients */}
+{(
+  <div className="mb-12">
+    <h2 className="text-3xl font-bold mb-8 tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent inline-block">Recommended for You</h2>
+    <AIRecommendations />
+  </div>
+)}
+
 // Extended Vehicle type with recommendation data
 interface RecommendedVehicle extends Vehicle {
   recommendationScore: number;

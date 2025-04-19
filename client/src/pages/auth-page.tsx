@@ -389,9 +389,6 @@ export default function AuthPage() {
             </div>
 
             <div className="lg:order-1 text-center lg:text-left">
-              <div className="flex items-center justify-center lg:justify-start mb-6">
-                <h1 className="text-3xl font-bold text-primary">Sirenda</h1>
-              </div>
               <h2 className="text-3xl font-bold mb-4">
                 {activeTab === "login"
                   ? "Welcome Back to Sirenda"

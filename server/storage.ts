@@ -57,6 +57,8 @@ export interface IStorage {
   createReview(review: InsertReview): Promise<Review>;
 
   sessionStore: session.Store;
+
+  updateVehicleAvailability(ownerId: number, availability: boolean): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -345,6 +347,16 @@ export class MemStorage implements IStorage {
       priceFrom: 119
     });
   }
+
+  async updateVehicleAvailability(ownerId: number, availability: boolean): Promise<void> {
+    // Get all vehicles owned by the user
+    const vehicles = await this.getVehiclesByOwner(ownerId);
+    
+    // Update availability for each vehicle
+    for (const vehicle of vehicles) {
+      await this.updateVehicle(vehicle.id, { availability });
+    }
+  }
 }
 
 export class DatabaseStorage implements IStorage {
@@ -517,7 +529,6 @@ export class DatabaseStorage implements IStorage {
       .set(vehicleData)
       .where(eq(vehicles.id, id))
       .returning();
-
     return updatedVehicle;
   }
 
@@ -545,10 +556,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createBooking(booking: InsertBooking): Promise<Booking> {
-    // Set default values
+    // Set default values with all required properties
     const bookingWithDefaults = {
       ...booking,
-      status: "pending",
+      status: "pending" as const,
       createdAt: new Date()
     };
 
@@ -556,11 +567,6 @@ export class DatabaseStorage implements IStorage {
     const [newBooking] = await db.insert(bookings)
       .values(bookingWithDefaults)
       .returning();
-
-    // Update vehicle availability
-    await db.update(vehicles)
-      .set({ availability: false })
-      .where(eq(vehicles.id, booking.vehicleId));
 
     return newBooking;
   }
@@ -571,15 +577,6 @@ export class DatabaseStorage implements IStorage {
       .set({ status })
       .where(eq(bookings.id, id))
       .returning();
-
-    // If status is 'completed' or 'cancelled', make the vehicle available again
-    if (status === 'completed' || status === 'cancelled') {
-      if (updatedBooking) {
-        await db.update(vehicles)
-          .set({ availability: true })
-          .where(eq(vehicles.id, updatedBooking.vehicleId));
-      }
-    }
 
     return updatedBooking;
   }
@@ -652,6 +649,21 @@ export class DatabaseStorage implements IStorage {
         priceFrom: 119
       });
     }
+  }
+
+  async updateVehicleAvailability(ownerId: number, availability: boolean): Promise<void> {
+    // Get all vehicles owned by the user
+    const vehicles = await this.getVehiclesByOwner(ownerId);
+    
+    // Update availability for each vehicle
+    for (const vehicle of vehicles) {
+      await this.updateVehicle(vehicle.id, { availability });
+    }
+  }
+
+  async getBookingsByOwner(ownerId: number): Promise<Booking[]> {
+    const bookings = await db.select().from(bookings).where(eq(bookings.ownerId, ownerId)).orderBy(desc(bookings.createdAt));
+    return bookings;
   }
 }
 

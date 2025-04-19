@@ -21,14 +21,14 @@ export default function Header() {
 
   return (
     <header className="relative isolate overflow-hidden pt-6 pb-4 bg-gradient-to-br from-[#ff80b5] to-[#9089fc]">
-      <div className="absolute inset-0 -z-10 bg-white/90 backdrop-blur-xl"></div>
+      <div className="absolute inset-0 -z-10 bg-white/100 backdrop-blur-xl"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 h-10 flex items-center justify-between">
         <div className="w-full max-w-6xl mx-auto flex items-center justify-between">
-        <Link href="/home">
+        <Link href="/">
         <img
   src="/uploads/Logo.png"
   alt="Sirenda Hire"
-  style={{ height: "16px", width: "auto" }}
+  style={{ height: "36px", width: "auto" }}
 />
 </Link>
 

@@ -135,7 +135,7 @@ export const bookings = pgTable("bookings", {
   pickupDate: date("pickup_date").notNull(),
   returnDate: date("return_date").notNull(),
   totalPrice: integer("total_price").notNull(),
-  status: text("status").notNull().default('pending'),
+  status: text("status", { enum: ["pending", "confirmed", "rejected", "completed", "cancelled"] }).notNull().default('pending'),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

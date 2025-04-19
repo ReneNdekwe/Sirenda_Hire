@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -48,6 +48,17 @@ import {
   CheckCircle2
 } from "lucide-react";
 import { format } from 'date-fns';
+
+interface Booking {
+  id: number;
+  vehicleId: number;
+  userId: number;
+  pickupDate: string;
+  returnDate: string;
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  totalPrice: number;
+  customerName?: string;
+}
 
 function SidebarItem({ 
   icon: Icon, 
@@ -127,6 +138,17 @@ function StatCard({
 }
 
 function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle, onEdit: (id: number) => void }) {
+  // Fetch vehicle bookings
+  const { data: bookings } = useQuery<Booking[]>({
+    queryKey: [`/api/vehicle-bookings/${vehicle.id}`],
+    enabled: !!vehicle.id,
+  });
+
+  // Check if vehicle is available (no active bookings)
+  const isAvailable = !bookings?.some(booking => 
+    booking.status !== 'cancelled' && booking.status !== 'completed'
+  );
+
   return (
     <Card className="overflow-hidden border border-gray-200 transition-all hover:shadow-md group">
       <div className="aspect-video bg-gray-100 relative overflow-hidden">
@@ -144,12 +166,12 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle, onEdit: (id: numbe
         <Badge 
           className={cn(
             "absolute top-2 right-2",
-            vehicle.availability 
+            isAvailable 
               ? "bg-green-100 text-green-800 hover:bg-green-200" 
               : "bg-red-100 text-red-800 hover:bg-red-200"
           )}
         >
-          {vehicle.availability ? 'Available' : 'Booked'}
+          {isAvailable ? 'Available' : 'Booked'}
         </Badge>
       </div>
       <CardContent className="p-4">
@@ -202,15 +224,81 @@ export default function Dashboard() {
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("dashboard");
-  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const queryClient = useQueryClient();
 
   const { data: vehicles, isLoading: isLoadingVehicles } = useQuery<Vehicle[]>({
     queryKey: ['/api/my-vehicles'],
+    queryFn: async () => {
+      const response = await fetch('/api/my-vehicles', {
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Please log in to view vehicles');
+        }
+        throw new Error('Failed to fetch vehicles');
+      }
+      return response.json();
+    },
+    enabled: !!user,
+    retry: false,
   });
 
-  const { data: bookings, isLoading: isLoadingBookings } = useQuery({
-    queryKey: ['/api/bookings'],
-    refetchInterval: 5000,
+  const { data: bookings, isLoading: isLoadingBookings } = useQuery<Booking[]>({
+    queryKey: ['/api/rental-company/bookings'],
+    queryFn: async () => {
+      const response = await fetch('/api/rental-company/bookings', {
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Please log in to view bookings');
+        }
+        throw new Error('Failed to fetch bookings');
+      }
+      return response.json();
+    },
+    enabled: !!user && user.userType === "company",
+    retry: false,
+  });
+
+  const { data: analytics, isLoading: isLoadingAnalytics } = useQuery({
+    queryKey: ['/api/analytics'],
+    queryFn: async () => {
+      const response = await fetch('/api/analytics', {
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Please log in to view analytics');
+        }
+        throw new Error('Failed to fetch analytics');
+      }
+      return response.json();
+    },
+    enabled: !!user,
+    retry: false,
+  });
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Failed to logout');
+    },
+    onSuccess: () => {
+      navigate('/auth');
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to logout",
+        variant: "destructive"
+      });
+    }
   });
 
   if (!user) return null;
@@ -221,10 +309,35 @@ export default function Dashboard() {
 
   const companyName = user.companyName || user.username;
 
-  const handleStatusChange = (bookingId: number, newStatus: string) => {
-    // Placeholder: Replace with actual API call to update booking status
-    console.log(`Updating booking ${bookingId} to status: ${newStatus}`);
-    // In a real application, you would make an API call here to update the booking status on the server.
+  const handleStatusChange = async (bookingId: number, newStatus: string) => {
+    try {
+      const response = await fetch(`/api/bookings/${bookingId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update booking status');
+      }
+
+      // Invalidate and refetch bookings
+      queryClient.invalidateQueries({ queryKey: ['/api/rental-company/bookings'] });
+      
+      toast({
+        title: "Success",
+        description: `Booking status updated to ${newStatus}`,
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update booking status",
+        variant: "destructive"
+      });
+    }
   };
 
   return (
@@ -341,7 +454,7 @@ export default function Dashboard() {
                       credentials: 'include'
                     });
                     if (!response.ok) throw new Error('Failed to reset availability');
-                    queryClient.invalidateQueries(['/api/my-vehicles']);
+                    queryClient.invalidateQueries({ queryKey: ['/api/my-vehicles'] });
                     toast({
                       title: "Success",
                       description: "Vehicle availability has been reset",
@@ -376,8 +489,8 @@ export default function Dashboard() {
                       
                       if (!response.ok) throw new Error('Failed to cancel booking');
                       
-                      queryClient.invalidateQueries(['/api/bookings']);
-                      queryClient.invalidateQueries(['/api/my-vehicles']);
+                      queryClient.invalidateQueries({ queryKey: ['/api/rental-company/bookings'] });
+                      queryClient.invalidateQueries({ queryKey: ['/api/my-vehicles'] });
                       
                       toast({
                         title: "Success",
@@ -434,18 +547,18 @@ export default function Dashboard() {
                 />
                 <StatCard 
                   title="Active Bookings" 
-                  value={bookings?.length.toString() || "0"} 
+                  value={bookings?.filter(b => b.status === 'confirmed').length.toString() || "0"} 
                   icon={Calendar} 
                   trend="up" 
-                  trendValue="+2% from last month"
+                  trendValue={`${analytics?.bookingTrend || 0}% from last month`}
                   bgClass="bg-gradient-to-r from-emerald-500 to-green-500"
                 />
                 <StatCard 
                   title="Total Revenue" 
-                  value="$12,345" 
+                  value={`$${analytics?.totalRevenue || 0}`} 
                   icon={CircleDollarSign} 
-                  trend="up" 
-                  trendValue="+12% from last month"
+                  trend={analytics?.revenueTrend > 0 ? "up" : "down"} 
+                  trendValue={`${analytics?.revenueTrend || 0}% from last month`}
                   bgClass="bg-gradient-to-r from-amber-500 to-orange-500"
                 />
               </div>
@@ -593,9 +706,9 @@ export default function Dashboard() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {bookings?.filter(b => b.vehicleId === vehicle.id).map((booking) => (
+                        {bookings?.filter((b: Booking) => b.vehicleId === vehicle.id).map((booking: Booking) => (
                           <TableRow key={booking.id}>
-                            <TableCell>{booking.userId}</TableCell>
+                            <TableCell>{booking.customerName || `User #${booking.userId}`}</TableCell>
                             <TableCell>
                               {format(new Date(booking.pickupDate), "MMM d, yyyy")} -{" "}
                               {format(new Date(booking.returnDate), "MMM d, yyyy")}
@@ -625,7 +738,11 @@ export default function Dashboard() {
                             </TableCell>
                             <TableCell>${booking.totalPrice}</TableCell>
                             <TableCell>
-                              <Button variant="ghost" size="sm">
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => setSelectedBooking(booking)}
+                              >
                                 View Details
                               </Button>
                             </TableCell>

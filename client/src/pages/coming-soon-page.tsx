@@ -10,7 +10,7 @@ export default function ComingSoonPage() {
         <div className="container flex justify-between items-center">
           <Link href="/">
             <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              CarHire
+              Sirenda
             </h1>
           </Link>
           <Link href="/">
@@ -63,7 +63,7 @@ export default function ComingSoonPage() {
       {/* Footer */}
       <footer className="py-6 border-t border-gray-100">
         <div className="container text-center text-gray-500 text-sm">
-          © {new Date().getFullYear()} CarHire. All rights reserved.
+          © {new Date().getFullYear()} Sirenda. All rights reserved.
         </div>
       </footer>
     </div>

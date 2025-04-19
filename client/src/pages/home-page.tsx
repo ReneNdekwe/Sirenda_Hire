@@ -8,7 +8,6 @@ import { Vehicle } from "@shared/schema";
 import VehicleCard from "@/components/vehicles/vehicle-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/use-auth";
-import AIRecommendations from "@/components/recommendations/ai-recommendations";
 import Hero from "@/components/home/hero";
 
 export default function HomePage() {
@@ -30,20 +29,13 @@ export default function HomePage() {
 
         {/* Vehicle listings section */}
         <section className="relative isolate overflow-hidden pt-6 pb-4 bg-gradient-to-br from-[#ff80b5] to-[#9089fc]">
-          <div className="absolute inset-0 -z-10 bg-white/90 backdrop-blur-xl"></div>
+          <div className="absolute inset-0 -z-10 bg-white/100 backdrop-blur-xl"></div>
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="w-full max-w-6xl mx-auto">
-              {/* AI Recommendations for logged-in clients */}
-              {isClient && (
-                <div className="mb-12">
-                  <h2 className="text-3xl font-bold mb-8 tracking-tight bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent inline-block">Recommended for You</h2>
-                  <AIRecommendations />
-                </div>
-              )}
               
               {/* Browse controls */}
-              <div className="flex justify-between items-center flex-wrap gap-4 mb-10">
-                <h2 className="text-3xl font-bold tracking-tight">Available Vehicles</h2>
+              <div className="flex justify-between items-center flex-wrap gap-2 mb-10">
+                <h3 className="text-1.5xl font-bold tracking-tight">Available Vehicles</h3>
                 <div className="flex items-center gap-3">
                   <Button 
                     variant="outline" 

@@ -46,7 +46,7 @@ export default function Hero() {
 
   return (
     <section className="relative isolate overflow-hidden pt-20 pb-12 bg-gradient-to-br from-[#ff80b5] to-[#9089fc]">
-      <div className="absolute inset-0 -z-10 bg-white/90 backdrop-blur-xl"></div>
+      <div className="absolute inset-0 -z-10 bg-white/100 backdrop-blur-xl"></div>
 
 
   {/* Top background swirl */}
@@ -67,9 +67,12 @@ export default function Hero() {
   <div className="max-w-7xl mx-auto">
     <div className="w-full max-w-6xl mx-auto">
       <div className="mx-auto max-w-3xl text-center mb-10">
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 max-w-4xl mx-auto leading-[1.2]">
-          The #1 platform trusted by renters and car owners nationwide
-        </h1>
+        <h2 className="text-3xl sm:text-5xl lg:text-5xl font-extrabold tracking-tight text-gray-900 max-w-4xl mx-auto leading-[1.2]">
+       <span className="text-blue-800">Re-imagining</span> Carhiring,
+        </h2>
+        <p className="mt-4 text-lg sm:text-xl text-gray-400">
+        changing the way you rent, forever.
+  </p>
       </div>
 
       <div className="mx-auto max-w-3xl">

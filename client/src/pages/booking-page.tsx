@@ -90,10 +90,10 @@ export default function BookingPage() {
       bookedStart.setHours(0, 0, 0, 0);
       bookedEnd.setHours(0, 0, 0, 0);
 
+      // Check for any overlap
       return (
-        (checkStart < bookedEnd && checkEnd > bookedStart) ||
-        checkStart.getTime() === bookedStart.getTime() ||
-        checkEnd.getTime() === bookedEnd.getTime()
+        (checkStart <= bookedEnd && checkEnd >= bookedStart) ||
+        (bookedStart <= checkEnd && bookedEnd >= checkStart)
       );
     });
   };
@@ -140,8 +140,8 @@ export default function BookingPage() {
       const bookingData = {
         vehicleId: vehicle.id,
         userId: user.id,
-        pickupDate,
-        returnDate,
+        pickupDate: pickupDate.toISOString().split('T')[0],
+        returnDate: returnDate.toISOString().split('T')[0],
         totalPrice,
         status: "pending",
       };
@@ -315,9 +315,10 @@ export default function BookingPage() {
                                   date={pickupDate}
                                   setDate={handlePickupDateChange}
                                   placeholder="Select date"
-                                  disabled={(date) => {
+                                  disabled={(date: Date): boolean => {
                                     return date < new Date() || isDateBooked(date);
                                   }}
+                                  bookedDates={bookedDates}
                                 />
                               </div>
                               <div>
@@ -329,7 +330,7 @@ export default function BookingPage() {
                                   setDate={setReturnDate}
                                   placeholder="Select date"
                                   fromDate={pickupDate}
-                                  disabled={(date) => {
+                                  disabled={(date: Date): boolean => {
                                     if (!pickupDate) return true;
                                     // Check if any dates between pickup and return are booked
                                     const checkDate = new Date(date);
@@ -338,6 +339,7 @@ export default function BookingPage() {
                                     }
                                     return false;
                                   }}
+                                  bookedDates={bookedDates}
                                 />
                               </div>
                             </div>
