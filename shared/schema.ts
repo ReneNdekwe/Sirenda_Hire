@@ -160,6 +160,18 @@ export const insertReviewSchema = createInsertSchema(reviews).pick({
   comment: true,
 });
 
+// Notifications
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  message: text("message").notNull(),
+  type: text("type", { enum: ["booking_approved", "booking_rejected", "booking_cancelled"] }).notNull(),
+  read: boolean("read").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertNotificationSchema = createInsertSchema(notifications);
+
 // Export types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -175,6 +187,9 @@ export type Booking = typeof bookings.$inferSelect;
 
 export type InsertReview = z.infer<typeof insertReviewSchema>;
 export type Review = typeof reviews.$inferSelect;
+
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
+export type Notification = typeof notifications.$inferSelect;
 
 // Login schema
 export const loginSchema = z.object({

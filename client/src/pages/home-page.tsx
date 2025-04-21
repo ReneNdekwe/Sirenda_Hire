@@ -35,7 +35,7 @@ export default function HomePage() {
               
               {/* Browse controls */}
               <div className="flex justify-between items-center flex-wrap gap-2 mb-10">
-                <h3 className="text-1.5xl font-bold tracking-tight">Available Vehicles</h3>
+                <h3 className="text-2xl font-bold tracking-tight">Available Vehicles</h3>
                 <div className="flex items-center gap-3">
                   <Button 
                     variant="outline" 

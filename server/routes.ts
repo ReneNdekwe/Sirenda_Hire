@@ -6,6 +6,7 @@ import {
   insertVehicleSchema, 
   insertBookingSchema, 
   insertReviewSchema,
+  insertNotificationSchema,
   Booking
 } from "@shared/schema";
 import { ZodError } from "zod";
@@ -700,8 +701,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Update the booking status
       const updatedBooking = await storage.updateBookingStatus(bookingId, status);
+
+      // Create notification for the user
+      const notificationType = status === 'confirmed' ? 'booking_approved' : 'booking_rejected';
+      const message = status === 'confirmed' 
+        ? `Your booking for ${vehicle.brand} ${vehicle.model} has been approved!` 
+        : `Your booking for ${vehicle.brand} ${vehicle.model} has been rejected.`;
+
+      // Create notification
+      await storage.createNotification({
+        userId: booking.userId,
+        message,
+        type: notificationType
+      });
+
       res.json(updatedBooking);
     } catch (error) {
+      console.error('Error updating booking status:', error);
       res.status(500).json({ message: "Error updating booking status" });
     }
   });
@@ -777,6 +793,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching analytics:", error);
       return res.status(500).json({ error: "Failed to fetch analytics" });
+    }
+  });
+
+  // Notifications routes
+  app.get("/api/notifications", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      const notifications = await storage.getNotifications(req.user.id);
+      res.json(notifications);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching notifications" });
+    }
+  });
+
+  app.post("/api/notifications/mark-read", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+      await storage.markNotificationsAsRead(req.user.id);
+      res.json({ message: "Notifications marked as read" });
+    } catch (error) {
+      res.status(500).json({ message: "Error marking notifications as read" });
     }
   });
 

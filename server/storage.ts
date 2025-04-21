@@ -4,7 +4,9 @@ import {
   Vehicle, InsertVehicle, 
   Booking, InsertBooking, 
   Review, InsertReview,
-  users, categories, vehicles, bookings, reviews
+  users, categories, vehicles, bookings, reviews,
+  notifications,
+  Notification
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
@@ -59,6 +61,14 @@ export interface IStorage {
   sessionStore: session.Store;
 
   updateVehicleAvailability(ownerId: number, availability: boolean): Promise<void>;
+
+  getNotifications(userId: number): Promise<Notification[]>;
+  createNotification(data: {
+    userId: number;
+    message: string;
+    type: 'booking_approved' | 'booking_rejected' | 'booking_cancelled';
+  }): Promise<Notification>;
+  markNotificationsAsRead(userId: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -119,7 +129,25 @@ export class MemStorage implements IStorage {
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentId.user++;
-    const user: User = { ...insertUser, id };
+    const user: User = { 
+      ...insertUser, 
+      id,
+      createdAt: new Date(),
+      subscriptionStatus: 'trial',
+      trialEndsAt: null,
+      subscriptionEndsAt: null,
+      stripeCustomerId: null,
+      stripeSubscriptionId: null,
+      phone: insertUser.phone ?? null,
+      userType: insertUser.userType ?? 'client',
+      companyName: insertUser.companyName ?? null,
+      companyDescription: insertUser.companyDescription ?? null,
+      companyLogo: insertUser.companyLogo ?? null,
+      address: insertUser.address ?? null,
+      city: insertUser.city ?? null,
+      state: insertUser.state ?? null,
+      zipCode: insertUser.zipCode ?? null
+    };
     this.users.set(id, user);
     return user;
   }
@@ -161,7 +189,13 @@ export class MemStorage implements IStorage {
 
   async createCategory(category: InsertCategory): Promise<Category> {
     const id = this.currentId.category++;
-    const newCategory: Category = { ...category, id };
+    const newCategory: Category = { 
+      ...category, 
+      id,
+      description: category.description || null,
+      imageUrl: category.imageUrl || null,
+      priceFrom: category.priceFrom || null
+    };
     this.categories.set(id, newCategory);
     return newCategory;
   }
@@ -202,7 +236,18 @@ export class MemStorage implements IStorage {
 
   async createVehicle(vehicle: InsertVehicle): Promise<Vehicle> {
     const id = this.currentId.vehicle++;
-    const newVehicle: Vehicle = { ...vehicle, id, rating: 0, reviewCount: 0 };
+    const newVehicle: Vehicle = { 
+      ...vehicle, 
+      id, 
+      rating: 0, 
+      reviewCount: 0,
+      description: vehicle.description ?? null,
+      bags: vehicle.bags ?? null,
+      features: vehicle.features ?? [],
+      imageUrls: vehicle.imageUrls ?? [],
+      isFeatured: vehicle.isFeatured ?? false,
+      availability: true
+    };
     this.vehicles.set(id, newVehicle);
     return newVehicle;
   }
@@ -217,7 +262,10 @@ export class MemStorage implements IStorage {
   }
 
   async deleteVehicle(id: number): Promise<boolean> {
-    return this.vehicles.delete(id);
+    const result = await db.delete(vehicles)
+      .where(eq(vehicles.id, id))
+      .returning({ id: vehicles.id });
+    return result.length > 0;
   }
 
   // Booking methods
@@ -246,41 +294,19 @@ export class MemStorage implements IStorage {
     const newBooking: Booking = { 
       ...booking, 
       id, 
-      createdAt: new Date() 
+      createdAt: new Date(),
+      status: 'pending' as const
     };
     this.bookings.set(id, newBooking);
-
-    // Update vehicle availability
-    const vehicle = this.vehicles.get(booking.vehicleId);
-    if (vehicle) {
-      this.vehicles.set(booking.vehicleId, {
-        ...vehicle,
-        availability: false
-      });
-    }
-
     return newBooking;
   }
 
-  async updateBookingStatus(id: number, status: string): Promise<Booking | undefined> {
-    const booking = this.bookings.get(id);
-    if (!booking) return undefined;
-
-    const updatedBooking = { ...booking, status };
-    this.bookings.set(id, updatedBooking);
-
-    // If status is 'completed' or 'cancelled', make the vehicle available again
-    if (status === 'completed' || status === 'cancelled') {
-      const vehicle = this.vehicles.get(booking.vehicleId);
-      if (vehicle) {
-        this.vehicles.set(booking.vehicleId, {
-          ...vehicle,
-          availability: true
-        });
-      }
-    }
-
-    return updatedBooking;
+  async updateBookingStatus(id: number, status: 'pending' | 'confirmed' | 'rejected' | 'completed' | 'cancelled'): Promise<Booking | undefined> {
+    const result = await db.update(bookings)
+      .set({ status })
+      .where(eq(bookings.id, id))
+      .returning();
+    return result[0];
   }
 
   // Review methods
@@ -295,24 +321,10 @@ export class MemStorage implements IStorage {
     const newReview: Review = { 
       ...review, 
       id, 
-      createdAt: new Date() 
+      createdAt: new Date(),
+      comment: review.comment || null
     };
     this.reviews.set(id, newReview);
-
-    // Update vehicle rating
-    const vehicle = this.vehicles.get(review.vehicleId);
-    if (vehicle) {
-      const reviews = await this.getReviews(review.vehicleId);
-      const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
-      const avgRating = Math.round(totalRating / reviews.length);
-
-      this.vehicles.set(review.vehicleId, {
-        ...vehicle,
-        rating: avgRating,
-        reviewCount: reviews.length
-      });
-    }
-
     return newReview;
   }
 
@@ -349,13 +361,32 @@ export class MemStorage implements IStorage {
   }
 
   async updateVehicleAvailability(ownerId: number, availability: boolean): Promise<void> {
-    // Get all vehicles owned by the user
-    const vehicles = await this.getVehiclesByOwner(ownerId);
-    
-    // Update availability for each vehicle
-    for (const vehicle of vehicles) {
-      await this.updateVehicle(vehicle.id, { availability });
-    }
+    await db.update(vehicles)
+      .set({ availability })
+      .where(eq(vehicles.ownerId, ownerId));
+  }
+
+  async getNotifications(userId: number): Promise<Notification[]> {
+    return await db.select().from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt));
+  }
+
+  async createNotification(data: {
+    userId: number;
+    message: string;
+    type: 'booking_approved' | 'booking_rejected' | 'booking_cancelled';
+  }): Promise<Notification> {
+    const [notification] = await db.insert(notifications)
+      .values(data)
+      .returning();
+    return notification;
+  }
+
+  async markNotificationsAsRead(userId: number): Promise<void> {
+    await db.update(notifications)
+      .set({ read: true })
+      .where(eq(notifications.userId, userId));
   }
 }
 
@@ -533,8 +564,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteVehicle(id: number): Promise<boolean> {
-    const result = await db.delete(vehicles).where(eq(vehicles.id, id));
-    return result.rowCount > 0;
+    const result = await db.delete(vehicles)
+      .where(eq(vehicles.id, id))
+      .returning({ id: vehicles.id });
+    return result.length > 0;
   }
 
   // Booking methods
@@ -571,14 +604,12 @@ export class DatabaseStorage implements IStorage {
     return newBooking;
   }
 
-  async updateBookingStatus(id: number, status: string): Promise<Booking | undefined> {
-    // Update the booking status
-    const [updatedBooking] = await db.update(bookings)
+  async updateBookingStatus(id: number, status: 'pending' | 'confirmed' | 'rejected' | 'completed' | 'cancelled'): Promise<Booking | undefined> {
+    const result = await db.update(bookings)
       .set({ status })
       .where(eq(bookings.id, id))
       .returning();
-
-    return updatedBooking;
+    return result[0];
   }
 
   // Review methods
@@ -652,18 +683,41 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateVehicleAvailability(ownerId: number, availability: boolean): Promise<void> {
-    // Get all vehicles owned by the user
-    const vehicles = await this.getVehiclesByOwner(ownerId);
-    
-    // Update availability for each vehicle
-    for (const vehicle of vehicles) {
-      await this.updateVehicle(vehicle.id, { availability });
-    }
+    await db.update(vehicles)
+      .set({ availability })
+      .where(eq(vehicles.ownerId, ownerId));
   }
 
   async getBookingsByOwner(ownerId: number): Promise<Booking[]> {
-    const bookings = await db.select().from(bookings).where(eq(bookings.ownerId, ownerId)).orderBy(desc(bookings.createdAt));
-    return bookings;
+    const result = await db.select()
+      .from(bookings)
+      .innerJoin(vehicles, eq(bookings.vehicleId, vehicles.id))
+      .where(eq(vehicles.ownerId, ownerId))
+      .orderBy(desc(bookings.createdAt));
+    return result;
+  }
+
+  async getNotifications(userId: number): Promise<Notification[]> {
+    return await db.select().from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt));
+  }
+
+  async createNotification(data: {
+    userId: number;
+    message: string;
+    type: 'booking_approved' | 'booking_rejected' | 'booking_cancelled';
+  }): Promise<Notification> {
+    const [notification] = await db.insert(notifications)
+      .values(data)
+      .returning();
+    return notification;
+  }
+
+  async markNotificationsAsRead(userId: number): Promise<void> {
+    await db.update(notifications)
+      .set({ read: true })
+      .where(eq(notifications.userId, userId));
   }
 }
 

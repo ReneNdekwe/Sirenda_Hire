@@ -9,10 +9,87 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { CarFront, Search, Menu, X, User, Globe } from "lucide-react";
+import { CarFront, Search, Menu, X, User, Globe, Bell } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+
+interface Notification {
+  id: number;
+  message: string;
+  type: 'booking_approved' | 'booking_rejected' | 'booking_cancelled';
+  createdAt: string;
+  read: boolean;
+}
+
+function NotificationBell() {
+  const { user } = useAuth();
+  const { data: notifications, refetch } = useQuery<Notification[]>({
+    queryKey: ['/api/notifications'],
+    enabled: !!user,
+    refetchInterval: 10000, // Refetch every 10 seconds
+  });
+
+  const unreadCount = notifications?.filter(n => !n.read).length || 0;
+
+  const markAsRead = async () => {
+    try {
+      await apiRequest('POST', '/api/notifications/mark-read');
+      refetch();
+    } catch (error) {
+      console.error('Error marking notifications as read:', error);
+    }
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="outline" size="icon" className="rounded-full relative">
+          <Bell className="h-4 w-4" />
+          {unreadCount > 0 && (
+            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-white text-xs flex items-center justify-center">
+              {unreadCount}
+            </span>
+          )}
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-80">
+        <div className="p-2">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="font-semibold">Notifications</h4>
+            {unreadCount > 0 && (
+              <Button variant="ghost" size="sm" className="text-xs" onClick={markAsRead}>
+                Mark all as read
+              </Button>
+            )}
+          </div>
+          <div className="max-h-60 overflow-y-auto">
+            {notifications?.length ? (
+              notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className={cn(
+                    "p-2 rounded-md mb-1",
+                    !notification.read && "bg-primary/5"
+                  )}
+                >
+                  <p className="text-sm">{notification.message}</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {new Date(notification.createdAt).toLocaleString()}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500 p-2">No notifications</p>
+            )}
+          </div>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
 
 export default function Header() {
   const [location] = useLocation();
@@ -22,7 +99,7 @@ export default function Header() {
   return (
     <header className="relative isolate overflow-hidden pt-6 pb-4 bg-gradient-to-br from-[#ff80b5] to-[#9089fc]">
       <div className="absolute inset-0 -z-10 bg-white/100 backdrop-blur-xl"></div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-10 h-10 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-5 h-5 flex items-center justify-between">
         <div className="w-full max-w-6xl mx-auto flex items-center justify-between">
         <Link href="/">
         <img
@@ -64,64 +141,67 @@ export default function Header() {
           </div>
 
           {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="rounded-full border-gray-200 flex items-center gap-2 pl-3 pr-2 h-10">
-                  <Menu className="h-4 w-4 text-gray-600" />
-                  <Avatar className="h-7 w-7">
-                    <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                      {user.fullName?.substring(0, 2).toUpperCase() || "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 mt-2 rounded-xl">
-                {user.userType === "company" ? (
-                  <>
+            <div className="flex items-center gap-4">
+              {user.userType === "client" && <NotificationBell />}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="rounded-full border-gray-200 flex items-center gap-2 pl-3 pr-2 h-10">
+                    <Menu className="h-4 w-4 text-gray-600" />
+                    <Avatar className="h-7 w-7">
+                      <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                        {user.fullName?.substring(0, 2).toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56 mt-2 rounded-xl">
+                  {user.userType === "company" ? (
+                    <>
+                      <DropdownMenuItem asChild className="cursor-pointer">
+                        <Link href="/dashboard">
+                          <div className="w-full flex items-center gap-2 cursor-pointer">
+                            <Search className="h-4 w-4" />
+                            <span>Dashboard</span>
+                          </div>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild className="cursor-pointer">
+                        <Link href="/add-vehicle">
+                          <div className="w-full flex items-center gap-2 cursor-pointer">
+                            <CarFront className="h-4 w-4" />
+                            <span>List a vehicle</span>
+                          </div>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
                     <DropdownMenuItem asChild className="cursor-pointer">
-                      <Link href="/dashboard">
+                      <Link href="/my-bookings">
                         <div className="w-full flex items-center gap-2 cursor-pointer">
                           <Search className="h-4 w-4" />
-                          <span>Dashboard</span>
+                          <span>My bookings</span>
                         </div>
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild className="cursor-pointer">
-                      <Link href="/add-vehicle">
-                        <div className="w-full flex items-center gap-2 cursor-pointer">
-                          <CarFront className="h-4 w-4" />
-                          <span>List a vehicle</span>
-                        </div>
-                      </Link>
-                    </DropdownMenuItem>
-                  </>
-                ) : (
+                  )}
                   <DropdownMenuItem asChild className="cursor-pointer">
-                    <Link href="/my-bookings">
+                    <Link href="/profile">
                       <div className="w-full flex items-center gap-2 cursor-pointer">
-                        <Search className="h-4 w-4" />
-                        <span>My bookings</span>
+                        <User className="h-4 w-4" />
+                        <span>Profile</span>
                       </div>
                     </Link>
                   </DropdownMenuItem>
-                )}
-                <DropdownMenuItem asChild className="cursor-pointer">
-                  <Link href="/profile">
-                    <div className="w-full flex items-center gap-2 cursor-pointer">
-                      <User className="h-4 w-4" />
-                      <span>Profile</span>
-                    </div>
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => logoutMutation.mutate()}
-                  className="cursor-pointer text-gray-600 hover:text-gray-900"
-                >
-                  Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => logoutMutation.mutate()}
+                    className="cursor-pointer text-gray-600 hover:text-gray-900"
+                  >
+                    Sign out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           ) : (
             <div className="flex items-center gap-4">
               <Link href="/auth">
@@ -176,6 +256,12 @@ export default function Header() {
                       {user.userType === "company" ? "Company account" : "Account"}
                     </div>
                     <div className="space-y-5 text-gray-600">
+                      {user.userType === "client" && (
+                        <div className="flex items-center gap-3 cursor-pointer hover:text-gray-900">
+                          <Bell className="h-5 w-5" />
+                          <span>Notifications</span>
+                        </div>
+                      )}
                       {user.userType === "company" ? (
                         <>
                           <Link href="/dashboard" onClick={() => setIsOpen(false)}>
