@@ -94,11 +94,11 @@ export default function Hero() {
       </div>
 
       {/* Main content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           {/* Left Column - Hero Content */}
           <div className="space-y-12">
-            <div className="space-y-22">
+            <div className="text-center">
               <h2 className="text-4xl sm:text-4xl lg:text-4xl font-extrabold tracking-tight leading-[1.2]">
                 <span 
                   style={{
@@ -109,7 +109,7 @@ export default function Hero() {
                     animation: 'moveGradient 4s linear infinite'
                   }}
                 >
-                        Re-imagining Carhiring
+                  The #1 platform trusted by car rental professionals
                 </span>
               </h2>
             </div>
