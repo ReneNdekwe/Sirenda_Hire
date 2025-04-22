@@ -295,7 +295,10 @@ export class MemStorage implements IStorage {
       ...booking, 
       id, 
       createdAt: new Date(),
-      status: 'pending' as const
+      status: 'pending' as const,
+      paymentStatus: 'pending' as const,
+      paymentIntentId: null,
+      updatedAt: new Date()
     };
     this.bookings.set(id, newBooking);
     return newBooking;
@@ -593,7 +596,10 @@ export class DatabaseStorage implements IStorage {
     const bookingWithDefaults = {
       ...booking,
       status: "pending" as const,
-      createdAt: new Date()
+      paymentStatus: "pending" as const,
+      paymentIntentId: null,
+      createdAt: new Date(),
+      updatedAt: new Date()
     };
 
     // Insert the booking
@@ -694,7 +700,9 @@ export class DatabaseStorage implements IStorage {
       .innerJoin(vehicles, eq(bookings.vehicleId, vehicles.id))
       .where(eq(vehicles.ownerId, ownerId))
       .orderBy(desc(bookings.createdAt));
-    return result;
+    
+    // Map the joined results to just the booking objects
+    return result.map(item => item.bookings);
   }
 
   async getNotifications(userId: number): Promise<Notification[]> {

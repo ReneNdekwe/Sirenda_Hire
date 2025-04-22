@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useSearch, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Vehicle } from "@shared/schema";
-import { format, differenceInDays, addDays } from "date-fns";
+import { format, parse, differenceInDays, addDays, startOfDay, endOfDay } from "date-fns";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -22,6 +22,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Car, Calendar, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 export default function BookingPage() {
   const params = useParams<{ vehicleId: string }>();
@@ -31,17 +32,22 @@ export default function BookingPage() {
   const { toast } = useToast();
   const vehicleId = parseInt(params.vehicleId);
 
-  const [pickupDate, setPickupDate] = useState<Date | undefined>(
-    searchParams.get("pickupDate")
-      ? new Date(searchParams.get("pickupDate")!)
-      : undefined
-  );
+  const [pickupDate, setPickupDate] = useState<Date | undefined>(() => {
+    const dateStr = searchParams.get("pickupDate");
+    if (!dateStr) return undefined;
+    return parse(dateStr, 'yyyy-MM-dd', new Date());
+  });
 
-  const [returnDate, setReturnDate] = useState<Date | undefined>(
-    searchParams.get("returnDate")
-      ? new Date(searchParams.get("returnDate")!)
-      : undefined
-  );
+  const [returnDate, setReturnDate] = useState<Date | undefined>(() => {
+    const dateStr = searchParams.get("returnDate");
+    if (!dateStr) return undefined;
+    return parse(dateStr, 'yyyy-MM-dd', new Date());
+  });
+
+  const [hasDriver, setHasDriver] = useState(false);
+  const [hasCarWash, setHasCarWash] = useState(false);
+  const [hasHomeDelivery, setHasHomeDelivery] = useState(false);
+  const [deliveryAddress, setDeliveryAddress] = useState("");
 
   // Fetch vehicle availability
   const { data: bookedDates } = useQuery<Array<{ start: string; end: string }>>({
@@ -105,13 +111,12 @@ export default function BookingPage() {
       return;
     }
 
-    const newPickupDate = new Date(date);
-    newPickupDate.setHours(0, 0, 0, 0);
+    const newPickupDate = startOfDay(date);
     setPickupDate(newPickupDate);
 
     // If return date is before new pickup date or on a booked date, find next available date
     if (!returnDate || returnDate <= newPickupDate || isDateBooked(returnDate)) {
-      let nextDate = addDays(new Date(newPickupDate), 1);
+      let nextDate = addDays(newPickupDate, 1);
       while (isDateBooked(nextDate)) {
         nextDate = addDays(nextDate, 1);
       }
@@ -128,7 +133,11 @@ export default function BookingPage() {
   });
 
   const totalDays = pickupDate && returnDate ? differenceInDays(returnDate, pickupDate) : 0;
-  const totalPrice = vehicle?.pricePerDay ? totalDays * vehicle.pricePerDay : 0;
+  const basePrice = vehicle?.pricePerDay ? totalDays * vehicle.pricePerDay : 0;
+  const driverFee = hasDriver ? totalDays * 50 : 0; // $50 per day for driver
+  const carWashFee = hasCarWash ? 30 : 0; // $30 flat fee for car wash
+  const deliveryFee = hasHomeDelivery ? 40 : 0; // $40 flat fee for delivery
+  const totalPrice = basePrice + driverFee + carWashFee + deliveryFee;
 
   // Create booking mutation
   const bookingMutation = useMutation({
@@ -137,12 +146,20 @@ export default function BookingPage() {
         throw new Error("Missing required booking information");
       }
 
+      if (hasHomeDelivery && !deliveryAddress.trim()) {
+        throw new Error("Delivery address is required when home delivery is selected");
+      }
+
       const bookingData = {
         vehicleId: vehicle.id,
         userId: user.id,
-        pickupDate: pickupDate.toISOString().split('T')[0],
-        returnDate: returnDate.toISOString().split('T')[0],
+        pickupDate: format(pickupDate, 'yyyy-MM-dd'),
+        returnDate: format(returnDate, 'yyyy-MM-dd'),
         totalPrice,
+        hasDriver,
+        hasCarWash,
+        hasHomeDelivery,
+        deliveryAddress: hasHomeDelivery ? deliveryAddress : null,
         status: "pending",
       };
 
@@ -278,7 +295,7 @@ export default function BookingPage() {
                         <CardContent className="space-y-6">
                           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                             <div className="w-24 h-24 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
-                              {vehicle.imageUrls && vehicle.imageUrls[0] && (
+                              {vehicle.imageUrls && Array.isArray(vehicle.imageUrls) && vehicle.imageUrls[0] && (
                                 <img
                                   src={vehicle.imageUrls[0] as string}
                                   alt={`${vehicle.brand} ${vehicle.model}`}
@@ -378,8 +395,8 @@ export default function BookingPage() {
                         </CardContent>
                         <CardFooter>
                           <Button
-                            className="w-full"
-                            disabled={!pickupDate || !returnDate || !termsAccepted}
+                            className="w-full bg-primary text-white hover:bg-primary/90"
+                            disabled={!pickupDate || !returnDate || !termsAccepted || (hasHomeDelivery && !deliveryAddress.trim())}
                             onClick={handleBookNow}
                           >
                             Continue to Payment
@@ -400,11 +417,95 @@ export default function BookingPage() {
                                 ${vehicle.pricePerDay} × {totalDays || 0} day
                                 {totalDays !== 1 ? "s" : ""}
                               </span>
-                              <span>${totalPrice}</span>
+                              <span>${basePrice}</span>
                             </div>
                             <div className="flex justify-between text-sm text-gray-500">
                               <span>Rental Fee</span>
-                              <span>${totalPrice}</span>
+                              <span>${basePrice}</span>
+                            </div>
+                          </div>
+
+                          {hasDriver && (
+                            <div className="flex justify-between text-sm">
+                              <span>Driver Fee ($50/day)</span>
+                              <span>${driverFee}</span>
+                            </div>
+                          )}
+
+                          {hasCarWash && (
+                            <div className="flex justify-between text-sm">
+                              <span>Car Wash Fee</span>
+                              <span>${carWashFee}</span>
+                            </div>
+                          )}
+
+                          {hasHomeDelivery && (
+                            <div className="flex justify-between text-sm">
+                              <span>Delivery Fee</span>
+                              <span>${deliveryFee}</span>
+                            </div>
+                          )}
+
+                          <Separator />
+
+                          <div className="space-y-4 mt-4">
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id="driver"
+                                checked={hasDriver}
+                                onCheckedChange={(checked) => setHasDriver(checked as boolean)}
+                              />
+                              <label
+                                htmlFor="driver"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                Add Professional Driver ($50/day)
+                              </label>
+                            </div>
+
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id="carWash"
+                                checked={hasCarWash}
+                                onCheckedChange={(checked) => setHasCarWash(checked as boolean)}
+                              />
+                              <label
+                                htmlFor="carWash"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                Add Car Wash Service ($30)
+                              </label>
+                            </div>
+
+                            <div className="space-y-2">
+                              <div className="flex items-center space-x-2">
+                                <Checkbox
+                                  id="homeDelivery"
+                                  checked={hasHomeDelivery}
+                                  onCheckedChange={(checked) => {
+                                    setHasHomeDelivery(checked as boolean);
+                                    if (!checked) {
+                                      setDeliveryAddress("");
+                                    }
+                                  }}
+                                />
+                                <label
+                                  htmlFor="homeDelivery"
+                                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                  Add Home Delivery Service ($40)
+                                </label>
+                              </div>
+                              {hasHomeDelivery && (
+                                <div className="ml-6">
+                                  <Input
+                                    placeholder="Enter delivery address"
+                                    value={deliveryAddress}
+                                    onChange={(e) => setDeliveryAddress(e.target.value)}
+                                    className="w-full"
+                                  />
+                                </div>
+                              )}
                             </div>
                           </div>
 
@@ -439,7 +540,7 @@ export default function BookingPage() {
                   <CardContent className="space-y-6">
                     <div className="flex flex-col sm:flex-row sm:items-center gap-4 bg-gray-50 p-4 rounded-md">
                       <div className="w-24 h-24 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
-                        {vehicle.imageUrls && vehicle.imageUrls[0] && (
+                        {vehicle.imageUrls && Array.isArray(vehicle.imageUrls) && vehicle.imageUrls[0] && (
                           <img
                             src={vehicle.imageUrls[0] as string}
                             alt={`${vehicle.brand} ${vehicle.model}`}
@@ -515,16 +616,20 @@ export default function BookingPage() {
                       </p>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-between">
+                  <CardFooter className="flex justify-between gap-4 p-6">
                     <Button
                       variant="outline"
+                      size="lg"
                       onClick={() => setBookingStep("form")}
+                      className="min-w-[120px]"
                     >
                       Back
                     </Button>
                     <Button
+                      size="lg"
                       onClick={confirmBooking}
                       disabled={bookingMutation.isPending}
+                      className="min-w-[120px] bg-primary text-white hover:bg-primary/90"
                     >
                       {bookingMutation.isPending && (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -582,14 +687,20 @@ export default function BookingPage() {
                       </div>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex justify-center space-x-4">
+                  <CardFooter className="flex justify-center gap-4 p-6">
                     <Button
                       variant="outline"
+                      size="lg"
                       onClick={() => navigate("/my-bookings")}
+                      className="min-w-[160px]"
                     >
                       View My Bookings
                     </Button>
-                    <Button onClick={() => navigate("/vehicles")}>
+                    <Button
+                      size="lg"
+                      onClick={() => navigate("/vehicles")}
+                      className="min-w-[160px] bg-primary text-white hover:bg-primary/90"
+                    >
                       Browse More Vehicles
                     </Button>
                   </CardFooter>

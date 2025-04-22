@@ -6,7 +6,6 @@ import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 import VehicleCard from "@/components/vehicles/vehicle-card";
 import VehicleFilter from "@/components/vehicles/vehicle-filter";
-import AIRecommendations from "@/components/recommendations/ai-recommendations";
 import { useAuth } from "@/hooks/use-auth";
 import {
   Select,
@@ -274,13 +273,6 @@ export default function VehiclesPage() {
 
             {/* Main content */}
             <div className="col-span-12 lg:col-span-9">
-              {/* AI Recommendations for clients */}
-              {isClient && !isLoading && (
-                <div className="mb-8">
-                  <AIRecommendations />
-                </div>
-              )}
-
               {/* Results summary and sort */}
               <div className="bg-white rounded-xl shadow-sm p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
                 <h2 className="font-bold flex items-center">

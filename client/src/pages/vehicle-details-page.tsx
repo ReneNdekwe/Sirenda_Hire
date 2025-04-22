@@ -33,7 +33,7 @@ import {
   MapPin,
   StarHalf,
 } from "lucide-react";
-import { format, addDays, differenceInDays } from "date-fns";
+import { format, addDays, differenceInDays, parse, startOfDay } from "date-fns";
 import { useAuth } from "@/hooks/use-auth";
 
 export default function VehicleDetailsPage() {
@@ -67,14 +67,14 @@ export default function VehicleDetailsPage() {
   const handlePrevImage = () => {
     if (!vehicle || !vehicle.imageUrls) return;
     setCurrentImageIndex((prev) =>
-      prev === 0 ? vehicle.imageUrls.length - 1 : prev - 1
+      prev === 0 ? (vehicle.imageUrls as string[]).length - 1 : prev - 1
     );
   };
 
   const handleNextImage = () => {
     if (!vehicle || !vehicle.imageUrls) return;
     setCurrentImageIndex((prev) =>
-      prev === vehicle.imageUrls.length - 1 ? 0 : prev + 1
+      prev === (vehicle.imageUrls as string[]).length - 1 ? 0 : prev + 1
     );
   };
 
@@ -89,8 +89,8 @@ export default function VehicleDetailsPage() {
     }
 
     const searchParams = new URLSearchParams();
-    searchParams.set("pickupDate", pickupDate.toISOString().split("T")[0]);
-    searchParams.set("returnDate", returnDate.toISOString().split("T")[0]);
+    searchParams.set("pickupDate", format(pickupDate, 'yyyy-MM-dd'));
+    searchParams.set("returnDate", format(returnDate, 'yyyy-MM-dd'));
     
     navigate(`/booking/${vehicleId}?${searchParams.toString()}`);
   };
@@ -99,23 +99,28 @@ export default function VehicleDetailsPage() {
   const totalPrice = vehicle?.pricePerDay ? totalDays * vehicle.pricePerDay : 0;
 
   const handlePickupDateChange = (date: Date | undefined) => {
-    setPickupDate(date);
-    if (date && (!returnDate || returnDate <= date)) {
-      setReturnDate(addDays(date, 1));
+    if (!date) {
+      setPickupDate(undefined);
+      setReturnDate(undefined);
+      return;
+    }
+
+    const newPickupDate = startOfDay(date);
+    setPickupDate(newPickupDate);
+    
+    if (!returnDate || returnDate <= newPickupDate) {
+      setReturnDate(addDays(newPickupDate, 1));
     }
   };
 
   const isDateBooked = (date: Date) => {
     if (!bookedDates) return false;
 
-    const checkDate = new Date(date);
-    checkDate.setHours(0, 0, 0, 0);
+    const checkDate = startOfDay(date);
 
     return bookedDates.some(booking => {
-      const start = new Date(booking.start);
-      const end = new Date(booking.end);
-      start.setHours(0, 0, 0, 0);
-      end.setHours(0, 0, 0, 0);
+      const start = startOfDay(new Date(booking.start));
+      const end = startOfDay(new Date(booking.end));
 
       return checkDate >= start && checkDate <= end;
     });
@@ -161,20 +166,20 @@ export default function VehicleDetailsPage() {
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div className="grid grid-cols-4 gap-2 h-[450px]">
                       <div className="col-span-4 md:col-span-3 relative h-full bg-gray-100 rounded-lg overflow-hidden">
-                        {vehicle.imageUrls && 
+                        {(vehicle.imageUrls as string[] | null) && 
                          Array.isArray(vehicle.imageUrls) && 
-                         vehicle.imageUrls.length > currentImageIndex && (
+                         (vehicle.imageUrls as string[]).length > currentImageIndex && (
                           <img
-                            src={vehicle.imageUrls[currentImageIndex]}
+                            src={(vehicle.imageUrls as string[])[currentImageIndex]}
                             alt={`${vehicle.brand} ${vehicle.model}`}
                             className="w-full h-full object-cover"
                           />
                         )}
                       </div>
                       <div className="hidden md:flex md:col-span-1 flex-col gap-2">
-                        {vehicle.imageUrls && 
+                        {(vehicle.imageUrls as string[] | null) && 
                          Array.isArray(vehicle.imageUrls) && 
-                         vehicle.imageUrls.slice(0, 3).map((url, index) => (
+                         (vehicle.imageUrls as string[]).slice(0, 3).map((url, index) => (
                           <button
                             key={index}
                             onClick={() => setCurrentImageIndex(index)}
@@ -211,13 +216,13 @@ export default function VehicleDetailsPage() {
                     </div>
 
                     {/* Image grid instead of thumbnails */}
-                    {vehicle.imageUrls && 
+                    {(vehicle.imageUrls as string[] | null) && 
                      Array.isArray(vehicle.imageUrls) && 
-                     vehicle.imageUrls.length > 1 && (
+                     (vehicle.imageUrls as string[]).length > 1 && (
                       <div className="p-4">
                         <h3 className="font-medium text-sm mb-3 text-gray-700">Vehicle Photos</h3>
                         <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                          {vehicle.imageUrls.map((url, index) => (
+                          {(vehicle.imageUrls as string[]).map((url, index) => (
                             <button
                               key={index}
                               className={`aspect-square overflow-hidden rounded-lg ${

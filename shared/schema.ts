@@ -136,7 +136,14 @@ export const bookings = pgTable("bookings", {
   returnDate: date("return_date").notNull(),
   totalPrice: integer("total_price").notNull(),
   status: text("status", { enum: ["pending", "confirmed", "rejected", "completed", "cancelled"] }).notNull().default('pending'),
+  paymentStatus: text("payment_status", { enum: ["pending", "authorized", "captured", "refunded", "failed"] }).notNull().default('pending'),
+  paymentIntentId: text("payment_intent_id"),
+  hasDriver: boolean("has_driver").notNull().default(false),
+  hasCarWash: boolean("has_car_wash").notNull().default(false),
+  hasHomeDelivery: boolean("has_home_delivery").notNull().default(false),
+  deliveryAddress: text("delivery_address"),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const insertBookingSchema = createInsertSchema(bookings);

@@ -8,7 +8,6 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
-import AIRecommendations from "@/components/recommendations/ai-recommendations";
 import {
   Card,
   CardContent,
@@ -419,12 +418,6 @@ export default function ProfilePage() {
                 </Tabs>
               </CardContent>
             </Card>
-
-            <div className="mt-10">
-              <h2 className="text-xl font-bold mb-4">Personalized Recommendations</h2>
-              <p className="text-gray-600 mb-6">Based on your profile and preferences, here are some vehicles you might like.</p>
-              <AIRecommendations />
-            </div>
           </div>
         </div>
       </main>

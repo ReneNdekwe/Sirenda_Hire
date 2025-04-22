@@ -152,7 +152,7 @@ export async function updatePaymentStatus(
     await db
       .update(bookings)
       .set({
-        status: newStatus,
+        paymentStatus: newStatus,
         paymentIntentId,
         updatedAt: new Date()
       })

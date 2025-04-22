@@ -11,7 +11,6 @@ import {
 } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
-import { generateVehicleRecommendations } from "./ai/recommendations";
 import { subscriptionService } from "./subscription-service";
 import multer from "multer";
 import path from "path";
@@ -428,61 +427,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(reviews);
   });
 
-  // AI Recommendations route
-  app.get("/api/recommendations", async (req, res) => {
-    if (!req.isAuthenticated()) {
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    try {
-      // Limit to client users only for now
-      if (req.user.userType !== 'client') {
-        return res.status(403).json({ message: "Recommendations are only available for clients" });
-      }
-
-      // Get all necessary data for generating recommendations
-      const [availableVehicles, userBookings, categories] = await Promise.all([
-        storage.getVehicles({ availability: true }),
-        storage.getBookings(req.user.id),
-        storage.getCategories()
-      ]);
-
-      // Generate personalized recommendations
-      const recommendations = await generateVehicleRecommendations(
-        req.user,
-        availableVehicles,
-        userBookings,
-        categories,
-        3 // Limit to top 3 recommendations
-      );
-
-      // If we have recommendations, fetch the full vehicle details
-      const recommendedVehicles = await Promise.all(
-        recommendations.map(async (rec) => {
-          const vehicle = await storage.getVehicle(rec.vehicleId);
-          if (!vehicle) return null;
-          
-          return {
-            ...vehicle,
-            recommendationScore: rec.score,
-            recommendationReason: rec.reason
-          };
-        })
-      );
-
-      // Filter out any null values (in case a vehicle was deleted)
-      const validRecommendations = recommendedVehicles.filter(v => v !== null);
-
-      res.json(validRecommendations);
-    } catch (error) {
-      console.error("Error generating recommendations:", error);
-      res.status(500).json({ 
-        message: "Error generating recommendations",
-        error: error instanceof Error ? error.message : "Unknown error"
-      });
-    }
-  });
-  
   // Subscription management routes
   // Setup subscription for new company
   app.post("/api/subscription/setup", async (req, res) => {

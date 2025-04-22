@@ -1,8 +1,17 @@
 #!/usr/bin/env node
-const { drizzle } = require("drizzle-orm/neon-http");
-const { neon } = require("@neondatabase/serverless");
-const { migrate } = require("drizzle-orm/neon-http/migrator");
-const path = require("path");
+import { drizzle } from "drizzle-orm/neon-http";
+import { neon } from "@neondatabase/serverless";
+import { migrate } from "drizzle-orm/neon-http/migrator";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+
+// Load environment variables
+dotenv.config();
+
+// Get the directory name
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Read environment variables
 const DATABASE_URL = process.env.DATABASE_URL;
