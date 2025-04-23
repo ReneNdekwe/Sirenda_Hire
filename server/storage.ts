@@ -202,20 +202,30 @@ export class MemStorage implements IStorage {
 
   // Vehicle methods
   async getVehicles(filters?: Partial<Vehicle>): Promise<Vehicle[]> {
-    let vehicles = Array.from(this.vehicles.values());
-
-    if (filters) {
-      vehicles = vehicles.filter(vehicle => {
-        for (const [key, value] of Object.entries(filters)) {
-          if (vehicle[key as keyof Vehicle] !== value) {
-            return false;
-          }
-        }
-        return true;
-      });
+    if (!filters || Object.keys(filters).length === 0) {
+      return db.select().from(vehicles);
     }
 
-    return vehicles;
+    // Build dynamic query conditions
+    const conditions: any[] = [];
+
+    for (const [key, value] of Object.entries(filters)) {
+      // Skip undefined values and ensure key is valid
+      if (value !== undefined && key in vehicles) {
+        if (key === 'occasion') {
+          // Handle occasion filtering using JSONB contains
+          conditions.push(sql`${vehicles.occasions} ? ${value}`);
+        } else {
+          conditions.push(eq(vehicles[key as keyof typeof vehicles] as any, value));
+        }
+      }
+    }
+
+    if (conditions.length > 0) {
+      return db.select().from(vehicles).where(and(...conditions));
+    }
+
+    return db.select().from(vehicles);
   }
 
   async getVehicle(id: number): Promise<Vehicle | undefined> {
@@ -246,7 +256,8 @@ export class MemStorage implements IStorage {
       features: vehicle.features ?? [],
       imageUrls: vehicle.imageUrls ?? [],
       isFeatured: vehicle.isFeatured ?? false,
-      availability: true
+      availability: true,
+      occasions: vehicle.occasions ?? []
     };
     this.vehicles.set(id, newVehicle);
     return newVehicle;
@@ -290,17 +301,24 @@ export class MemStorage implements IStorage {
   }
 
   async createBooking(booking: InsertBooking): Promise<Booking> {
-    const id = this.currentId.booking++;
-    const newBooking: Booking = { 
-      ...booking, 
-      id, 
-      createdAt: new Date(),
-      status: 'pending' as const,
-      paymentStatus: 'pending' as const,
+    const { id, ...bookingWithoutId } = booking;
+    const bookingWithDefaults = {
+      ...bookingWithoutId,
+      status: "pending" as const,
+      paymentStatus: "pending" as const,
       paymentIntentId: null,
+      hasDriver: booking.hasDriver ?? false,
+      hasCarWash: booking.hasCarWash ?? false,
+      hasHomeDelivery: booking.hasHomeDelivery ?? false,
+      deliveryAddress: booking.deliveryAddress ?? null,
+      createdAt: new Date(),
       updatedAt: new Date()
     };
-    this.bookings.set(id, newBooking);
+
+    const [newBooking] = await db.insert(bookings)
+      .values(bookingWithDefaults)
+      .returning();
+
     return newBooking;
   }
 
@@ -512,7 +530,12 @@ export class DatabaseStorage implements IStorage {
     for (const [key, value] of Object.entries(filters)) {
       // Skip undefined values and ensure key is valid
       if (value !== undefined && key in vehicles) {
-        conditions.push(eq(vehicles[key as keyof typeof vehicles] as any, value));
+        if (key === 'occasion') {
+          // Handle occasion filtering using JSONB contains
+          conditions.push(sql`${vehicles.occasions} ? ${value}`);
+        } else {
+          conditions.push(eq(vehicles[key as keyof typeof vehicles] as any, value));
+        }
       }
     }
 
@@ -592,17 +615,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createBooking(booking: InsertBooking): Promise<Booking> {
-    // Set default values with all required properties
+    const { id, ...bookingWithoutId } = booking;
     const bookingWithDefaults = {
-      ...booking,
+      ...bookingWithoutId,
       status: "pending" as const,
       paymentStatus: "pending" as const,
       paymentIntentId: null,
+      hasDriver: booking.hasDriver ?? false,
+      hasCarWash: booking.hasCarWash ?? false,
+      hasHomeDelivery: booking.hasHomeDelivery ?? false,
+      deliveryAddress: booking.deliveryAddress ?? null,
       createdAt: new Date(),
       updatedAt: new Date()
     };
 
-    // Insert the booking
     const [newBooking] = await db.insert(bookings)
       .values(bookingWithDefaults)
       .returning();

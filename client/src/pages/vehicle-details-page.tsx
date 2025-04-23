@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { format, addDays, differenceInDays, parse, startOfDay } from "date-fns";
 import { useAuth } from "@/hooks/use-auth";
+import { formatPrice } from "@/lib/currency";
 
 export default function VehicleDetailsPage() {
   const params = useParams<{ id: string }>();
@@ -174,6 +175,28 @@ export default function VehicleDetailsPage() {
                             alt={`${vehicle.brand} ${vehicle.model}`}
                             className="w-full h-full object-cover"
                           />
+                        )}
+                        
+                        {/* Navigation arrows */}
+                        {(vehicle.imageUrls as string[] | null) && 
+                         Array.isArray(vehicle.imageUrls) && 
+                         (vehicle.imageUrls as string[]).length > 1 && (
+                          <>
+                            <button
+                              onClick={handlePrevImage}
+                              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full w-10 h-10 flex items-center justify-center shadow hover:shadow-md transition-colors backdrop-blur-sm"
+                              aria-label="Previous image"
+                            >
+                              <ChevronLeft className="h-5 w-5 text-gray-700" />
+                            </button>
+                            <button
+                              onClick={handleNextImage}
+                              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full w-10 h-10 flex items-center justify-center shadow hover:shadow-md transition-colors backdrop-blur-sm"
+                              aria-label="Next image"
+                            >
+                              <ChevronRight className="h-5 w-5 text-gray-700" />
+                            </button>
+                          </>
                         )}
                       </div>
                       <div className="hidden md:flex md:col-span-1 flex-col gap-2">
@@ -382,7 +405,14 @@ export default function VehicleDetailsPage() {
                         <div>
                           {vehicle.brand} {vehicle.model}
                         </div>
-                        <div className="text-xl">${vehicle.pricePerDay}</div>
+                        <div className="text-right">
+                          <div className="flex flex-col">
+                            <span className="font-bold text-xl text-primary">
+                              {formatPrice(vehicle.pricePerDay)}
+                              <span className="text-sm font-light text-gray-500 ml-1">/day</span>
+                            </span>
+                          </div>
+                        </div>
                       </CardTitle>
                       <CardDescription>per day</CardDescription>
                     </CardHeader>
@@ -451,14 +481,14 @@ export default function VehicleDetailsPage() {
                         <div className="bg-gray-50 p-3 rounded-md">
                           <div className="flex justify-between mb-1">
                             <span>
-                              ${vehicle.pricePerDay} × {totalDays} day{totalDays > 1 ? "s" : ""}
+                              {formatPrice(vehicle.pricePerDay)} × {totalDays} day{totalDays > 1 ? "s" : ""}
                             </span>
-                            <span>${totalPrice}</span>
+                            <span>{formatPrice(totalPrice)}</span>
                           </div>
                           <Separator className="my-2" />
                           <div className="flex justify-between font-bold">
                             <span>Total</span>
-                            <span>${totalPrice}</span>
+                            <span>{formatPrice(totalPrice)}</span>
                           </div>
                         </div>
                       )}

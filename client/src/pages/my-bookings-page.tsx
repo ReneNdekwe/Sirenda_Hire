@@ -24,6 +24,8 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "wouter";
 import { ChevronRight, Calendar, Car, AlertCircle, Loader2 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { formatPrice } from "@/lib/currency";
 
 export default function MyBookingsPage() {
   const { user } = useAuth();
@@ -58,6 +60,96 @@ export default function MyBookingsPage() {
   };
 
   const isLoading = isLoadingBookings || isLoadingVehicles;
+
+  // Filter bookings by status
+  const pendingBookings = bookings?.filter(b => b.status === 'pending') || [];
+  const confirmedBookings = bookings?.filter(b => b.status === 'confirmed') || [];
+  const completedBookings = bookings?.filter(b => b.status === 'completed') || [];
+  const cancelledBookings = bookings?.filter(b => b.status === 'cancelled') || [];
+
+  const renderBookingsTable = (bookings: Booking[]) => {
+    if (bookings.length === 0) {
+      return (
+        <div className="text-center py-8">
+          <div className="mx-auto w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+            <Calendar className="h-6 w-6 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-medium mb-2">No bookings found</h3>
+          <p className="text-gray-500 mb-4">
+            You don't have any bookings in this category.
+          </p>
+          <Link href="/vehicles">
+            <Button>Browse Vehicles</Button>
+          </Link>
+        </div>
+      );
+    }
+
+    return (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Vehicle</TableHead>
+            <TableHead>Dates</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead></TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {bookings.map((booking) => {
+            const vehicle = getVehicleDetails(booking.vehicleId);
+            const imageUrls = vehicle?.imageUrls ? (Array.isArray(vehicle.imageUrls) ? vehicle.imageUrls as string[] : []) : [];
+            return (
+              <TableRow key={booking.id}>
+                <TableCell className="font-medium">
+                  {vehicle ? (
+                    <div className="flex items-center">
+                      <div className="h-10 w-10 bg-gray-200 rounded overflow-hidden mr-2">
+                        {imageUrls.length > 0 && (
+                          <img
+                            src={imageUrls[0]}
+                            alt={`${vehicle.brand} ${vehicle.model}`}
+                            className="h-full w-full object-cover"
+                          />
+                        )}
+                      </div>
+                      <span>
+                        {vehicle.brand} {vehicle.model}
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <div className="h-10 w-10 bg-gray-200 rounded overflow-hidden mr-2 flex items-center justify-center">
+                        <Car className="h-6 w-6 text-gray-400" />
+                      </div>
+                      <span>Vehicle #{booking.vehicleId}</span>
+                    </div>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {format(new Date(booking.pickupDate), "MMM d, yyyy")} -{" "}
+                  {format(new Date(booking.returnDate), "MMM d, yyyy")}
+                </TableCell>
+                <TableCell>{getStatusBadge(booking.status)}</TableCell>
+                <TableCell>{formatPrice(booking.totalPrice)}</TableCell>
+                <TableCell>
+                  {vehicle && (
+                    <Link href={`/vehicles/${vehicle.id}`}>
+                      <Button variant="ghost" size="sm">
+                        Details
+                        <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
+                    </Link>
+                  )}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    );
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -97,168 +189,76 @@ export default function MyBookingsPage() {
             </Card>
           ) : (
             <div className="space-y-8">
-              <div className="grid grid-cols-1 gap-4">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Current & Upcoming Bookings</CardTitle>
-                    <CardDescription>Your pending and confirmed bookings</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {bookings.filter(b => b.status === 'pending' || b.status === 'confirmed').length > 0 ? (
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Vehicle</TableHead>
-                            <TableHead>Dates</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Price</TableHead>
-                            <TableHead></TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {bookings
-                            .filter(b => b.status === 'pending' || b.status === 'confirmed')
-                            .map((booking) => {
-                              const vehicle = getVehicleDetails(booking.vehicleId);
-                              return (
-                                <TableRow key={booking.id}>
-                                  <TableCell className="font-medium">
-                                    {vehicle ? (
-                                      <div className="flex items-center">
-                                        <div className="h-10 w-10 bg-gray-200 rounded overflow-hidden mr-2">
-                                          {vehicle.imageUrls && vehicle.imageUrls[0] && (
-                                            <img
-                                              src={vehicle.imageUrls[0] as string}
-                                              alt={`${vehicle.brand} ${vehicle.model}`}
-                                              className="h-full w-full object-cover"
-                                            />
-                                          )}
-                                        </div>
-                                        <span>
-                                          {vehicle.brand} {vehicle.model}
-                                        </span>
-                                      </div>
-                                    ) : (
-                                      <div className="flex items-center">
-                                        <div className="h-10 w-10 bg-gray-200 rounded overflow-hidden mr-2 flex items-center justify-center">
-                                          <Car className="h-6 w-6 text-gray-400" />
-                                        </div>
-                                        <span>Vehicle #{booking.vehicleId}</span>
-                                      </div>
-                                    )}
-                                  </TableCell>
-                                  <TableCell>
-                                    {format(new Date(booking.pickupDate), "MMM d, yyyy")} -{" "}
-                                    {format(new Date(booking.returnDate), "MMM d, yyyy")}
-                                  </TableCell>
-                                  <TableCell>{getStatusBadge(booking.status)}</TableCell>
-                                  <TableCell>${booking.totalPrice}</TableCell>
-                                  <TableCell>
-                                    {vehicle && (
-                                      <Link href={`/vehicles/${vehicle.id}`}>
-                                        <Button variant="ghost" size="sm">
-                                          Details
-                                          <ChevronRight className="h-4 w-4 ml-1" />
-                                        </Button>
-                                      </Link>
-                                    )}
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            })}
-                        </TableBody>
-                      </Table>
-                    ) : (
-                      <div className="text-center py-8">
-                        <div className="mx-auto w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center mb-4">
-                          <Calendar className="h-6 w-6 text-gray-400" />
-                        </div>
-                        <h3 className="text-lg font-medium mb-2">No upcoming bookings</h3>
-                        <p className="text-gray-500 mb-4">
-                          You don't have any pending or confirmed bookings at the moment.
-                        </p>
-                        <Link href="/vehicles">
-                          <Button>Browse Vehicles</Button>
-                        </Link>
-                      </div>
+              <Tabs defaultValue="pending" className="w-full">
+                <TabsList className="grid w-full grid-cols-4 mb-8">
+                  <TabsTrigger value="pending" className="relative">
+                    Pending
+                    {pendingBookings.length > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-yellow-100 text-yellow-800 text-xs flex items-center justify-center">
+                        {pendingBookings.length}
+                      </span>
                     )}
-                  </CardContent>
-                </Card>
+                  </TabsTrigger>
+                  <TabsTrigger value="confirmed" className="relative">
+                    Confirmed
+                    {confirmedBookings.length > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-green-100 text-green-800 text-xs flex items-center justify-center">
+                        {confirmedBookings.length}
+                      </span>
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger value="completed">Completed</TabsTrigger>
+                  <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
+                </TabsList>
 
-                {bookings.filter(b => b.status === 'completed' || b.status === 'cancelled').length > 0 && (
+                <TabsContent value="pending">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Booking History</CardTitle>
-                      <CardDescription>Your past bookings</CardDescription>
+                      <CardTitle>Pending Bookings</CardTitle>
+                      <CardDescription>Your bookings awaiting confirmation</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Vehicle</TableHead>
-                            <TableHead>Dates</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Price</TableHead>
-                            <TableHead></TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {bookings
-                            .filter(b => b.status === 'completed' || b.status === 'cancelled')
-                            .map((booking) => {
-                              const vehicle = getVehicleDetails(booking.vehicleId);
-                              return (
-                                <TableRow key={booking.id}>
-                                  <TableCell className="font-medium">
-                                    {vehicle ? (
-                                      <div className="flex items-center">
-                                        <div className="h-10 w-10 bg-gray-200 rounded overflow-hidden mr-2">
-                                          {vehicle.imageUrls && vehicle.imageUrls[0] && (
-                                            <img
-                                              src={vehicle.imageUrls[0] as string}
-                                              alt={`${vehicle.brand} ${vehicle.model}`}
-                                              className="h-full w-full object-cover"
-                                            />
-                                          )}
-                                        </div>
-                                        <span>
-                                          {vehicle.brand} {vehicle.model}
-                                        </span>
-                                      </div>
-                                    ) : (
-                                      <div className="flex items-center">
-                                        <div className="h-10 w-10 bg-gray-200 rounded overflow-hidden mr-2 flex items-center justify-center">
-                                          <Car className="h-6 w-6 text-gray-400" />
-                                        </div>
-                                        <span>Vehicle #{booking.vehicleId}</span>
-                                      </div>
-                                    )}
-                                  </TableCell>
-                                  <TableCell>
-                                    {format(new Date(booking.pickupDate), "MMM d, yyyy")} -{" "}
-                                    {format(new Date(booking.returnDate), "MMM d, yyyy")}
-                                  </TableCell>
-                                  <TableCell>{getStatusBadge(booking.status)}</TableCell>
-                                  <TableCell>${booking.totalPrice}</TableCell>
-                                  <TableCell>
-                                    {vehicle && (
-                                      <Link href={`/vehicles/${vehicle.id}`}>
-                                        <Button variant="ghost" size="sm">
-                                          Details
-                                          <ChevronRight className="h-4 w-4 ml-1" />
-                                        </Button>
-                                      </Link>
-                                    )}
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            })}
-                        </TableBody>
-                      </Table>
+                      {renderBookingsTable(pendingBookings)}
                     </CardContent>
                   </Card>
-                )}
-              </div>
+                </TabsContent>
+
+                <TabsContent value="confirmed">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Confirmed Bookings</CardTitle>
+                      <CardDescription>Your upcoming confirmed bookings</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {renderBookingsTable(confirmedBookings)}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="completed">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Completed Bookings</CardTitle>
+                      <CardDescription>Your past completed bookings</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {renderBookingsTable(completedBookings)}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+
+                <TabsContent value="cancelled">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Cancelled Bookings</CardTitle>
+                      <CardDescription>Your cancelled bookings</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {renderBookingsTable(cancelledBookings)}
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
             </div>
           )}
         </div>

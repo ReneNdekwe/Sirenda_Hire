@@ -5,6 +5,9 @@ import { Link } from "wouter";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Heart, StarHalf, MapPin } from "lucide-react";
+import { formatPrice } from "@/lib/currency";
 
 export default function FeaturedVehicles() {
   const [currentPage, setCurrentPage] = useState(0);
@@ -149,10 +152,12 @@ function VehicleCardAirbnb({ vehicle }: { vehicle: Vehicle }) {
           </div>
           
           <div className="text-right">
-            <p className="font-semibold text-gray-900">
-              ${vehicle.pricePerDay}
-              <span className="text-sm font-normal text-gray-500">/day</span>
-            </p>
+            <div className="flex flex-col">
+              <span className="font-bold text-base text-primary">
+                {formatPrice(vehicle.pricePerDay)}
+                <span className="text-xs font-light text-gray-500 ml-1">/day</span>
+              </span>
+            </div>
           </div>
         </div>
       </a>

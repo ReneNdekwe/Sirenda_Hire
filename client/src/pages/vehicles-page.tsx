@@ -25,6 +25,7 @@ import {
   RotateCcw,
   Filter as FilterIcon,
 } from "lucide-react";
+import { formatPrice } from "@/lib/currency";
 
 export default function VehiclesPage() {
   const [, setLocation] = useLocation();
@@ -36,10 +37,11 @@ export default function VehiclesPage() {
     categoryId: searchParams.get("categoryId") || undefined,
     location: searchParams.get("location") || "All Locations",
     available: true,
-    priceRange: [0, 500] as [number, number],
+    priceRange: [0, 1000000] as [number, number],
     seats: "any",
     transmission: "any",
     fuel: "any",
+    occasion: searchParams.get("occasion") || undefined,
   });
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -67,6 +69,10 @@ export default function VehiclesPage() {
 
   if (filters.available !== undefined) {
     queryParams.available = String(filters.available);
+  }
+
+  if (filters.occasion) {
+    queryParams.occasion = filters.occasion;
   }
 
   // Fetch vehicles based on filters
@@ -305,34 +311,12 @@ export default function VehiclesPage() {
               {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {[1, 2, 3, 4, 5, 6].map((i) => (
-                    <div
-                      key={i}
-                      className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100"
-                    >
-                      <Skeleton className="h-48 w-full" />
-                      <div className="p-5">
-                        <div className="flex justify-between mb-3">
-                          <div>
-                            <Skeleton className="h-6 w-40 mb-2" />
-                            <Skeleton className="h-4 w-24" />
-                          </div>
-                          <div className="text-right">
-                            <Skeleton className="h-6 w-16 mb-1" />
-                            <Skeleton className="h-4 w-20" />
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2 mb-4">
-                          {[1, 2, 3, 4].map((j) => (
-                            <Skeleton
-                              key={j}
-                              className="h-8 w-20 rounded-full"
-                            />
-                          ))}
-                        </div>
-                        <div className="flex space-x-2 mt-4">
-                          <Skeleton className="h-10 flex-1" />
-                          <Skeleton className="h-10 w-28" />
-                        </div>
+                    <div key={i} className="bg-white rounded-xl shadow-sm overflow-hidden">
+                      <Skeleton className="h-40 w-full" />
+                      <div className="p-4 space-y-3">
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <Skeleton className="h-4 w-2/3" />
                       </div>
                     </div>
                   ))}
@@ -362,10 +346,11 @@ export default function VehiclesPage() {
                         categoryId: undefined,
                         location: "All Locations",
                         available: true,
-                        priceRange: [0, 500],
+                        priceRange: [0, 1000000],
                         seats: "any",
                         transmission: "any",
                         fuel: "any",
+                        occasion: undefined,
                       });
                       setSearchQuery("");
                       setSortOption("recommended");

@@ -9,6 +9,7 @@ import VehicleCard from "@/components/vehicles/vehicle-card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/use-auth";
 import Hero from "@/components/home/hero";
+import BrowseByOccasion from "@/components/home/browse-by-occasion";
 
 export default function HomePage() {
   const [, navigate] = useLocation();
@@ -26,6 +27,9 @@ export default function HomePage() {
       <main className="flex-grow">
         {/* Custom Hero Component with Rwandan locations */}
         <Hero />
+
+        {/* Browse by Occasion Section */}
+        <BrowseByOccasion />
 
         {/* Vehicle listings section */}
         <section className="relative isolate overflow-hidden pt-6 pb-4 bg-gradient-to-br from-[#ff80b5] to-[#9089fc]">

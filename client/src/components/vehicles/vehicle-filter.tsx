@@ -18,8 +18,8 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { X, Filter } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { X, Filter, Car, MapPin, DollarSign, Settings, Calendar } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 
 const LOCATIONS = [
   "All Locations",
@@ -67,7 +67,7 @@ export default function VehicleFilter({
   categoryId,
   location,
   available = true,
-  priceRange = [0, 500],
+  priceRange = [0, 500000],
   seats = "any",
   transmission = "any",
   fuel = "any",
@@ -78,7 +78,7 @@ export default function VehicleFilter({
     categoryId,
     location: location || "All Locations",
     available,
-    priceRange,
+    priceRange: priceRange || [0, 1000000],
     seats,
     transmission,
     fuel,
@@ -102,7 +102,7 @@ export default function VehicleFilter({
       categoryId: undefined,
       location: "All Locations",
       available: true,
-      priceRange: [0, 500],
+      priceRange: [0, 1000000] as [number, number],
       seats: "any",
       transmission: "any",
       fuel: "any",
@@ -125,20 +125,30 @@ export default function VehicleFilter({
   }, [categoryId, location, available, priceRange, seats, transmission, fuel]);
 
   const filterContent = (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Filters</h3>
-        <Button variant="ghost" size="sm" onClick={resetFilters}>
+    <div className="space-y-8">
+      <div className="flex items-center justify-between border-b pb-4">
+        <h3 className="text-lg font-semibold text-gray-900">Filters</h3>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={resetFilters}
+          className="text-gray-500 hover:text-gray-900"
+        >
           <X className="h-4 w-4 mr-2" />
           Reset
         </Button>
       </div>
 
-      <Accordion type="single" collapsible defaultValue="category">
-        <AccordionItem value="category">
-          <AccordionTrigger>Vehicle Category</AccordionTrigger>
-          <AccordionContent>
-            <div className="space-y-2">
+      <Accordion type="single" collapsible defaultValue="category" className="space-y-4">
+        <AccordionItem value="category" className="border rounded-lg overflow-hidden">
+          <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
+            <div className="flex items-center">
+              <Car className="h-4 w-4 mr-2 text-primary" />
+              <span className="font-medium">Vehicle Category</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-4 pb-4">
+            <div className="space-y-3">
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="category-all"
@@ -173,14 +183,19 @@ export default function VehicleFilter({
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="location">
-          <AccordionTrigger>Location</AccordionTrigger>
-          <AccordionContent>
+        <AccordionItem value="location" className="border rounded-lg overflow-hidden">
+          <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
+            <div className="flex items-center">
+              <MapPin className="h-4 w-4 mr-2 text-primary" />
+              <span className="font-medium">Location</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-4 pb-4">
             <Select
               value={filters.location}
               onValueChange={(value) => handleFilterChange("location", value)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select location" />
               </SelectTrigger>
               <SelectContent>
@@ -194,28 +209,39 @@ export default function VehicleFilter({
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="price">
-          <AccordionTrigger>Price Range ($ per day)</AccordionTrigger>
-          <AccordionContent>
+        <AccordionItem value="price" className="border rounded-lg overflow-hidden">
+          <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
+            <div className="flex items-center">
+              <DollarSign className="h-4 w-4 mr-2 text-primary" />
+              <span className="font-medium">Price Range</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-4 pb-4">
             <div className="space-y-4">
+              <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <span>{filters.priceRange[0].toLocaleString()} RWF</span>
+                <span>{filters.priceRange[1].toLocaleString()} RWF</span>
+              </div>
               <Slider
                 defaultValue={filters.priceRange}
                 value={filters.priceRange}
-                max={500}
-                step={10}
+                max={1000000}
+                step={10000}
                 onValueChange={(value) => handleFilterChange("priceRange", value)}
+                className="py-4"
               />
-              <div className="flex justify-between">
-                <span className="text-sm">${filters.priceRange[0]}</span>
-                <span className="text-sm">${filters.priceRange[1]}</span>
-              </div>
             </div>
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="specs">
-          <AccordionTrigger>Vehicle Specifications</AccordionTrigger>
-          <AccordionContent>
+        <AccordionItem value="specs" className="border rounded-lg overflow-hidden">
+          <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
+            <div className="flex items-center">
+              <Settings className="h-4 w-4 mr-2 text-primary" />
+              <span className="font-medium">Vehicle Specifications</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-4 pb-4">
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium block mb-2">Seats</label>
@@ -277,9 +303,14 @@ export default function VehicleFilter({
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="availability">
-          <AccordionTrigger>Availability</AccordionTrigger>
-          <AccordionContent>
+        <AccordionItem value="availability" className="border rounded-lg overflow-hidden">
+          <AccordionTrigger className="px-4 py-3 hover:bg-gray-50">
+            <div className="flex items-center">
+              <Calendar className="h-4 w-4 mr-2 text-primary" />
+              <span className="font-medium">Availability</span>
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-4 pb-4">
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="available"
@@ -299,7 +330,7 @@ export default function VehicleFilter({
         </AccordionItem>
       </Accordion>
 
-      <Button className="w-full mt-4" onClick={applyFilters}>
+      <Button className="w-full" onClick={applyFilters}>
         Apply Filters
       </Button>
     </div>
@@ -309,7 +340,9 @@ export default function VehicleFilter({
     <>
       {/* Desktop filter */}
       <div className="hidden md:block sticky top-20 h-fit">
-        {filterContent}
+        <div className="bg-white rounded-xl shadow-sm p-6">
+          {filterContent}
+        </div>
       </div>
 
       {/* Mobile filter */}
@@ -322,6 +355,7 @@ export default function VehicleFilter({
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="w-full sm:max-w-md">
+            <SheetTitle className="sr-only">Filter Vehicles</SheetTitle>
             <div className="h-full overflow-auto py-4">{filterContent}</div>
           </SheetContent>
         </Sheet>

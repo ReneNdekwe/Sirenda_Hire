@@ -237,19 +237,6 @@ export default function Header() {
               </SheetTrigger>
               <SheetContent side="right" className="w-full max-w-[300px] p-0">
                 <div className="flex flex-col h-full">
-                  <div className="flex items-center justify-between p-6 border-b border-gray-100">
-                    <Link href="/" onClick={() => setIsOpen(false)}>
-                      <div className="flex items-center space-x-2 cursor-pointer">
-                        <CarFront className="h-6 w-6 text-primary" />
-                        <span className="font-medium text-lg text-gray-900">CarRental</span>
-                      </div>
-                    </Link>
-                    <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="rounded-full h-8 w-8">
-                      <X className="h-4 w-4" />
-                      <span className="sr-only">Close menu</span>
-                    </Button>
-                  </div>
-
                   <div className="flex flex-col pt-6 px-6">
                     {user ? (
                       <div className="border-b border-gray-100 pb-6">

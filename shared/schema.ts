@@ -105,6 +105,7 @@ export const vehicles = pgTable("vehicles", {
   rating: integer("rating"),
   reviewCount: integer("review_count"),
   isFeatured: boolean("is_featured").default(false),
+  occasions: jsonb("occasions").default([]), // Array of occasions
 });
 
 export const insertVehicleSchema = createInsertSchema(vehicles).pick({
@@ -125,6 +126,7 @@ export const insertVehicleSchema = createInsertSchema(vehicles).pick({
   location: true,
   availability: true,
   isFeatured: true,
+  occasions: true,
 });
 
 // Bookings

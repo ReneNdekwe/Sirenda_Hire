@@ -23,6 +23,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Car, Calendar, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { formatPrice } from "@/lib/currency";
 
 export default function BookingPage() {
   const params = useParams<{ vehicleId: string }>();
@@ -134,9 +135,9 @@ export default function BookingPage() {
 
   const totalDays = pickupDate && returnDate ? differenceInDays(returnDate, pickupDate) : 0;
   const basePrice = vehicle?.pricePerDay ? totalDays * vehicle.pricePerDay : 0;
-  const driverFee = hasDriver ? totalDays * 50 : 0; // $50 per day for driver
-  const carWashFee = hasCarWash ? 30 : 0; // $30 flat fee for car wash
-  const deliveryFee = hasHomeDelivery ? 40 : 0; // $40 flat fee for delivery
+  const driverFee = hasDriver ? totalDays * 8 : 0; // 10000 RWF per day for driver
+  const carWashFee = hasCarWash ? 5 : 0; // 5000 RWF flat fee for car wash
+  const deliveryFee = hasHomeDelivery ? 5 : 0; // 5000 RWF flat fee for delivery
   const totalPrice = basePrice + driverFee + carWashFee + deliveryFee;
 
   // Create booking mutation
@@ -315,7 +316,7 @@ export default function BookingPage() {
                                 </span>
                               </div>
                               <p className="text-primary font-semibold mt-1">
-                                ${vehicle.pricePerDay} per day
+                                {formatPrice(vehicle.pricePerDay)} per day
                               </p>
                             </div>
                           </div>
@@ -414,35 +415,35 @@ export default function BookingPage() {
                           <div>
                             <div className="flex justify-between mb-1">
                               <span>
-                                ${vehicle.pricePerDay} × {totalDays || 0} day
+                                {formatPrice(vehicle.pricePerDay)} × {totalDays || 0} day
                                 {totalDays !== 1 ? "s" : ""}
                               </span>
-                              <span>${basePrice}</span>
+                              <span>{formatPrice(basePrice)}</span>
                             </div>
                             <div className="flex justify-between text-sm text-gray-500">
                               <span>Rental Fee</span>
-                              <span>${basePrice}</span>
+                              <span>{formatPrice(basePrice)}</span>
                             </div>
                           </div>
 
                           {hasDriver && (
                             <div className="flex justify-between text-sm">
-                              <span>Driver Fee ($50/day)</span>
-                              <span>${driverFee}</span>
+                              <span>Driver Fee ({formatPrice(8)}/day)</span>
+                              <span>{formatPrice(driverFee)}</span>
                             </div>
                           )}
 
                           {hasCarWash && (
                             <div className="flex justify-between text-sm">
                               <span>Car Wash Fee</span>
-                              <span>${carWashFee}</span>
+                              <span>{formatPrice(carWashFee)}</span>
                             </div>
                           )}
 
                           {hasHomeDelivery && (
                             <div className="flex justify-between text-sm">
                               <span>Delivery Fee</span>
-                              <span>${deliveryFee}</span>
+                              <span>{formatPrice(deliveryFee)}</span>
                             </div>
                           )}
 
@@ -459,7 +460,7 @@ export default function BookingPage() {
                                 htmlFor="driver"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                               >
-                                Add Professional Driver ($50/day)
+                                Add Professional Driver ({formatPrice(8)}/day)
                               </label>
                             </div>
 
@@ -473,7 +474,7 @@ export default function BookingPage() {
                                 htmlFor="carWash"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                               >
-                                Add Car Wash Service ($30)
+                                Add Car Wash Service ({formatPrice(5)})
                               </label>
                             </div>
 
@@ -493,7 +494,7 @@ export default function BookingPage() {
                                   htmlFor="homeDelivery"
                                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
-                                  Add Home Delivery Service ($40)
+                                  Add Home Delivery Service ({formatPrice(5)})
                                 </label>
                               </div>
                               {hasHomeDelivery && (
@@ -513,12 +514,12 @@ export default function BookingPage() {
 
                           <div className="flex justify-between font-bold">
                             <span>Total</span>
-                            <span>${totalPrice}</span>
+                            <span>{formatPrice(totalPrice)}</span>
                           </div>
 
                           <div className="pt-2 text-xs text-gray-500">
                             <p>
-                              Prices are in USD. Additional fees may apply at pickup
+                              Prices are in RWF. Additional fees may apply at pickup
                               (fuel, insurance options, etc).
                             </p>
                           </div>
@@ -595,14 +596,14 @@ export default function BookingPage() {
                         <div className="bg-gray-50 p-3 rounded-md">
                           <div className="flex justify-between mb-1">
                             <span>
-                              ${vehicle.pricePerDay} × {totalDays} day{totalDays !== 1 ? "s" : ""}
+                              {formatPrice(vehicle.pricePerDay)} × {totalDays} day{totalDays !== 1 ? "s" : ""}
                             </span>
-                            <span>${totalPrice}</span>
+                            <span>{formatPrice(totalPrice)}</span>
                           </div>
                           <Separator className="my-2" />
                           <div className="flex justify-between font-semibold">
                             <span>Total</span>
-                            <span>${totalPrice}</span>
+                            <span>{formatPrice(totalPrice)}</span>
                           </div>
                         </div>
                       </div>
