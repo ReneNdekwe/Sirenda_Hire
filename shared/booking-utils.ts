@@ -163,3 +163,36 @@ export async function updatePaymentStatus(
     return false;
   }
 }
+
+/**
+ * Updates the status of confirmed bookings to completed if their return date has passed.
+ * This function should be called periodically (e.g., daily) to maintain booking statuses.
+ * 
+ * @returns A promise that resolves to the number of bookings updated
+ */
+export async function updateCompletedBookings(): Promise<number> {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // Get all confirmed bookings where return date has passed
+  const completedBookings = await db
+    .select()
+    .from(bookings)
+    .where(
+      and(
+        eq(bookings.status, 'confirmed'),
+        lte(bookings.returnDate, today.toISOString().split('T')[0])
+      )
+    );
+
+  // Update each booking's status to completed
+  let updatedCount = 0;
+  for (const booking of completedBookings) {
+    const success = await updateBookingStatus(booking.id, 'completed');
+    if (success) {
+      updatedCount++;
+    }
+  }
+
+  return updatedCount;
+}

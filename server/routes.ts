@@ -15,6 +15,7 @@ import { subscriptionService } from "./subscription-service";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { updateCompletedBookings } from "@shared/booking-utils";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize database with sample data if it's empty
@@ -766,6 +767,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Error marking notifications as read" });
     }
   });
+
+  // Set up daily task to update completed bookings
+  const ONE_DAY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+  
+  async function runDailyUpdate() {
+    try {
+      const updatedCount = await updateCompletedBookings();
+      console.log(`Updated ${updatedCount} bookings to completed status`);
+    } catch (error) {
+      console.error('Error updating completed bookings:', error);
+    }
+  }
+
+  // Run immediately on startup
+  await runDailyUpdate();
+  
+  // Then schedule to run daily
+  setInterval(runDailyUpdate, ONE_DAY);
 
   const httpServer = createServer(app);
 
