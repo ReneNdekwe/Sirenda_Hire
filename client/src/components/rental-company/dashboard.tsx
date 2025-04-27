@@ -301,16 +301,9 @@ export default function Dashboard() {
     }
   });
 
-  if (!user) return null;
-
-  const handleEditVehicle = (id: number) => {
-    navigate(`/edit-vehicle/${id}`);
-  };
-
-  const companyName = user.companyName || user.username;
-
-  const handleStatusChange = async (bookingId: number, newStatus: string) => {
-    try {
+  // Add the mutation
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ bookingId, newStatus }: { bookingId: number; newStatus: 'pending' | 'confirmed' | 'completed' | 'cancelled' }) => {
       const response = await fetch(`/api/bookings/${bookingId}/status`, {
         method: 'PUT',
         headers: {
@@ -324,21 +317,52 @@ export default function Dashboard() {
         throw new Error('Failed to update booking status');
       }
 
-      // Invalidate and refetch bookings
-      queryClient.invalidateQueries({ queryKey: ['/api/rental-company/bookings'] });
-      
-      toast({
-        title: "Success",
-        description: `Booking status updated to ${newStatus}`,
-      });
-    } catch (error) {
+      return response.json();
+    },
+    onMutate: async ({ bookingId, newStatus }) => {
+      await queryClient.cancelQueries({ queryKey: ['/api/rental-company/bookings'] });
+      const previousBookings = queryClient.getQueryData<Booking[]>(['/api/rental-company/bookings']);
+
+      if (previousBookings) {
+        queryClient.setQueryData<Booking[]>(['/api/rental-company/bookings'], old => 
+          old?.map(booking => 
+            booking.id === bookingId 
+              ? { ...booking, status: newStatus }
+              : booking
+          )
+        );
+      }
+
+      return { previousBookings };
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousBookings) {
+        queryClient.setQueryData(['/api/rental-company/bookings'], context.previousBookings);
+      }
       toast({
         title: "Error",
         description: "Failed to update booking status",
         variant: "destructive"
       });
-    }
+    },
+    onSettled: () => {
+      // Invalidate both bookings and analytics queries
+      queryClient.invalidateQueries({ queryKey: ['/api/rental-company/bookings'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/analytics'] });
+    },
+  });
+
+  const handleStatusChange = (bookingId: number, newStatus: 'pending' | 'confirmed' | 'completed' | 'cancelled') => {
+    updateStatusMutation.mutate({ bookingId, newStatus });
   };
+
+  if (!user) return null;
+
+  const handleEditVehicle = (id: number) => {
+    navigate(`/edit-vehicle/${id}`);
+  };
+
+  const companyName = user.companyName || user.username;
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-white">
@@ -726,13 +750,22 @@ export default function Dashboard() {
                                   {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                                 </Badge>
                                 {booking.status === "pending" && (
-                                  <Button
-                                    size="sm"
-                                    onClick={() => handleStatusChange(booking.id, "confirmed")}
-                                    className="bg-green-500 hover:bg-green-600 text-white"
-                                  >
-                                    Confirm
-                                  </Button>
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleStatusChange(booking.id, "confirmed")}
+                                      className="bg-green-500 hover:bg-green-600 text-white"
+                                    >
+                                      Confirm
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      onClick={() => handleStatusChange(booking.id, "cancelled")}
+                                      className="bg-red-500 hover:bg-red-600 text-white"
+                                    >
+                                      Decline
+                                    </Button>
+                                  </div>
                                 )}
                               </div>
                             </TableCell>

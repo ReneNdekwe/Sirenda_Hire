@@ -24,6 +24,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Car, Calendar, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { formatPrice } from "@/lib/currency";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import MTNMoMoWidget from "@/components/payment/mtn-momo-widget";
+import { CheckCircle2 } from "lucide-react";
+import MTNMoMoPayment from "@/components/payment/mtn-momo-payment";
 
 export default function BookingPage() {
   const params = useParams<{ vehicleId: string }>();
@@ -169,7 +173,6 @@ export default function BookingPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/my-bookings"] });
-      setBookingStep("success");
     },
     onError: (error) => {
       toast({
@@ -232,8 +235,33 @@ export default function BookingPage() {
     setBookingStep("confirmation");
   };
 
-  const confirmBooking = () => {
-    bookingMutation.mutate();
+  const [paymentMethod, setPaymentMethod] = useState<'mtn-momo' | 'card'>('mtn-momo');
+  const [paymentComplete, setPaymentComplete] = useState(false);
+  const [bookingCreated, setBookingCreated] = useState(false);
+
+  const handlePaymentSuccess = () => {
+    setPaymentComplete(true);
+    setBookingStep("success");
+  };
+
+  const confirmBooking = async () => {
+    if (!bookingCreated) {
+      try {
+        await bookingMutation.mutateAsync();
+        setBookingCreated(true);
+        toast({
+          title: "Booking created",
+          description: "Please proceed with payment to confirm your booking.",
+        });
+      } catch (error) {
+        console.error('Error creating booking:', error);
+        toast({
+          title: 'Error',
+          description: 'Failed to create booking. Please try again.',
+          variant: 'destructive',
+        });
+      }
+    }
   };
 
   // Redirect if user is not logged in
@@ -535,7 +563,7 @@ export default function BookingPage() {
                   <CardHeader>
                     <CardTitle>Confirm Your Booking</CardTitle>
                     <CardDescription>
-                      Please review your booking details before proceeding
+                      Review your booking details and complete payment
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
@@ -609,6 +637,39 @@ export default function BookingPage() {
                       </div>
                     </div>
 
+                    <div className="space-y-4">
+                      <h3 className="font-medium">Payment Method</h3>
+                      <Tabs defaultValue="mtn-momo" onValueChange={(value) => setPaymentMethod(value as 'mtn-momo' | 'card')}>
+                        <TabsList className="grid w-full grid-cols-2">
+                          <TabsTrigger value="mtn-momo">MTN Mobile Money</TabsTrigger>
+                          <TabsTrigger value="card">Credit Card</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="mtn-momo">
+                          {!paymentComplete ? (
+                            bookingCreated ? (
+                              <MTNMoMoPayment 
+                                bookingId={bookingMutation.data?.id || 0} 
+                                amount={totalPrice} 
+                                onSuccess={handlePaymentSuccess}
+                                onCancel={() => setBookingStep("form")}
+                              />
+                            ) : null
+                          ) : (
+                            <div className="text-center">
+                              <h3 className="text-lg font-medium">Payment Successful!</h3>
+                              <p className="text-muted-foreground">Your booking has been confirmed.</p>
+                            </div>
+                          )}
+                        </TabsContent>
+                        <TabsContent value="card">
+                          <div className="p-6 bg-gray-50 rounded-md text-center">
+                            <p className="text-gray-500">Credit card payment is not available in this demo.</p>
+                            <p className="text-sm text-gray-400 mt-2">Please use MTN Mobile Money instead.</p>
+                          </div>
+                        </TabsContent>
+                      </Tabs>
+                    </div>
+
                     <div className="bg-yellow-50 p-3 rounded-md text-yellow-800 flex">
                       <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0" />
                       <p className="text-sm">
@@ -626,17 +687,19 @@ export default function BookingPage() {
                     >
                       Back
                     </Button>
-                    <Button
-                      size="lg"
-                      onClick={confirmBooking}
-                      disabled={bookingMutation.isPending}
-                      className="min-w-[120px] bg-primary text-white hover:bg-primary/90"
-                    >
-                      {bookingMutation.isPending && (
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      )}
-                      Confirm Booking
-                    </Button>
+                    {!bookingCreated && (
+                      <Button
+                        size="lg"
+                        onClick={confirmBooking}
+                        disabled={bookingMutation.isPending}
+                        className="min-w-[120px] bg-primary text-white hover:bg-primary/90"
+                      >
+                        {bookingMutation.isPending && (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                        Confirm Booking
+                      </Button>
+                    )}
                   </CardFooter>
                 </Card>
               )}

@@ -9,6 +9,13 @@ import { subscriptionService } from "./subscription-service";
 import { User as SelectUser } from "@shared/schema";
 import { add } from "date-fns";
 
+// Extend the SessionData interface to include userId
+declare module "express-session" {
+  interface SessionData {
+    userId?: number;
+  }
+}
+
 declare global {
   namespace Express {
     interface User extends SelectUser {}
@@ -37,7 +44,7 @@ export function setupAuth(app: Express) {
     saveUninitialized: false,
     store: storage.sessionStore,
     cookie: {
-      secure: process.env.NODE_ENV === 'production',
+      secure: false, // Allow cookies in development
       maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
     }
   };

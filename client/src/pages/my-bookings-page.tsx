@@ -207,8 +207,22 @@ export default function MyBookingsPage() {
                       </span>
                     )}
                   </TabsTrigger>
-                  <TabsTrigger value="completed">Completed</TabsTrigger>
-                  <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
+                  <TabsTrigger value="completed" className="relative">
+                    Completed
+                    {completedBookings.length > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-blue-100 text-blue-800 text-xs flex items-center justify-center">
+                        {completedBookings.length}
+                      </span>
+                    )}
+                  </TabsTrigger>
+                  <TabsTrigger value="cancelled" className="relative">
+                    Cancelled
+                    {cancelledBookings.length > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-red-100 text-red-800 text-xs flex items-center justify-center">
+                        {cancelledBookings.length}
+                      </span>
+                    )}
+                  </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="pending">

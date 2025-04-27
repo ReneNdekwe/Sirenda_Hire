@@ -16,6 +16,12 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { updateCompletedBookings } from "@shared/booking-utils";
+import { MTNMoMoService } from "./mtn-momo-service";  
+import { MTN_MOMO_CONFIG } from "./config/mtn-momo.config";
+import { v4 as uuidv4 } from 'uuid';
+
+// Helper function to generate UUID
+const generateUUID = () => uuidv4();
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize database with sample data if it's empty
@@ -785,6 +791,112 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Then schedule to run daily
   setInterval(runDailyUpdate, ONE_DAY);
+
+  // Initialize MTN MoMo service
+  const mtnMoMoService = new MTNMoMoService();
+
+  // MTN MoMo Payment Routes
+  app.post('/api/payments/mtn-momo/initiate', async (req, res) => {
+    try {
+      const { bookingId, phoneNumber, amount } = req.body;
+
+      // Get the booking
+      const booking = await storage.getBooking(bookingId);
+      if (!booking) {
+        return res.status(404).json({ success: false, message: 'Booking not found' });
+      }
+
+      // Format phone number - ensure it's in the correct format
+      let formattedPhoneNumber = phoneNumber.replace(/\D/g, '');
+      if (!formattedPhoneNumber.match(/^250[0-9]{9}$/)) {
+        // Try to format the number if it's not in the correct format
+        let formatted = formattedPhoneNumber;
+        if (formatted.startsWith('0')) {
+          formatted = '250' + formatted.slice(1);
+        } else if (formatted.startsWith('7')) {
+          formatted = '250' + formatted;
+        } else if (!formatted.startsWith('250')) {
+          formatted = '250' + formatted;
+        }
+        
+        if (!formatted.match(/^250[0-9]{9}$/)) {
+          return res.status(400).json({ 
+            success: false, 
+            message: 'Invalid phone number format. Must be a Rwanda number starting with 07 or 250.' 
+          });
+        }
+        formattedPhoneNumber = formatted;
+      }
+
+      // Create payment request
+      const paymentRequest = {
+        amount: amount.toString(),
+        currency: MTN_MOMO_CONFIG.currency,
+        externalId: generateUUID(),
+        payer: {
+          partyIdType: "MSISDN",
+          partyId: formattedPhoneNumber
+        },
+        payerMessage: "Test payment",
+        payeeNote: "Test payment note"
+      };
+
+      console.log('Initiating MTN MoMo payment:', {
+        amount,
+        currency: MTN_MOMO_CONFIG.currency,
+        phoneNumber: formattedPhoneNumber,
+        paymentRequest
+      });
+
+      // Initiate payment
+      const referenceId = await mtnMoMoService.initiatePayment(paymentRequest);
+
+      // Update booking status
+      await storage.updateBookingStatus(bookingId, 'pending');
+
+      res.json({ success: true, referenceId });
+    } catch (error) {
+      console.error('Error initiating payment:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to initiate payment',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
+  app.get('/api/payments/mtn-momo/status/:referenceId', async (req, res) => {
+    try {
+      const { referenceId } = req.params;
+
+      console.log('Checking MTN MoMo payment status:', { referenceId });
+
+      // Check payment status
+      const status = await mtnMoMoService.checkPaymentStatus(referenceId);
+
+      // Map MTN MoMo status to our booking status
+      let bookingStatus: 'pending' | 'confirmed' | 'rejected';
+      switch (status) {
+        case 'SUCCESSFUL':
+          bookingStatus = 'confirmed';
+          break;
+        case 'FAILED':
+          bookingStatus = 'rejected';
+          break;
+        default:
+          bookingStatus = 'pending';
+      }
+
+      res.json({ success: true, status, bookingStatus });
+    } catch (error) {
+      console.error('Error checking payment status:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: 'Failed to check payment status',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
 
   const httpServer = createServer(app);
 
