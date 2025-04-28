@@ -278,14 +278,14 @@ export default function VehicleDetailsPage() {
                       <TabsContent value="details" className="p-4 bg-white rounded-b-lg shadow-md">
                         <div className="space-y-4">
                           <div>
-                            <h3 className="font-semibold text-lg mb-2">Description</h3>
-                            <p className="text-gray-700">{vehicle.description || "No description available."}</p>
+                            <h1 className="font-semibold text-lg mb-2">Description</h1>
+                            <p className="text-gray-700">{vehicle.description || `This ${vehicle.brand} ${vehicle.model} is perfect for your travels in Rwanda. A ${vehicle.year} model with ${vehicle.transmission} transmission, ${vehicle.seats} seats, and ${vehicle.fuel} engine. Great for exploring Kigali and other parts of Rwanda.`}</p>
                           </div>
 
                           <Separator />
 
                           <div>
-                            <h3 className="font-semibold text-lg mb-2">Specifications</h3>
+                            <h2 className="font-semibold text-lg mb-2">Specifications</h2>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                               <div>
                                 <p className="text-gray-500 text-sm">Brand</p>

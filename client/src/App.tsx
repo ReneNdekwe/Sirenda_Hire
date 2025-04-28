@@ -14,6 +14,7 @@ import EditVehiclePage from "@/pages/edit-vehicle-page";
 import MyBookingsPage from "@/pages/my-bookings-page";
 import ProfilePage from "@/pages/profile-page";
 import AdminDashboardPage from "@/pages/admin-dashboard-page";
+import AboutPage from "@/pages/about-page";
 import { ProtectedRoute, CompanyRoute, AdminRoute } from "./lib/protected-route";
 import { AuthProvider } from "@/hooks/use-auth";
 import ComingSoonPage from "@/pages/coming-soon-page";
@@ -26,6 +27,7 @@ function Router() {
       <Route path="/vehicles" component={VehiclesPage} />
       <Route path="/vehicles/:id" component={VehicleDetailsPage} />
       <Route path="/coming-soon" component={ComingSoonPage} />
+      <Route path="/about-page" component={AboutPage} />
       <ProtectedRoute path="/booking/:vehicleId" component={BookingPage} />
       <ProtectedRoute path="/my-bookings" component={MyBookingsPage} />
       <ProtectedRoute path="/profile" component={ProfilePage} />

@@ -45,6 +45,7 @@ export const users = pgTable("users", {
   // Subscription related fields
   createdAt: timestamp("created_at").defaultNow(),
   subscriptionStatus: text("subscription_status").default("trial"), // 'trial', 'active', 'expired'
+  subscriptionTier: text("subscription_tier").default("basic"), // 'basic', 'pro', 'enterprise'
   trialEndsAt: timestamp("trial_ends_at"),
   subscriptionEndsAt: timestamp("subscription_ends_at"),
   stripeCustomerId: text("stripe_customer_id"),

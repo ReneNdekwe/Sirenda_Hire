@@ -517,7 +517,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-// Get subscription details
+  // Get subscription details
   app.get("/api/subscription/details", async (req, res) => {
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: "Unauthorized" });
@@ -593,6 +593,135 @@ export async function registerRoutes(app: Express): Promise<Server> {
         message: "Error checking subscriptions",
         error: error instanceof Error ? error.message : "Unknown error"
       });
+    }
+  });
+
+  // Admin route to get all companies
+  app.get("/api/admin/companies", async (req, res) => {
+    if (!req.isAuthenticated() || req.user.userType !== 'admin') {
+      return res.status(403).json({ message: "Only administrators can access this endpoint" });
+    }
+    
+    try {
+      const companies = await storage.getAllUsers({ userType: 'company' });
+      res.json(companies);
+    } catch (error) {
+      console.error("Error getting companies:", error);
+      res.status(500).json({ 
+        message: "Error getting companies",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // Admin route to get all users
+  app.get("/api/admin/users", async (req, res) => {
+    if (!req.isAuthenticated() || req.user.userType !== 'admin') {
+      return res.status(403).json({ message: "Only administrators can access this endpoint" });
+    }
+    
+    try {
+      const users = await storage.getAllUsers();
+      res.json(users);
+    } catch (error) {
+      console.error("Error getting users:", error);
+      res.status(500).json({ 
+        message: "Error getting users",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // Admin route to get all vehicles
+  app.get("/api/admin/vehicles", async (req, res) => {
+    if (!req.isAuthenticated() || req.user.userType !== 'admin') {
+      return res.status(403).json({ message: "Only administrators can access this endpoint" });
+    }
+    
+    try {
+      const vehicles = await storage.getVehicles();
+      res.json(vehicles);
+    } catch (error) {
+      console.error("Error getting vehicles:", error);
+      res.status(500).json({ 
+        message: "Error getting vehicles",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // Admin route to get all bookings
+  app.get("/api/admin/bookings", async (req, res) => {
+    if (!req.isAuthenticated() || req.user.userType !== 'admin') {
+      return res.status(403).json({ message: "Only administrators can access this endpoint" });
+    }
+    
+    try {
+      const bookings = await storage.getBookings();
+      res.json(bookings);
+    } catch (error) {
+      console.error("Error getting bookings:", error);
+      res.status(500).json({ 
+        message: "Error getting bookings",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
+    }
+  });
+
+  // Admin analytics endpoint
+  app.get("/api/admin/analytics", async (req, res) => {
+    try {
+      // Check if user is authenticated and is admin
+      if (!req.isAuthenticated() || req.user?.userType !== "admin") {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      // Get current date and date 6 months ago
+      const now = new Date();
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(now.getMonth() - 6);
+
+      // Get total counts
+      const totalUsers = await storage.getAllUsers({ userType: 'client' });
+      const totalCompanies = await storage.getAllUsers({ userType: 'company' });
+      const totalVehicles = await storage.getVehicles();
+      const totalBookings = await storage.getBookings();
+      const totalRevenue = await storage.getTotalRevenue();
+
+      // Get monthly bookings and revenue for the last 6 months
+      const monthlyStats = await storage.getMonthlyStats(sixMonthsAgo);
+
+      // Get booking distribution by vehicle type
+      const bookingDistribution = await storage.getBookingDistribution();
+
+      // Get active listings (vehicles with bookings in the last 30 days)
+      const activeListings = await storage.getActiveListings();
+
+      // Calculate conversion rate (completed bookings / total bookings)
+      const conversionStats = await storage.getConversionStats();
+
+      const conversionRate = conversionStats.rows[0].total > 0 
+        ? (conversionStats.rows[0].completed / conversionStats.rows[0].total * 100).toFixed(1)
+        : 0;
+
+      // Calculate average booking value
+      const avgBookingValue = await storage.getAvgBookingValue();
+
+      res.json({
+        totalUsers: totalUsers.length,
+        totalCompanies: totalCompanies.length,
+        totalVehicles: totalVehicles.length,
+        totalRevenue: totalRevenue.sum,
+        monthlyBookings: monthlyStats.rows[0]?.bookings || 0,
+        avgBookingValue: avgBookingValue.rows[0].avg,
+        activeListings: activeListings.rows[0].count,
+        conversionRate,
+        monthlyStats: monthlyStats.rows,
+        bookingDistribution: bookingDistribution.rows
+      });
+    } catch (error) {
+      console.error("Error fetching analytics:", error);
+      res.status(500).json({ error: "Failed to fetch analytics" });
     }
   });
 

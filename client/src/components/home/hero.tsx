@@ -99,7 +99,7 @@ export default function Hero() {
           {/* Left Column - Hero Content */}
           <div className="space-y-12">
             <div className="text-center">
-              <h2 className="text-4xl sm:text-4xl lg:text-4xl font-extrabold tracking-tight leading-[1.2]">
+              <h1 className="text-4xl sm:text-4xl lg:text-4xl font-extrabold tracking-tight leading-[1.2]">
                 <span 
                   style={{
                     background: 'linear-gradient(to left, #00A1DE 0%, #FAD201 33%,rgb(217, 215, 215) 66%, #00A1DE 100%)',
@@ -109,9 +109,12 @@ export default function Hero() {
                     animation: 'moveGradient 4s linear infinite'
                   }}
                 >
-                  The #1 platform trusted by car rental professionals
+                  Rwanda's Best Car Rental Service
                 </span>
-              </h2>
+              </h1>
+              <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
+                Find affordable car rentals in Kigali and across Rwanda. Choose from a wide selection of vehicles at great prices. Book online and get the best deals on car hire.
+              </p>
             </div>
 
             {/* Modern Process Cards - Hidden on mobile */}

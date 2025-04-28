@@ -12,7 +12,7 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import connectPgSimple from "connect-pg-simple";
 import { db } from "./db";
-import { eq, and, desc, or, sql, isNull, not } from "drizzle-orm";
+import { eq, and, desc, or, sql, isNull, not, gte } from "drizzle-orm";
 import pkg from 'pg';
 const { Pool } = pkg;
 
@@ -69,6 +69,13 @@ export interface IStorage {
     type: 'booking_approved' | 'booking_rejected' | 'booking_cancelled';
   }): Promise<Notification>;
   markNotificationsAsRead(userId: number): Promise<void>;
+
+  getTotalRevenue(): Promise<{ sum: number }>;
+  getMonthlyStats(since: Date): Promise<{ rows: Array<{ month: string, bookings: number, revenue: number }> }>;
+  getBookingDistribution(): Promise<{ rows: Array<{ category: string, count: number }> }>;
+  getActiveListings(): Promise<{ rows: Array<{ count: number }> }>;
+  getConversionStats(): Promise<{ rows: Array<{ total: number, completed: number }> }>;
+  getAvgBookingValue(): Promise<{ rows: Array<{ avg: number }> }>;
 }
 
 export class MemStorage implements IStorage {
@@ -134,6 +141,7 @@ export class MemStorage implements IStorage {
       id,
       createdAt: new Date(),
       subscriptionStatus: 'trial',
+      subscriptionTier: 'basic',
       trialEndsAt: null,
       subscriptionEndsAt: null,
       stripeCustomerId: null,
@@ -408,6 +416,74 @@ export class MemStorage implements IStorage {
     await db.update(notifications)
       .set({ read: true })
       .where(eq(notifications.userId, userId));
+  }
+
+  async getTotalRevenue(): Promise<{ sum: number }> {
+    const [result] = await db
+      .select({ sum: sql<number>`COALESCE(SUM(total_price), 0)` })
+      .from(bookings)
+      .where(eq(bookings.status, 'completed'));
+    return result;
+  }
+
+  async getMonthlyStats(since: Date): Promise<{ rows: Array<{ month: string, bookings: number, revenue: number }> }> {
+    const result = await db
+      .select({
+        month: sql<string>`TO_CHAR(${bookings.pickupDate}, 'YYYY-MM')`,
+        bookings: sql<number>`COUNT(*)`,
+        revenue: sql<number>`COALESCE(SUM(${bookings.totalPrice}), 0)`
+      })
+      .from(bookings)
+      .where(sql`${bookings.pickupDate} >= ${since.toISOString()}`)
+      .groupBy(sql`TO_CHAR(${bookings.pickupDate}, 'YYYY-MM')`)
+      .orderBy(sql`TO_CHAR(${bookings.pickupDate}, 'YYYY-MM')`);
+    return { rows: result };
+  }
+
+  async getBookingDistribution(): Promise<{ rows: Array<{ category: string, count: number }> }> {
+    const result = await db
+      .select({
+        category: sql<string>`COALESCE(${categories.name}, 'Uncategorized')`,
+        count: sql<number>`COUNT(*)`
+      })
+      .from(bookings)
+      .leftJoin(vehicles, eq(bookings.vehicleId, vehicles.id))
+      .leftJoin(categories, eq(vehicles.categoryId, categories.id))
+      .where(eq(bookings.status, 'completed'))
+      .groupBy(categories.name)
+      .orderBy(sql`COUNT(*) DESC`);
+    return { rows: result };
+  }
+
+  async getActiveListings(): Promise<{ rows: Array<{ count: number }> }> {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const result = await db
+      .select({
+        count: sql<number>`COUNT(DISTINCT ${bookings.vehicleId})`
+      })
+      .from(bookings)
+      .where(sql`${bookings.pickupDate} >= ${thirtyDaysAgo.toISOString()}`);
+    return { rows: result };
+  }
+
+  async getConversionStats(): Promise<{ rows: Array<{ total: number, completed: number }> }> {
+    const [result] = await db
+      .select({
+        total: sql<number>`COUNT(*)`,
+        completed: sql<number>`SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END)`
+      })
+      .from(bookings);
+    return { rows: [result] };
+  }
+
+  async getAvgBookingValue(): Promise<{ rows: Array<{ avg: number }> }> {
+    const [result] = await db
+      .select({ avg: sql<number>`COALESCE(ROUND(AVG(total_price)), 0)` })
+      .from(bookings)
+      .where(eq(bookings.status, 'completed'));
+    return { rows: [result] };
   }
 }
 
@@ -752,6 +828,74 @@ export class DatabaseStorage implements IStorage {
     await db.update(notifications)
       .set({ read: true })
       .where(eq(notifications.userId, userId));
+  }
+
+  async getTotalRevenue(): Promise<{ sum: number }> {
+    const [result] = await db
+      .select({ sum: sql<number>`COALESCE(SUM(total_price), 0)` })
+      .from(bookings)
+      .where(eq(bookings.status, 'completed'));
+    return result;
+  }
+
+  async getMonthlyStats(since: Date): Promise<{ rows: Array<{ month: string, bookings: number, revenue: number }> }> {
+    const result = await db
+      .select({
+        month: sql<string>`TO_CHAR(${bookings.pickupDate}, 'YYYY-MM')`,
+        bookings: sql<number>`COUNT(*)`,
+        revenue: sql<number>`COALESCE(SUM(${bookings.totalPrice}), 0)`
+      })
+      .from(bookings)
+      .where(sql`${bookings.pickupDate} >= ${since.toISOString()}`)
+      .groupBy(sql`TO_CHAR(${bookings.pickupDate}, 'YYYY-MM')`)
+      .orderBy(sql`TO_CHAR(${bookings.pickupDate}, 'YYYY-MM')`);
+    return { rows: result };
+  }
+
+  async getBookingDistribution(): Promise<{ rows: Array<{ category: string, count: number }> }> {
+    const result = await db
+      .select({
+        category: sql<string>`COALESCE(${categories.name}, 'Uncategorized')`,
+        count: sql<number>`COUNT(*)`
+      })
+      .from(bookings)
+      .leftJoin(vehicles, eq(bookings.vehicleId, vehicles.id))
+      .leftJoin(categories, eq(vehicles.categoryId, categories.id))
+      .where(eq(bookings.status, 'completed'))
+      .groupBy(categories.name)
+      .orderBy(sql`COUNT(*) DESC`);
+    return { rows: result };
+  }
+
+  async getActiveListings(): Promise<{ rows: Array<{ count: number }> }> {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    
+    const result = await db
+      .select({
+        count: sql<number>`COUNT(DISTINCT ${bookings.vehicleId})`
+      })
+      .from(bookings)
+      .where(sql`${bookings.pickupDate} >= ${thirtyDaysAgo.toISOString()}`);
+    return { rows: result };
+  }
+
+  async getConversionStats(): Promise<{ rows: Array<{ total: number, completed: number }> }> {
+    const [result] = await db
+      .select({
+        total: sql<number>`COUNT(*)`,
+        completed: sql<number>`SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END)`
+      })
+      .from(bookings);
+    return { rows: [result] };
+  }
+
+  async getAvgBookingValue(): Promise<{ rows: Array<{ avg: number }> }> {
+    const [result] = await db
+      .select({ avg: sql<number>`COALESCE(ROUND(AVG(total_price)), 0)` })
+      .from(bookings)
+      .where(eq(bookings.status, 'completed'));
+    return { rows: [result] };
   }
 }
 

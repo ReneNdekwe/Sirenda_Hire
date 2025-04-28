@@ -121,12 +121,12 @@ export default function Header() {
                     Browse
                   </span>
                 </Link>
-                <Link href="/how-it-works">
+                <Link href="/about-page">
                   <span className={cn(
                     "font-medium cursor-pointer px-3 py-2",
-                    location === "/how-it-works" ? "text-primary" : "text-gray-600 hover:text-gray-900"
+                    location === "/about-page" ? "text-primary" : "text-gray-600 hover:text-gray-900"
                   )}>
-                    How it works
+                    About Sirenda
                   </span>
                 </Link>
                 {user?.userType === "company" && (
@@ -308,9 +308,9 @@ export default function Header() {
                             <span>Browse vehicles</span>
                           </div>
                         </Link>
-                        <Link href="/how-it-works" onClick={() => setIsOpen(false)}>
+                        <Link href="/about-page" onClick={() => setIsOpen(false)}>
                           <div className="flex items-center gap-3 cursor-pointer hover:text-gray-900">
-                            <span>How it works</span>
+                            <span>About Sirenda</span>
                           </div>
                         </Link>
                       </div>

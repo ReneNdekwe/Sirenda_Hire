@@ -175,18 +175,17 @@ export default function VehiclesPage() {
             <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
             <div className="relative z-10">
               <h1 className="text-2xl md:text-3xl font-bold mb-2 text-gray-900">
-                Skip the rental car counter
+                Find Affordable Cars in Rwanda
               </h1>
               <p className="text-gray-600 mb-6 max-w-xl">
-                Browse our selection of quality vehicles, from trusted rental
-                companies.
+                Browse our selection of cars available in Kigali and across Rwanda.
               </p>
 
               <div className="bg-white p-4 rounded-lg shadow-md">
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="flex-1 relative">
                     <Input
-                      placeholder="Search by brand, model or type..."
+                      placeholder="Search by brand, model, or location in Rwanda..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="pl-10 border-gray-200 focus:ring-primary"

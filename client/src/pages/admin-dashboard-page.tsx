@@ -17,7 +17,6 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import {
   BarChart3,
-  PieChart,
   Users,
   Car,
   Building2,
@@ -64,6 +63,47 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
+import { format } from 'date-fns';
+import { apiRequest } from "@/lib/apiRequest";
+import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+
+const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#0088fe', '#00c49f', '#ffbb28', '#ff8042'];
+
+const SUBSCRIPTION_TIERS = [
+  {
+    name: "Basic",
+    price: 15000,
+    features: [
+      "Up to 3 vehicles",
+      "Basic analytics",
+      "Email support",
+      "Standard listing"
+    ]
+  },
+  {
+    name: "Pro",
+    price: 30000,
+    features: [
+      "Up to 10 vehicles",
+      "Advanced analytics",
+      "Priority support",
+      "Featured listings",
+      "Custom branding"
+    ]
+  },
+  {
+    name: "Enterprise",
+    price: 50000,
+    features: [
+      "Up to 25 vehicles",
+      "Full analytics suite",
+      "24/7 support",
+      "Premium listings",
+      "API access",
+      "Custom integrations"
+    ]
+  }
+];
 
 // Mini-component for sidebar menu items
 function SidebarItem({ 
@@ -269,114 +309,144 @@ function PaymentRow({ payment }: { payment: any }) {
   );
 }
 
-function BookingRow({ booking }: { booking: any }) {
+export default function AdminDashboardPage() {
+  const { user } = useAuth();
+  const [, navigate] = useLocation();
+  const [activeTab, setActiveTab] = useState("dashboard");
+
+  // Fetch real data from API endpoints
+  const { data: analytics, isLoading: isLoadingAnalytics } = useQuery({
+    queryKey: ['/api/admin/analytics'],
+    queryFn: async () => {
+      const response = await fetch('/api/admin/analytics', {
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch analytics');
+      }
+      return response.json();
+    },
+  });
+
+  const { data: companies, isLoading: isLoadingCompanies } = useQuery({
+    queryKey: ['/api/admin/companies'],
+    queryFn: async () => {
+      const response = await fetch('/api/admin/companies', {
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch companies');
+      }
+      return response.json();
+    },
+  });
+
+  const { data: usersData = [], isLoading: isLoadingUsers } = useQuery<User[]>({
+    queryKey: ["admin-users"],
+    queryFn: async () => {
+      const response = await apiRequest<User[]>("/api/admin/users");
+      return response;
+    },
+  });
+
+  const { data: vehiclesData = [], isLoading: isLoadingVehicles } = useQuery<Vehicle[]>({
+    queryKey: ["admin-vehicles"],
+    queryFn: async () => {
+      const response = await apiRequest<Vehicle[]>("/api/admin/vehicles");
+      return response;
+    },
+  });
+
+  const { data: bookingsData = [], isLoading: isLoadingBookings } = useQuery<Booking[]>({
+    queryKey: ["admin-bookings"],
+    queryFn: async () => {
+      const response = await apiRequest<Booking[]>("/api/admin/bookings");
+      return response;
+    },
+  });
+
+  const getUserName = (userId: number) => {
+    const user = usersData.find((u: User) => u.id === userId);
+    return user ? user.username : `User ${userId}`;
+  };
+
+  const getVehicleName = (vehicleId: number) => {
+    const vehicle = vehiclesData.find((v: Vehicle) => v.id === vehicleId);
+    return vehicle ? `${vehicle.brand} ${vehicle.model}` : `Vehicle ${vehicleId}`;
+  };
+
+  const getStatusVariant = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "default";
+      case "confirmed":
+        return "default";
+      case "pending":
+        return "secondary";
+      case "cancelled":
+        return "destructive";
+      default:
+        return "default";
+    }
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(price);
+  };
+
+  // Route protection
+  if (!user || user.userType !== "admin") {
   return (
-    <TableRow>
-      <TableCell>
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-            <Users className="h-4 w-4 text-primary" />
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <div className="text-center space-y-4">
+          <h1 className="text-2xl font-bold">Admin Access Required</h1>
+          <p className="text-muted-foreground">
+            This section is only accessible to system administrators.
+          </p>
+          <Button asChild>
+            <Link href="/">Return to Home</Link>
+          </Button>
           </div>
-          <div>
-            <p className="font-medium">{booking.userName}</p>
-            <p className="text-xs text-gray-500">{booking.userEmail}</p>
           </div>
-        </div>
+    );
+  }
+
+  const BookingRow = ({ booking }: { booking: Booking }) => {
+    return (
+      <TableRow>
+        <TableCell>
+          <div className="font-medium">{getUserName(booking.userId)}</div>
+          <div className="text-sm text-muted-foreground">ID: {booking.userId}</div>
       </TableCell>
       <TableCell>
-        <div className="font-medium">{booking.vehicleName}</div>
-        <div className="text-xs text-gray-500">{booking.companyName}</div>
+          <div className="font-medium">{getVehicleName(booking.vehicleId)}</div>
+          <div className="text-sm text-muted-foreground">ID: {booking.vehicleId}</div>
       </TableCell>
       <TableCell>
-        <div className="font-medium">{booking.startDate}</div>
-        <div className="text-xs text-gray-500">{booking.endDate}</div>
+          <div className="font-medium">{format(new Date(booking.pickupDate), "MMM d, yyyy")}</div>
+          <div className="text-sm text-muted-foreground">{format(new Date(booking.returnDate), "MMM d, yyyy")}</div>
       </TableCell>
       <TableCell>
-        <div className="font-medium">${booking.totalAmount}</div>
+          <div className="font-medium">{formatPrice(booking.totalPrice)}</div>
+          <div className="text-sm text-muted-foreground">{booking.paymentStatus}</div>
       </TableCell>
       <TableCell>
-        <Badge 
-          className={cn(
-            "px-2 py-1 text-xs",
-            booking.status === "Completed" ? "bg-green-100 text-green-800" :
-            booking.status === "Confirmed" ? "bg-blue-100 text-blue-800" :
-            booking.status === "Pending" ? "bg-yellow-100 text-yellow-800" :
-            booking.status === "Cancelled" ? "bg-red-100 text-red-800" : ""
-          )}
-        >
+          <Badge variant={getStatusVariant(booking.status)}>
           {booking.status}
         </Badge>
       </TableCell>
       <TableCell>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <ArrowDownUp className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem>
-              <Eye className="h-4 w-4 mr-2" />
-              View Details
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <CheckCircle2 className="h-4 w-4 mr-2" />
-              Approve
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="text-red-600">
-              <XCircle className="h-4 w-4 mr-2" />
-              Cancel
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <span className="text-xs text-gray-500">
+            {format(booking.createdAt ? new Date(booking.createdAt) : new Date(), "MMM d, h:mm a")}
+          </span>
       </TableCell>
     </TableRow>
   );
-}
+  };
 
-export default function AdminDashboardPage() {
-  const { user } = useAuth();
-  const [, navigate] = useLocation();
-  const [activeTab, setActiveTab] = useState("overview");
-
-  // Simulated data (would be fetched from API in production)
-  const companies = [
-    { id: 1, username: "LuxuryCars", companyName: "Luxury Cars Rwanda", email: "info@luxurycars.rw", companyLogo: null, userType: "company" },
-    { id: 2, username: "PremiumRentals", companyName: "Premium Rentals", email: "contact@premiumrentals.rw", companyLogo: null, userType: "company" },
-    { id: 3, username: "KigaliDrive", companyName: "Kigali Drive", email: "support@kigalidrive.rw", companyLogo: null, userType: "company" },
-    { id: 4, username: "RwandaWheels", companyName: "Rwanda Wheels", email: "hello@rwandawheels.rw", companyLogo: null, userType: "company" }
-  ] as User[];
-
-  const paymentHistory = [
-    { id: 1, companyName: "Luxury Cars Rwanda", email: "info@luxurycars.rw", amount: 10, date: "May 1, 2023", time: "09:45 AM", status: "Completed" },
-    { id: 2, companyName: "Premium Rentals", email: "contact@premiumrentals.rw", amount: 10, date: "May 1, 2023", time: "10:30 AM", status: "Completed" },
-    { id: 3, companyName: "Kigali Drive", email: "support@kigalidrive.rw", amount: 10, date: "May 1, 2023", time: "11:15 AM", status: "Pending" },
-    { id: 4, companyName: "Rwanda Wheels", email: "hello@rwandawheels.rw", amount: 10, date: "May 1, 2023", time: "01:20 PM", status: "Failed" }
-  ];
-
-  const recentBookings = [
-    { id: 1, userName: "John Doe", userEmail: "john@example.com", vehicleName: "Mercedes-Benz S-Class", companyName: "Luxury Cars Rwanda", startDate: "May 5, 2023", endDate: "May 10, 2023", totalAmount: 450, status: "Confirmed" },
-    { id: 2, userName: "Jane Smith", userEmail: "jane@example.com", vehicleName: "BMW 7 Series", companyName: "Premium Rentals", startDate: "May 7, 2023", endDate: "May 9, 2023", totalAmount: 280, status: "Pending" },
-    { id: 3, userName: "Robert Johnson", userEmail: "robert@example.com", vehicleName: "Audi A8", companyName: "Kigali Drive", startDate: "May 3, 2023", endDate: "May 8, 2023", totalAmount: 520, status: "Completed" },
-    { id: 4, userName: "Emily Williams", userEmail: "emily@example.com", vehicleName: "Toyota Land Cruiser", companyName: "Rwanda Wheels", startDate: "May 6, 2023", endDate: "May 15, 2023", totalAmount: 750, status: "Cancelled" }
-  ];
-
-  // Route protection - only accessible to admin
-  if (!user || user.userType !== "admin") {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6">
-        <AlertCircle className="h-16 w-16 text-red-500 mb-4" />
-        <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
-        <p className="text-gray-600 mb-6 text-center max-w-md">
-          You don't have permission to access this page. Only administrators can view the admin dashboard.
-        </p>
-        <Button onClick={() => navigate("/")}>
-          Return to Home
-        </Button>
-      </div>
-    );
-  }
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
@@ -444,21 +514,6 @@ export default function AdminDashboardPage() {
               />
             </nav>
           </div>
-          
-          <Separator className="my-4" />
-          
-          <div className="p-4">
-            <div className="bg-gradient-to-br from-amber-50 to-amber-100 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2 text-amber-700 font-medium">
-                <ShieldCheck className="h-4 w-4" /> 
-                <span>Admin Controls</span>
-              </div>
-              <p className="text-xs text-amber-800 mb-3">Access advanced system settings and controls.</p>
-              <Button variant="outline" size="sm" className="w-full border-amber-400 text-amber-700 hover:bg-amber-200">
-                System Settings
-              </Button>
-            </div>
-          </div>
         </div>
         
         {/* Main content */}
@@ -487,325 +542,492 @@ export default function AdminDashboardPage() {
                 {activeTab === "settings" && "Configure platform settings"}
               </p>
             </div>
-            
-            {activeTab === "companies" && (
-              <Button>
-                <UserPlus className="h-4 w-4 mr-2" />
-                Add New Company
-              </Button>
-            )}
           </div>
           
           {/* Overview Tab */}
           {activeTab === "overview" && (
-            <div className="space-y-8">
+            <div className="space-y-6">
+              {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard 
-                  title="Total Companies" 
-                  value="24" 
-                  icon={Building2} 
-                  trend="up" 
-                  trendValue="+3 this month"
-                  bgClass="bg-gradient-to-r from-blue-500 to-indigo-500"
-                />
-                <StatCard 
-                  title="Active Users" 
-                  value="346" 
+                  title="Total Users" 
+                  value={analytics?.totalUsers || "0"} 
                   icon={Users} 
                   trend="up" 
                   trendValue="+12% from last month"
+                  bgClass="bg-gradient-to-r from-blue-500 to-indigo-500"
+                />
+                <StatCard 
+                  title="Rental Companies" 
+                  value={analytics?.totalCompanies || "0"} 
+                  icon={Building2} 
+                  trend="up" 
+                  trendValue="+3 this month"
                   bgClass="bg-gradient-to-r from-green-500 to-emerald-500"
                 />
                 <StatCard 
-                  title="Total Bookings" 
-                  value="1,258" 
-                  icon={Calendar} 
+                  title="Total Vehicles" 
+                  value={analytics?.totalVehicles || "0"} 
+                  icon={Car} 
                   trend="up" 
                   trendValue="+8% from last month"
                   bgClass="bg-gradient-to-r from-amber-500 to-orange-500"
                 />
                 <StatCard 
-                  title="Monthly Revenue" 
-                  value="$2,450" 
+                  title="Total Revenue" 
+                  value={`$${analytics?.totalRevenue || "0"}`} 
                   icon={CircleDollarSign} 
                   trend="up" 
                   trendValue="+15% from last month"
                   bgClass="bg-gradient-to-r from-purple-500 to-pink-500"
                 />
+                <StatCard 
+                  title="Monthly Bookings" 
+                  value={analytics?.monthlyBookings || "0"} 
+                  icon={Calendar} 
+                  trend="up" 
+                  trendValue="+20% from last month"
+                  bgClass="bg-gradient-to-r from-cyan-500 to-blue-500"
+                />
+                <StatCard 
+                  title="Average Booking Value" 
+                  value={`$${Math.round(analytics?.avgBookingValue || 0)}`} 
+                  icon={CircleDollarSign} 
+                  trend="up" 
+                  trendValue="+5% from last month"
+                  bgClass="bg-gradient-to-r from-rose-500 to-pink-500"
+                />
+                <StatCard 
+                  title="Active Listings" 
+                  value={analytics?.activeListings || "0"} 
+                  icon={Car} 
+                  trend="up" 
+                  trendValue="+10% from last month"
+                  bgClass="bg-gradient-to-r from-violet-500 to-purple-500"
+                />
+                <StatCard 
+                  title="Conversion Rate" 
+                  value={`${analytics?.conversionRate || "0"}%`} 
+                  icon={BarChart} 
+                  trend="up" 
+                  trendValue="+2% from last month"
+                  bgClass="bg-gradient-to-r from-teal-500 to-emerald-500"
+                />
               </div>
               
+              {/* Trends Section */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {/* Recent Activity */}
                 <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle>Recent Activity</CardTitle>
-                      <Button variant="ghost" size="sm" className="text-xs gap-1">
-                        View all <ChevronRight className="h-3 w-3" />
-                      </Button>
-                    </div>
+                  <CardHeader>
+                    <CardTitle>Revenue Trends</CardTitle>
+                    <CardDescription>Monthly revenue over the past 6 months</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex items-start gap-4">
-                        <div className="bg-green-100 rounded-full p-2">
-                          <Building2 className="h-4 w-4 text-green-700" />
+                    <div className="h-[300px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RechartsBarChart data={analytics?.monthlyStats}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis 
+                            dataKey="month" 
+                            tickFormatter={(value) => format(new Date(value), 'MMM yyyy')}
+                          />
+                          <YAxis />
+                          <Tooltip 
+                            formatter={(value) => [`$${value}`, 'Revenue']}
+                            labelFormatter={(label) => format(new Date(label), 'MMMM yyyy')}
+                          />
+                          <Bar dataKey="revenue" fill="#8884d8" />
+                        </RechartsBarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Booking Distribution</CardTitle>
+                    <CardDescription>Distribution of bookings by vehicle type</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-[300px]">
+                      <ResponsiveContainer width="100%" height={300}>
+                        <PieChart>
+                          <Pie
+                            data={analytics?.bookingDistribution?.rows || []}
+                            dataKey="count"
+                            nameKey="category"
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={80}
+                            label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                          >
+                            {(analytics?.bookingDistribution?.rows || []).map((_: unknown, index: number) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip 
+                            formatter={(value: number) => [`${value} bookings`, 'Count']}
+                          />
+                          <Legend />
+                        </PieChart>
+                      </ResponsiveContainer>
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-medium">New company registered</h4>
-                            <span className="text-xs text-gray-500">2 hours ago</span>
+                  </CardContent>
+                </Card>
                           </div>
-                          <p className="text-xs text-gray-500">Kigali Executive Cars registered as a new rental company</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-4">
+
+              {/* Recent Activity */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recent Activity</CardTitle>
+                  <CardDescription>Latest platform activities and updates</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {bookingsData?.slice(0, 5).map((booking) => (
+                      <div key={booking.id} className="flex items-start gap-4">
                         <div className="bg-blue-100 rounded-full p-2">
                           <Calendar className="h-4 w-4 text-blue-700" />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <h4 className="text-sm font-medium">New booking created</h4>
-                            <span className="text-xs text-gray-500">3 hours ago</span>
+                            <span className="text-xs text-gray-500">
+                              {format(booking.createdAt ? new Date(booking.createdAt) : new Date(), "MMM d, h:mm a")}
+                            </span>
                           </div>
-                          <p className="text-xs text-gray-500">Mercedes-Benz S-Class booked for 5 days</p>
+                          <p className="text-xs text-gray-500">
+                            {getVehicleName(booking.vehicleId)} booked by {getUserName(booking.userId)}
+                          </p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-4">
-                        <div className="bg-amber-100 rounded-full p-2">
-                          <CircleDollarSign className="h-4 w-4 text-amber-700" />
+                    ))}
+                    {usersData?.slice(0, 3).map((user) => (
+                      <div key={user.id} className="flex items-start gap-4">
+                        <div className="bg-green-100 rounded-full p-2">
+                          <UserPlus className="h-4 w-4 text-green-700" />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
-                            <h4 className="text-sm font-medium">Subscription payment received</h4>
-                            <span className="text-xs text-gray-500">5 hours ago</span>
+                            <h4 className="text-sm font-medium">New user registered</h4>
+                            <span className="text-xs text-gray-500">
+                              {format(user.createdAt ? new Date(user.createdAt) : new Date(), "MMM d, h:mm a")}
+                            </span>
                           </div>
-                          <p className="text-xs text-gray-500">Premium Rentals paid $10 monthly subscription</p>
+                          <p className="text-xs text-gray-500">
+                            {user.username} ({user.userType})
+                          </p>
                         </div>
                       </div>
-                      <div className="flex items-start gap-4">
+                    ))}
+                    {vehiclesData?.slice(0, 3).map((vehicle) => (
+                      <div key={vehicle.id} className="flex items-start gap-4">
                         <div className="bg-purple-100 rounded-full p-2">
                           <Car className="h-4 w-4 text-purple-700" />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <h4 className="text-sm font-medium">New vehicle listed</h4>
-                            <span className="text-xs text-gray-500">1 day ago</span>
+                            <p className="text-xs text-gray-500">
+                              {vehicle.brand} {vehicle.model} by {getUserName(vehicle.ownerId)}
+                            </p>
                           </div>
-                          <p className="text-xs text-gray-500">Luxury Cars Rwanda added Audi Q7</p>
                         </div>
                       </div>
+                    ))}
                     </div>
                   </CardContent>
                 </Card>
+            </div>
+          )}
                 
-                {/* Payment History Card */}
+          {/* Companies Tab */}
+          {activeTab === "companies" && (
+            <div className="space-y-6">
                 <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle>Recent Payments</CardTitle>
-                      <Button variant="ghost" size="sm" className="text-xs gap-1" onClick={() => setActiveTab("payments")}>
-                        View all <ChevronRight className="h-3 w-3" />
-                      </Button>
-                    </div>
+                <CardHeader>
+                  <CardTitle>Rental Companies</CardTitle>
+                  <CardDescription>Manage rental companies and their subscriptions</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Table>
                       <TableHeader>
                         <TableRow>
                           <TableHead>Company</TableHead>
-                          <TableHead>Amount</TableHead>
+                        <TableHead>Contact</TableHead>
                           <TableHead>Status</TableHead>
-                          <TableHead>Date</TableHead>
+                        <TableHead>Vehicles</TableHead>
+                        <TableHead>Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {paymentHistory.slice(0, 3).map((payment) => (
-                          <TableRow key={payment.id}>
+                      {isLoadingCompanies ? (
+                        <TableRow>
+                          <TableCell colSpan={5}>
+                            <div className="flex items-center justify-center py-4">
+                              <Skeleton className="h-4 w-[250px]" />
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        companies?.map((company: User) => (
+                          <TableRow key={company.id}>
                             <TableCell>
-                              <div className="font-medium">{payment.companyName}</div>
-                              <div className="text-xs text-gray-500">{payment.email}</div>
+                              <div className="flex items-center gap-2">
+                                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                  <Building2 className="h-4 w-4 text-primary" />
+                                </div>
+                                <div>
+                                  <p className="font-medium">{company.companyName}</p>
+                                  <p className="text-xs text-gray-500">{company.username}</p>
+                                </div>
+                              </div>
                             </TableCell>
-                            <TableCell>${payment.amount}</TableCell>
+                            <TableCell>
+                              <p className="text-sm">{company.email}</p>
+                              <p className="text-xs text-gray-500">{company.phone}</p>
+                            </TableCell>
                             <TableCell>
                               <Badge 
                                 className={cn(
                                   "px-2 py-1 text-xs",
-                                  payment.status === "Completed" ? "bg-green-100 text-green-800" :
-                                  payment.status === "Pending" ? "bg-yellow-100 text-yellow-800" :
-                                  payment.status === "Failed" ? "bg-red-100 text-red-800" : ""
+                                  company.subscriptionStatus === "active" ? "bg-green-100 text-green-800" :
+                                  company.subscriptionStatus === "trial" ? "bg-yellow-100 text-yellow-800" :
+                                  "bg-red-100 text-red-800"
                                 )}
                               >
-                                {payment.status}
+                                {company.subscriptionStatus}
                               </Badge>
                             </TableCell>
-                            <TableCell>{payment.date}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Car className="h-4 w-4 text-gray-500" />
+                                <span className="text-sm">
+                                  {vehiclesData?.filter((v: Vehicle) => v.ownerId === company.id).length || 0}
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon">
+                                    <ArrowDownUp className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem>
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    View Details
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem>
+                                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                                    Approve
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem className="text-red-600">
+                                    <XCircle className="h-4 w-4 mr-2" />
+                                    Suspend
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
                           </TableRow>
-                        ))}
+                        ))
+                      )}
                       </TableBody>
                     </Table>
                   </CardContent>
                 </Card>
               </div>
-              
-              {/* Platform Stats */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <Card className="lg:col-span-2">
-                  <CardHeader>
-                    <CardTitle>Booking Statistics</CardTitle>
-                    <CardDescription>Monthly booking trends across the platform</CardDescription>
-                  </CardHeader>
-                  <CardContent className="h-[300px] flex items-center justify-center">
-                    <div className="text-center">
-                      <BarChart className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                      <p className="text-gray-500">Chart visualization would appear here</p>
-                    </div>
-                  </CardContent>
-                </Card>
+          )}
+
+          {/* Users Tab */}
+          {activeTab === "users" && (
+            <div className="space-y-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Vehicle Categories</CardTitle>
-                    <CardDescription>Distribution by category</CardDescription>
+                  <CardTitle>User Management</CardTitle>
+                  <CardDescription>View and manage user accounts</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm font-medium">Luxury Sedans</span>
-                          <span className="text-sm font-medium">35%</span>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>User</TableHead>
+                        <TableHead>Contact</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {isLoadingUsers ? (
+                        <TableRow>
+                          <TableCell colSpan={5}>
+                            <div className="flex items-center justify-center py-4">
+                              <Skeleton className="h-4 w-[250px]" />
                         </div>
-                        <Progress value={35} className="h-2" />
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        usersData?.map((user: User) => (
+                          <TableRow key={user.id}>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                  <Users className="h-4 w-4 text-primary" />
                       </div>
                       <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm font-medium">SUVs</span>
-                          <span className="text-sm font-medium">28%</span>
+                                  <p className="font-medium">{user.fullName}</p>
+                                  <p className="text-xs text-gray-500">{user.username}</p>
                         </div>
-                        <Progress value={28} className="h-2" />
                       </div>
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm font-medium">Sport Cars</span>
-                          <span className="text-sm font-medium">22%</span>
-                        </div>
-                        <Progress value={22} className="h-2" />
-                      </div>
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm font-medium">Convertibles</span>
-                          <span className="text-sm font-medium">15%</span>
-                        </div>
-                        <Progress value={15} className="h-2" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          )}
-          
-          {/* Companies Tab */}
-          {activeTab === "companies" && (
-            <div className="space-y-6">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                    <div className="space-y-1">
-                      <h3 className="text-lg font-semibold">Company Management</h3>
-                      <p className="text-sm text-gray-500">Monitor and manage rental company accounts</p>
-                    </div>
-                    <div className="flex flex-wrap gap-3">
-                      <Button variant="outline" size="sm">
-                        <SearchCheck className="h-4 w-4 mr-2" />
-                        Filter
+                            </TableCell>
+                            <TableCell>
+                              <p className="text-sm">{user.email}</p>
+                              <p className="text-xs text-gray-500">{user.phone}</p>
+                            </TableCell>
+                            <TableCell>
+                              <Badge 
+                                className={cn(
+                                  "px-2 py-1 text-xs",
+                                  user.userType === "admin" ? "bg-purple-100 text-purple-800" :
+                                  user.userType === "company" ? "bg-blue-100 text-blue-800" :
+                                  "bg-gray-100 text-gray-800"
+                                )}
+                              >
+                                {user.userType}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <Badge className="bg-green-100 text-green-800 px-2 py-1 text-xs">
+                                Active
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon">
+                                    <ArrowDownUp className="h-4 w-4" />
                       </Button>
-                      <Button variant="outline" size="sm">
-                        <Award className="h-4 w-4 mr-2" />
-                        Set Featured
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <Tabs defaultValue="active">
-                    <TabsList className="mb-4">
-                      <TabsTrigger value="active">Active Companies</TabsTrigger>
-                      <TabsTrigger value="pending">Pending Approval</TabsTrigger>
-                      <TabsTrigger value="suspended">Suspended</TabsTrigger>
-                    </TabsList>
-                    
-                    <TabsContent value="active">
-                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                        {companies.map((company) => (
-                          <CompanyCard key={company.id} company={company} />
-                        ))}
-                      </div>
-                    </TabsContent>
-                    
-                    <TabsContent value="pending">
-                      <div className="text-center py-12">
-                        <SquareCheck className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium mb-2">No Pending Companies</h3>
-                        <p className="text-gray-500 max-w-md mx-auto">
-                          There are no companies waiting for approval at the moment.
-                        </p>
-                      </div>
-                    </TabsContent>
-                    
-                    <TabsContent value="suspended">
-                      <div className="text-center py-12">
-                        <AlertCircle className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium mb-2">No Suspended Companies</h3>
-                        <p className="text-gray-500 max-w-md mx-auto">
-                          There are no suspended companies at the moment.
-                        </p>
-                      </div>
-                    </TabsContent>
-                  </Tabs>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem>
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    View Details
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem>
+                                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                                    Verify
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem className="text-red-600">
+                                    <XCircle className="h-4 w-4 mr-2" />
+                                    Ban
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
                 </CardContent>
               </Card>
             </div>
           )}
           
-          {/* Payments Tab */}
-          {activeTab === "payments" && (
+          {/* Vehicles Tab */}
+          {activeTab === "vehicles" && (
             <div className="space-y-6">
               <Card>
-                <CardContent className="p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                    <div className="space-y-1">
-                      <h3 className="text-lg font-semibold">Payment Transactions</h3>
-                      <p className="text-sm text-gray-500">View and manage subscription payments</p>
-                    </div>
-                    <div className="flex gap-3">
-                      <Button variant="outline" size="sm">
-                        <ArrowUpRight className="h-4 w-4 mr-2" />
-                        Export CSV
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <SearchCheck className="h-4 w-4 mr-2" />
-                        Filter
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <div className="rounded-md border">
+                <CardHeader>
+                  <CardTitle>Vehicle Listings</CardTitle>
+                  <CardDescription>Explore all vehicle listings</CardDescription>
+                </CardHeader>
+                <CardContent>
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Company</TableHead>
-                          <TableHead>Amount</TableHead>
-                          <TableHead>Date</TableHead>
+                        <TableHead>Vehicle</TableHead>
+                        <TableHead>Owner</TableHead>
                           <TableHead>Status</TableHead>
-                          <TableHead className="w-[80px]"></TableHead>
+                        <TableHead>Price</TableHead>
+                        <TableHead>Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {paymentHistory.map((payment) => (
-                          <PaymentRow key={payment.id} payment={payment} />
-                        ))}
+                      {isLoadingVehicles ? (
+                        <TableRow>
+                          <TableCell colSpan={5}>
+                            <div className="flex items-center justify-center py-4">
+                              <Skeleton className="h-4 w-[250px]" />
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        vehiclesData?.map((vehicle: Vehicle) => (
+                          <TableRow key={vehicle.id}>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                  <Car className="h-4 w-4 text-primary" />
+                                </div>
+                                <div>
+                                  <p className="font-medium">{vehicle.brand} {vehicle.model}</p>
+                                  <p className="text-xs text-gray-500">{vehicle.year}</p>
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <p className="text-sm">
+                                {companies?.find((c: User) => c.id === vehicle.ownerId)?.companyName}
+                              </p>
+                            </TableCell>
+                            <TableCell>
+                              <Badge 
+                                className={cn(
+                                  "px-2 py-1 text-xs",
+                                  vehicle.availability ? "bg-green-100 text-green-800" :
+                                  "bg-red-100 text-red-800"
+                                )}
+                              >
+                                {vehicle.availability ? "Available" : "Unavailable"}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="font-medium">${vehicle.pricePerDay}/day</div>
+                            </TableCell>
+                            <TableCell>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon">
+                                    <ArrowDownUp className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuItem>
+                                    <Eye className="h-4 w-4 mr-2" />
+                                    View Details
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem>
+                                    <CheckCircle2 className="h-4 w-4 mr-2" />
+                                    Verify
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem className="text-red-600">
+                                    <XCircle className="h-4 w-4 mr-2" />
+                                    Remove
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
                       </TableBody>
                     </Table>
-                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -815,35 +1037,11 @@ export default function AdminDashboardPage() {
           {activeTab === "bookings" && (
             <div className="space-y-6">
               <Card>
-                <CardContent className="p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                    <div className="space-y-1">
-                      <h3 className="text-lg font-semibold">Booking Management</h3>
-                      <p className="text-sm text-gray-500">Monitor and manage all bookings across the platform</p>
-                    </div>
-                    <div className="flex gap-3">
-                      <Button variant="outline" size="sm">
-                        <ArrowUpRight className="h-4 w-4 mr-2" />
-                        Export
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <SearchCheck className="h-4 w-4 mr-2" />
-                        Filter
-                      </Button>
-                    </div>
-                  </div>
-                  
-                  <Tabs defaultValue="all">
-                    <TabsList className="mb-4">
-                      <TabsTrigger value="all">All Bookings</TabsTrigger>
-                      <TabsTrigger value="pending">Pending</TabsTrigger>
-                      <TabsTrigger value="confirmed">Confirmed</TabsTrigger>
-                      <TabsTrigger value="completed">Completed</TabsTrigger>
-                      <TabsTrigger value="cancelled">Cancelled</TabsTrigger>
-                    </TabsList>
-                    
-                    <TabsContent value="all">
-                      <div className="rounded-md border">
+                <CardHeader>
+                  <CardTitle>Booking Management</CardTitle>
+                  <CardDescription>Track and manage booking requests</CardDescription>
+                </CardHeader>
+                <CardContent>
                         <Table>
                           <TableHeader>
                             <TableRow>
@@ -852,64 +1050,77 @@ export default function AdminDashboardPage() {
                               <TableHead>Dates</TableHead>
                               <TableHead>Amount</TableHead>
                               <TableHead>Status</TableHead>
-                              <TableHead className="w-[80px]"></TableHead>
+                        <TableHead>Actions</TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {recentBookings.map((booking) => (
-                              <BookingRow key={booking.id} booking={booking} />
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </TabsContent>
-                    
-                    {["pending", "confirmed", "completed", "cancelled"].map((status) => (
-                      <TabsContent key={status} value={status}>
-                        <div className="rounded-md border">
-                          <Table>
-                            <TableHeader>
+                      {isLoadingBookings ? (
                               <TableRow>
-                                <TableHead>Customer</TableHead>
-                                <TableHead>Vehicle</TableHead>
-                                <TableHead>Dates</TableHead>
-                                <TableHead>Amount</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="w-[80px]"></TableHead>
+                          <TableCell colSpan={6}>
+                            <div className="flex items-center justify-center py-4">
+                              <Skeleton className="h-4 w-[250px]" />
+                            </div>
+                          </TableCell>
                               </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {recentBookings
-                                .filter((b) => b.status.toLowerCase() === status)
-                                .map((booking) => (
+                      ) : (
+                        bookingsData?.map((booking: Booking) => (
                                   <BookingRow key={booking.id} booking={booking} />
-                                ))}
+                        ))
+                      )}
                             </TableBody>
                           </Table>
-                        </div>
-                      </TabsContent>
-                    ))}
-                  </Tabs>
                 </CardContent>
               </Card>
             </div>
           )}
           
-          {/* Other Tabs (placeholder content) */}
-          {(activeTab === "users" || activeTab === "vehicles" || activeTab === "analytics" || activeTab === "settings") && (
-            <div className="flex items-center justify-center bg-white p-12 rounded-lg shadow-sm border border-gray-100">
-              <div className="text-center">
-                <Clock className="h-16 w-16 text-primary/20 mx-auto mb-4" />
-                <h3 className="text-xl font-medium mb-2">Coming Soon</h3>
-                <p className="text-gray-500 mb-4 max-w-md">
-                  This section is currently under development and will be available soon.
-                </p>
-                <Button variant="outline" onClick={() => setActiveTab("overview")}>
-                  Return to Dashboard
+          {/* Subscription Tiers */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Subscription Tiers</CardTitle>
+              <CardDescription>Manage your subscription plan</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {SUBSCRIPTION_TIERS.map((tier) => (
+                  <Card key={tier.name} className={cn(
+                    "relative",
+                    user?.subscriptionTier === tier.name.toLowerCase() && "border-primary"
+                  )}>
+                    <CardHeader>
+                      <CardTitle>{tier.name}</CardTitle>
+                      <CardDescription>
+                        <span className="text-2xl font-bold">{tier.price.toLocaleString('en-RW')} RWF</span>
+                        <span className="text-gray-500">/month</span>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-2">
+                        {tier.features.map((feature) => (
+                          <li key={feature} className="flex items-center gap-2">
+                            <CheckCircle2 className="h-4 w-4 text-green-500" />
+                            <span className="text-sm">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardContent>
+                    <CardFooter>
+                      <Button 
+                        className="w-full"
+                        variant={user?.subscriptionTier === tier.name.toLowerCase() ? "default" : "outline"}
+                        onClick={() => {
+                          // TODO: Implement subscription change
+                          console.log(`Upgrade to ${tier.name}`);
+                        }}
+                      >
+                        {user?.subscriptionTier === tier.name.toLowerCase() ? "Current Plan" : "Upgrade"}
                 </Button>
+                    </CardFooter>
+                  </Card>
+                ))}
               </div>
-            </div>
-          )}
+            </CardContent>
+          </Card>
         </div>
       </main>
       <Footer />
