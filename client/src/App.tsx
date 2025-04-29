@@ -18,6 +18,7 @@ import AboutPage from "@/pages/about-page";
 import { ProtectedRoute, CompanyRoute, AdminRoute } from "./lib/protected-route";
 import { AuthProvider } from "@/hooks/use-auth";
 import ComingSoonPage from "@/pages/coming-soon-page";
+import SubscriptionPage from "@/pages/rental-company/subscription-page";
 
 function Router() {
   return (
@@ -34,6 +35,7 @@ function Router() {
       <CompanyRoute path="/dashboard" component={DashboardPage} />
       <CompanyRoute path="/add-vehicle" component={AddVehiclePage} />
       <CompanyRoute path="/edit-vehicle/:id" component={EditVehiclePage} />
+      <CompanyRoute path="/subscription" component={SubscriptionPage} />
       <AdminRoute path="/admin" component={AdminDashboardPage} />
       <Route component={NotFound} />
     </Switch>

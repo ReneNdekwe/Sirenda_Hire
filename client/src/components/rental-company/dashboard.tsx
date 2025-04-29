@@ -290,6 +290,11 @@ export default function Dashboard() {
       if (!response.ok) throw new Error('Failed to logout');
     },
     onSuccess: () => {
+      queryClient.setQueryData(['/api/user'], null);
+      toast({
+        title: "Success",
+        description: "You have been logged out successfully"
+      });
       navigate('/auth');
     },
     onError: () => {
@@ -407,6 +412,11 @@ export default function Dashboard() {
               label="Customers" 
               active={activeTab === "customers"} 
               onClick={() => setActiveTab("customers")}
+            />
+            <SidebarItem 
+              icon={CircleDollarSign} 
+              label="Subscription" 
+              href="/subscription"
             />
             <SidebarItem 
               icon={Settings} 
