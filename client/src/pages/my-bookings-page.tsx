@@ -86,68 +86,125 @@ export default function MyBookingsPage() {
     }
 
     return (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Vehicle</TableHead>
-            <TableHead>Dates</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Price</TableHead>
-            <TableHead></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
+      <div className="space-y-4">
+        {/* Desktop Table View */}
+        <div className="hidden md:block">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Vehicle</TableHead>
+                <TableHead>Dates</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {bookings.map((booking) => {
+                const vehicle = getVehicleDetails(booking.vehicleId);
+                const imageUrls = vehicle?.imageUrls ? (Array.isArray(vehicle.imageUrls) ? vehicle.imageUrls as string[] : []) : [];
+                return (
+                  <TableRow key={booking.id}>
+                    <TableCell className="font-medium">
+                      {vehicle ? (
+                        <div className="flex items-center">
+                          <div className="h-10 w-10 bg-gray-200 rounded overflow-hidden mr-2">
+                            {imageUrls.length > 0 && (
+                              <img
+                                src={imageUrls[0]}
+                                alt={`${vehicle.brand} ${vehicle.model}`}
+                                className="h-full w-full object-cover"
+                              />
+                            )}
+                          </div>
+                          <span>
+                            {vehicle.brand} {vehicle.model}
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex items-center">
+                          <div className="h-10 w-10 bg-gray-200 rounded overflow-hidden mr-2 flex items-center justify-center">
+                            <Car className="h-6 w-6 text-gray-400" />
+                          </div>
+                          <span>Vehicle #{booking.vehicleId}</span>
+                        </div>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {format(new Date(booking.pickupDate), "MMM d, yyyy")} -{" "}
+                      {format(new Date(booking.returnDate), "MMM d, yyyy")}
+                    </TableCell>
+                    <TableCell>{getStatusBadge(booking.status)}</TableCell>
+                    <TableCell>{formatPrice(booking.totalPrice)}</TableCell>
+                    <TableCell>
+                      {vehicle && (
+                        <Link href={`/vehicles/${vehicle.id}`}>
+                          <Button variant="ghost" size="sm">
+                            Details
+                            <ChevronRight className="h-4 w-4 ml-1" />
+                          </Button>
+                        </Link>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Mobile Card View */}
+        <div className="md:hidden space-y-4">
           {bookings.map((booking) => {
             const vehicle = getVehicleDetails(booking.vehicleId);
             const imageUrls = vehicle?.imageUrls ? (Array.isArray(vehicle.imageUrls) ? vehicle.imageUrls as string[] : []) : [];
             return (
-              <TableRow key={booking.id}>
-                <TableCell className="font-medium">
-                  {vehicle ? (
-                    <div className="flex items-center">
-                      <div className="h-10 w-10 bg-gray-200 rounded overflow-hidden mr-2">
-                        {imageUrls.length > 0 && (
-                          <img
-                            src={imageUrls[0]}
-                            alt={`${vehicle.brand} ${vehicle.model}`}
-                            className="h-full w-full object-cover"
-                          />
-                        )}
-                      </div>
-                      <span>
-                        {vehicle.brand} {vehicle.model}
-                      </span>
-                    </div>
+              <Card key={booking.id} className="overflow-hidden">
+                <div className="aspect-video bg-gray-100 relative">
+                  {imageUrls.length > 0 ? (
+                    <img
+                      src={imageUrls[0]}
+                      alt={`${vehicle?.brand} ${vehicle?.model}`}
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
-                    <div className="flex items-center">
-                      <div className="h-10 w-10 bg-gray-200 rounded overflow-hidden mr-2 flex items-center justify-center">
-                        <Car className="h-6 w-6 text-gray-400" />
-                      </div>
-                      <span>Vehicle #{booking.vehicleId}</span>
+                    <div className="flex items-center justify-center h-full">
+                      <Car className="h-12 w-12 text-gray-400" />
                     </div>
                   )}
-                </TableCell>
-                <TableCell>
-                  {format(new Date(booking.pickupDate), "MMM d, yyyy")} -{" "}
-                  {format(new Date(booking.returnDate), "MMM d, yyyy")}
-                </TableCell>
-                <TableCell>{getStatusBadge(booking.status)}</TableCell>
-                <TableCell>{formatPrice(booking.totalPrice)}</TableCell>
-                <TableCell>
-                  {vehicle && (
-                    <Link href={`/vehicles/${vehicle.id}`}>
-                      <Button variant="ghost" size="sm">
-                        Details
-                        <ChevronRight className="h-4 w-4 ml-1" />
-                      </Button>
-                    </Link>
-                  )}
-                </TableCell>
-              </TableRow>
+                  <div className="absolute top-2 right-2">
+                    {getStatusBadge(booking.status)}
+                  </div>
+                </div>
+                <CardContent className="p-4">
+                  <div className="space-y-3">
+                    <div>
+                      <h3 className="font-semibold">
+                        {vehicle ? `${vehicle.brand} ${vehicle.model}` : `Vehicle #${booking.vehicleId}`}
+                      </h3>
+                      <p className="text-sm text-gray-500">
+                        {format(new Date(booking.pickupDate), "MMM d, yyyy")} -{" "}
+                        {format(new Date(booking.returnDate), "MMM d, yyyy")}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <p className="font-medium">{formatPrice(booking.totalPrice)}</p>
+                      {vehicle && (
+                        <Link href={`/vehicles/${vehicle.id}`}>
+                          <Button variant="ghost" size="sm">
+                            Details
+                            <ChevronRight className="h-4 w-4 ml-1" />
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             );
           })}
-        </TableBody>
-      </Table>
+        </div>
+      </div>
     );
   };
 

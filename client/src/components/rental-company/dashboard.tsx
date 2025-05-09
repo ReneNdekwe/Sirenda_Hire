@@ -45,9 +45,12 @@ import {
   TrendingUp,
   Star,
   Clock,
-  CheckCircle2
+  CheckCircle2,
+  Menu,
+  X
 } from "lucide-react";
 import { format } from 'date-fns';
+import { BookingDetailsModal } from "./booking-details-modal";
 
 interface Booking {
   id: number;
@@ -55,9 +58,16 @@ interface Booking {
   userId: number;
   pickupDate: string;
   returnDate: string;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'rejected';
   totalPrice: number;
-  customerName?: string;
+  createdAt: Date | null;
+  updatedAt: Date | null;
+  paymentStatus: 'pending' | 'authorized' | 'captured' | 'refunded' | 'failed';
+  paymentIntentId: string | null;
+  hasDriver: boolean;
+  hasCarWash: boolean;
+  hasHomeDelivery: boolean;
+  deliveryAddress: string | null;
 }
 
 function SidebarItem({ 
@@ -225,6 +235,7 @@ export default function Dashboard() {
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: vehicles, isLoading: isLoadingVehicles } = useQuery<Vehicle[]>({
@@ -308,7 +319,7 @@ export default function Dashboard() {
 
   // Add the mutation
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ bookingId, newStatus }: { bookingId: number; newStatus: 'pending' | 'confirmed' | 'completed' | 'cancelled' }) => {
+    mutationFn: async ({ bookingId, newStatus }: { bookingId: number; newStatus: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'rejected' }) => {
       const response = await fetch(`/api/bookings/${bookingId}/status`, {
         method: 'PUT',
         headers: {
@@ -357,7 +368,7 @@ export default function Dashboard() {
     },
   });
 
-  const handleStatusChange = (bookingId: number, newStatus: 'pending' | 'confirmed' | 'completed' | 'cancelled') => {
+  const handleStatusChange = (bookingId: number, newStatus: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'rejected') => {
     updateStatusMutation.mutate({ bookingId, newStatus });
   };
 
@@ -371,7 +382,21 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-white">
-      <div className="w-full lg:w-64 border-r border-gray-100 lg:min-h-screen bg-white">
+      {/* Mobile menu button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="lg:hidden fixed top-4 left-4 z-50"
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+      >
+        {isSidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+      </Button>
+
+      {/* Sidebar */}
+      <div className={cn(
+        "fixed lg:static inset-y-0 left-0 z-40 w-64 transform transition-transform duration-200 ease-in-out bg-white border-r border-gray-100",
+        isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+      )}>
         <div className="p-6">
           <h2 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
             {companyName}
@@ -387,36 +412,46 @@ export default function Dashboard() {
               icon={Home} 
               label="Dashboard" 
               active={activeTab === "dashboard"} 
-              onClick={() => setActiveTab("dashboard")}
+              onClick={() => {
+                setActiveTab("dashboard");
+                setIsSidebarOpen(false);
+              }}
             />
             <SidebarItem 
               icon={Car} 
               label="My Vehicles" 
               active={activeTab === "vehicles"} 
-              onClick={() => setActiveTab("vehicles")}
+              onClick={() => {
+                setActiveTab("vehicles");
+                setIsSidebarOpen(false);
+              }}
             />
             <SidebarItem 
               icon={Calendar} 
               label="Bookings" 
               active={activeTab === "bookings"} 
-              onClick={() => setActiveTab("bookings")}
+              onClick={() => {
+                setActiveTab("bookings");
+                setIsSidebarOpen(false);
+              }}
             />
             <SidebarItem 
               icon={BarChart3} 
               label="Analytics" 
               active={activeTab === "analytics"} 
-              onClick={() => setActiveTab("analytics")}
+              onClick={() => {
+                setActiveTab("analytics");
+                setIsSidebarOpen(false);
+              }}
             />
             <SidebarItem 
               icon={Users} 
               label="Customers" 
               active={activeTab === "customers"} 
-              onClick={() => setActiveTab("customers")}
-            />
-            <SidebarItem 
-              icon={CircleDollarSign} 
-              label="Subscription" 
-              href="/subscription"
+              onClick={() => {
+                setActiveTab("customers");
+                setIsSidebarOpen(false);
+              }}
             />
             <SidebarItem 
               icon={Settings} 
@@ -427,50 +462,20 @@ export default function Dashboard() {
         </div>
 
         <Separator className="my-4" />
-
-        <div className="p-4">
-          {user.subscriptionStatus === 'active' ? (
-            <div className="bg-gradient-to-br from-green-100 to-green-50 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2 text-green-700 font-medium">
-                <CheckCircle2 className="h-4 w-4" /> 
-                <span>Active Subscription</span>
-              </div>
-              <p className="text-xs text-gray-600 mb-3">Your rental company subscription is active. Enjoy all premium features.</p>
-            </div>
-          ) : user.subscriptionStatus === 'trial' ? (
-            <div className="bg-gradient-to-br from-blue-100 to-blue-50 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2 text-blue-700 font-medium">
-                <Star className="h-4 w-4" /> 
-                <span>Trial Period</span>
-              </div>
-              <p className="text-xs text-gray-600 mb-3">You're currently in your 30-day free trial. Subscribe to continue after trial ends.</p>
-              <Link href="#subscription">
-                <Button variant="outline" size="sm" className="w-full border-blue-600 text-blue-700 hover:bg-blue-700 hover:text-white">
-                  View Subscription
-                </Button>
-              </Link>
-            </div>
-          ) : (
-            <div className="bg-gradient-to-br from-red-100 to-red-50 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2 text-red-700 font-medium">
-                <AlertCircle className="h-4 w-4" /> 
-                <span>Expired Subscription</span>
-              </div>
-              <p className="text-xs text-gray-600 mb-3">Your subscription has expired. Renew now to continue listing your vehicles.</p>
-              <Link href="#subscription">
-                <Button variant="outline" size="sm" className="w-full border-red-600 text-red-700 hover:bg-red-700 hover:text-white">
-                  Renew Now
-                </Button>
-              </Link>
-            </div>
-          )}
-        </div>
       </div>
+
+      {/* Overlay for mobile */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/20 z-30 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
 
       <div className="flex-1 overflow-y-auto bg-gray-50">
         <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
           <div className="flex items-center justify-between p-4">
-            <h1 className="text-xl font-bold">
+            <h1 className="text-xl font-bold ml-12 lg:ml-0">
               {activeTab === "dashboard" && "Dashboard Overview"}
               {activeTab === "vehicles" && "Vehicle Management"}
               {activeTab === "bookings" && "Booking Requests"}
@@ -742,7 +747,7 @@ export default function Dashboard() {
                       <TableBody>
                         {bookings?.filter((b: Booking) => b.vehicleId === vehicle.id).map((booking: Booking) => (
                           <TableRow key={booking.id}>
-                            <TableCell>{booking.customerName || `User #${booking.userId}`}</TableCell>
+                            <TableCell>{`User #${booking.userId}`}</TableCell>
                             <TableCell>
                               {format(new Date(booking.pickupDate), "MMM d, yyyy")} -{" "}
                               {format(new Date(booking.returnDate), "MMM d, yyyy")}
@@ -754,7 +759,8 @@ export default function Dashboard() {
                                     booking.status === "completed" && "bg-green-100 text-green-800",
                                     booking.status === "confirmed" && "bg-blue-100 text-blue-800",
                                     booking.status === "pending" && "bg-yellow-100 text-yellow-800",
-                                    booking.status === "cancelled" && "bg-red-100 text-red-800"
+                                    booking.status === "cancelled" && "bg-red-100 text-red-800",
+                                    booking.status === "rejected" && "bg-gray-100 text-gray-800"
                                   )}
                                 >
                                   {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
@@ -881,6 +887,11 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      <BookingDetailsModal 
+        booking={selectedBooking} 
+        onClose={() => setSelectedBooking(null)} 
+      />
     </div>
   );
 }

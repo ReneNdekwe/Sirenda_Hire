@@ -1027,6 +1027,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get user details by ID
+  app.get("/api/users/:id", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    const userId = parseInt(req.params.id);
+    const user = await storage.getUser(userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    // Only return necessary user information
+    const userDetails = {
+      id: user.id,
+      fullName: user.fullName,
+      phone: user.phone,
+      email: user.email
+    };
+    
+    res.json(userDetails);
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

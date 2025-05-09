@@ -22,7 +22,7 @@ export default function AboutPage() {
                   About Sirenda
                 </h1>
                 <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                  <span className="text-primary font-semibold">Founded in 2024</span>, Sirenda is <span className="font-semibold">Rwanda's premier car renting platform</span>. Our mission is to <span className="text-primary font-semibold">connect vehicle owners with renters</span>, making car hire <span className="font-semibold">accessible, transparent, and convenient</span> for everyone. We provide a <span className="text-primary font-semibold">trusted marketplace</span> where individuals can list their vehicles and customers can find the perfect car for their needs.
+                   <span className="text-primary font-semibold">Born in 2025</span> (yes, we’re younger than your old plugs--yet already shifting gears on Rwanda’s mobility), Sirenda is <span className="font-semibold">Rwanda’s top spot for car rentals</span> that don’t require a dozen phone calls and a cousin who "knows a guy." Our mission? To <span className="text-primary font-semibold">connect car owners and renters</span> without the usual drama. Whether you’re listing your ride or hunting for the perfect wheels to flex at a wedding, Sirenda’s got your back. It’s like <span className="font-semibold">Tinder for cars</span>—just less awkward and way more practical.
                 </p>
               </div>
             </div>

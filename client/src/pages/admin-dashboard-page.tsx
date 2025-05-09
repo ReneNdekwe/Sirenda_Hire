@@ -533,7 +533,7 @@ export default function AdminDashboardPage() {
               </h1>
               <p className="text-gray-500">
                 {activeTab === "overview" && "Monitor platform performance and activity"}
-                {activeTab === "companies" && "Manage rental companies and their subscriptions"}
+                {activeTab === "companies" && "Manage rental companies"}
                 {activeTab === "users" && "View and manage user accounts"}
                 {activeTab === "vehicles" && "Explore all vehicle listings"}
                 {activeTab === "bookings" && "Track and manage booking requests"}
@@ -747,30 +747,21 @@ export default function AdminDashboardPage() {
                 <Card>
                 <CardHeader>
                   <CardTitle>Rental Companies</CardTitle>
-                  <CardDescription>Manage rental companies and their subscriptions</CardDescription>
+                  <CardDescription>Manage rental companies</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Table>
                       <TableHeader>
                         <TableRow>
                           <TableHead>Company</TableHead>
-                        <TableHead>Contact</TableHead>
+                          <TableHead>Contact</TableHead>
                           <TableHead>Status</TableHead>
-                        <TableHead>Vehicles</TableHead>
-                        <TableHead>Actions</TableHead>
+                          <TableHead>Vehicles</TableHead>
+                          <TableHead>Actions</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                      {isLoadingCompanies ? (
-                        <TableRow>
-                          <TableCell colSpan={5}>
-                            <div className="flex items-center justify-center py-4">
-                              <Skeleton className="h-4 w-[250px]" />
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        companies?.map((company: User) => (
+                        {companies?.map((company: User) => (
                           <TableRow key={company.id}>
                             <TableCell>
                               <div className="flex items-center gap-2">
@@ -779,13 +770,13 @@ export default function AdminDashboardPage() {
                                 </div>
                                 <div>
                                   <p className="font-medium">{company.companyName}</p>
-                                  <p className="text-xs text-gray-500">{company.username}</p>
+                                  <p className="text-xs text-gray-500">{company.email}</p>
                                 </div>
                               </div>
                             </TableCell>
                             <TableCell>
-                              <p className="text-sm">{company.email}</p>
-                              <p className="text-xs text-gray-500">{company.phone}</p>
+                              <div className="font-medium">{company.phone}</div>
+                              <div className="text-xs text-gray-500">{company.address}</div>
                             </TableCell>
                             <TableCell>
                               <Badge 
@@ -832,8 +823,7 @@ export default function AdminDashboardPage() {
                               </DropdownMenu>
                             </TableCell>
                           </TableRow>
-                        ))
-                      )}
+                        ))}
                       </TableBody>
                     </Table>
                   </CardContent>
@@ -1073,54 +1063,6 @@ export default function AdminDashboardPage() {
               </Card>
             </div>
           )}
-          
-          {/* Subscription Tiers */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Subscription Tiers</CardTitle>
-              <CardDescription>Manage your subscription plan</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {SUBSCRIPTION_TIERS.map((tier) => (
-                  <Card key={tier.name} className={cn(
-                    "relative",
-                    user?.subscriptionTier === tier.name.toLowerCase() && "border-primary"
-                  )}>
-                    <CardHeader>
-                      <CardTitle>{tier.name}</CardTitle>
-                      <CardDescription>
-                        <span className="text-2xl font-bold">{tier.price.toLocaleString('en-RW')} RWF</span>
-                        <span className="text-gray-500">/month</span>
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-2">
-                        {tier.features.map((feature) => (
-                          <li key={feature} className="flex items-center gap-2">
-                            <CheckCircle2 className="h-4 w-4 text-green-500" />
-                            <span className="text-sm">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardContent>
-                    <CardFooter>
-                      <Button 
-                        className="w-full"
-                        variant={user?.subscriptionTier === tier.name.toLowerCase() ? "default" : "outline"}
-                        onClick={() => {
-                          // TODO: Implement subscription change
-                          console.log(`Upgrade to ${tier.name}`);
-                        }}
-                      >
-                        {user?.subscriptionTier === tier.name.toLowerCase() ? "Current Plan" : "Upgrade"}
-                </Button>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </main>
       <Footer />
