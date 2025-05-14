@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { Booking } from "@shared/schema";
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +34,9 @@ export function BookingDetailsModal({ booking, onClose }: BookingDetailsModalPro
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Booking Details</DialogTitle>
+          <DialogDescription>
+            View detailed information about this booking
+          </DialogDescription>
         </DialogHeader>
         <div className="space-y-6">
           {/* Customer Information */}

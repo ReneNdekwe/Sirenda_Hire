@@ -109,12 +109,10 @@ export default function Hero() {
                     animation: 'moveGradient 4s linear infinite'
                   }}
                 >
-                  Rwanda's Best Car Rental Service
+                  Rent a car in Rwanda in a few steps!
                 </span>
               </h1>
-              <p className="mt-6 text-lg text-gray-600 max-w-2xl mx-auto">
-                Find affordable car rentals in Kigali and across Rwanda. Choose from a wide selection of vehicles at great prices. Book online and get the best deals on car hire.
-              </p>
+              
             </div>
 
             {/* Modern Process Cards - Hidden on mobile */}
