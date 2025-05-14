@@ -112,9 +112,7 @@ export default function Hero() {
                   Rent a car in Rwanda in a few steps!
                 </span>
               </h1>
-              
             </div>
-
             {/* Modern Process Cards - Hidden on mobile */}
             <div className="hidden sm:grid grid-cols-1 sm:grid-cols-3 gap-6">
               <div className="group relative overflow-hidden rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 p-6 transition-all duration-300 hover:bg-white/20 hover:border-white/30 hover:shadow-lg hover:shadow-blue-500/10">

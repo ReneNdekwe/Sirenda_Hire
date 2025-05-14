@@ -175,7 +175,7 @@ export default function VehiclesPage() {
             <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
             <div className="relative z-10">
               <h1 className="text-2xl md:text-3xl font-bold mb-2 text-gray-900">
-                Find Affordable Cars in Rwanda
+              Skip the rental car counter
               </h1>
               <p className="text-gray-600 mb-6 max-w-xl">
                 Browse our selection of cars available in Kigali and across Rwanda.
