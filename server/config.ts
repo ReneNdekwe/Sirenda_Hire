@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 config({ path: resolve(__dirname, '../.env') });
 
 // Validate required environment variables
-const requiredEnvVars = ['DATABASE_URL', 'OPENAI_API_KEY'];
+const requiredEnvVars = ['DATABASE_URL'];
 const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
 
 if (missingEnvVars.length > 0) {
@@ -18,7 +18,6 @@ if (missingEnvVars.length > 0) {
 
 export const CONFIG = {
   DATABASE_URL: process.env.DATABASE_URL!,
-  OPENAI_API_KEY: process.env.OPENAI_API_KEY!,
   PORT: process.env.PORT || 5000,
   NODE_ENV: process.env.NODE_ENV || 'development',
 } as const;

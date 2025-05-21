@@ -1,8 +1,23 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import cors from 'cors';
 
 const app = express();
+
+// Configure CORS
+const corsOptions = {
+  origin: [
+    'https://sirenda-add5a8a6b7a9cna5.southafricanorth-01.azurewebsites.net',
+    'https://sirenda.rw',
+    'https://www.sirenda.rw'
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 

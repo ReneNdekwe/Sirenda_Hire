@@ -19,6 +19,7 @@ import { updateCompletedBookings } from "@shared/booking-utils";
 import { MTNMoMoService } from "./mtn-momo-service";  
 import { MTN_MOMO_CONFIG } from "./config/mtn-momo.config";
 import { v4 as uuidv4 } from 'uuid';
+import { azureStorageService } from './azure-storage-service';
 
 // Helper function to generate UUID
 const generateUUID = () => uuidv4();
@@ -29,29 +30,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     await storage.seedInitialData();
   }
 
+  // Initialize Azure Storage
+  await azureStorageService.initialize();
+
   // Configure multer for file uploads
-  const uploadsDir = path.join(process.cwd(), 'public/uploads');
-  
-  // Ensure uploads directory exists
-  if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-  }
-
-  // Configure storage for uploaded files
-  const storage_config = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, uploadsDir);
-    },
-    filename: function (req, file, cb) {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      const fileExt = path.extname(file.originalname);
-      cb(null, file.fieldname + '-' + uniqueSuffix + fileExt);
-    }
-  });
-
-  // Configure multer with file size limits and file types
   const upload = multer({
-    storage: storage_config,
+    storage: multer.memoryStorage(), // Use memory storage instead of disk storage
     limits: {
       fileSize: 5 * 1024 * 1024, // 5MB max file size
     },
@@ -185,18 +169,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
     
     const id = parseInt(req.params.id);
-    const vehicle = await storage.getVehicle(id);
+    console.log('Attempting to delete vehicle:', id); // Debug log
     
-    if (!vehicle) {
-      return res.status(404).json({ message: "Vehicle not found" });
+    try {
+      const vehicle = await storage.getVehicle(id);
+      console.log('Found vehicle:', vehicle); // Debug log
+      
+      if (!vehicle) {
+        console.log('Vehicle not found:', id); // Debug log
+        return res.status(404).json({ message: "Vehicle not found" });
+      }
+      
+      if (vehicle.ownerId !== req.user?.id) {
+        console.log('Unauthorized deletion attempt:', { vehicleOwner: vehicle.ownerId, currentUser: req.user?.id }); // Debug log
+        return res.status(403).json({ message: "Not authorized to delete this vehicle" });
+      }
+      
+      // Delete associated images from Azure Storage
+      if (vehicle.imageUrls && Array.isArray(vehicle.imageUrls)) {
+        console.log('Deleting associated images:', vehicle.imageUrls); // Debug log
+        await Promise.all(
+          vehicle.imageUrls.map(async (imageUrl) => {
+            try {
+              await azureStorageService.deleteImage(imageUrl);
+              console.log('Successfully deleted image:', imageUrl); // Debug log
+            } catch (error) {
+              console.error('Error deleting image:', error);
+              // Continue with deletion even if image deletion fails
+            }
+          })
+        );
+      }
+      
+      // Delete the vehicle from the database
+      console.log('Deleting vehicle from database:', id); // Debug log
+      const deleted = await storage.deleteVehicle(id);
+      console.log('Vehicle deletion result:', deleted); // Debug log
+      
+      if (!deleted) {
+        throw new Error('Failed to delete vehicle from database');
+      }
+      
+      res.status(204).send();
+    } catch (error) {
+      console.error('Error deleting vehicle:', error);
+      res.status(500).json({ 
+        message: "Error deleting vehicle",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
     }
-    
-    if (vehicle.ownerId !== req.user?.id) {
-      return res.status(403).json({ message: "Not authorized to delete this vehicle" });
-    }
-    
-    await storage.deleteVehicle(id);
-    res.status(204).send();
   });
 
   // Image upload endpoint
@@ -213,13 +234,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).json({ message: "No file uploaded or invalid file type" });
     }
     
-    // Return the file path that can be used to access the image
-    const filePath = `/uploads/${req.file.filename}`;
-    res.json({ 
-      success: true, 
-      message: "File uploaded successfully",
-      filePath
-    });
+    try {
+      // Upload to Azure Blob Storage
+      const imageUrl = await azureStorageService.uploadImage(req.file);
+      console.log('Uploaded image URL:', imageUrl); // Debug log
+      
+      if (!imageUrl) {
+        throw new Error('Failed to get image URL from Azure Storage');
+      }
+      
+      res.json({ 
+        success: true, 
+        message: "File uploaded successfully",
+        url: imageUrl
+      });
+    } catch (error) {
+      console.error('Error uploading to Azure:', error);
+      res.status(500).json({ 
+        success: false,
+        message: error instanceof Error ? error.message : "Failed to upload file to cloud storage"
+      });
+    }
+  });
+
+  // Static asset upload endpoint
+  app.post("/api/upload/static", upload.single('file'), async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    if (req.user?.userType !== 'admin') {
+      return res.status(403).json({ message: "Only admins can upload static assets" });
+    }
+    
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded or invalid file type" });
+    }
+    
+    try {
+      // Upload to Azure Blob Storage
+      const assetUrl = await azureStorageService.uploadStaticAsset(req.file);
+      console.log('Uploaded static asset URL:', assetUrl); // Debug log
+      
+      if (!assetUrl) {
+        throw new Error('Failed to get asset URL from Azure Storage');
+      }
+      
+      res.json({ 
+        success: true, 
+        message: "Static asset uploaded successfully",
+        url: assetUrl
+      });
+    } catch (error) {
+      console.error('Error uploading to Azure:', error);
+      res.status(500).json({ 
+        success: false,
+        message: error instanceof Error ? error.message : "Failed to upload static asset to cloud storage"
+      });
+    }
+  });
+
+  // Static assets endpoint
+  app.get("/api/static-assets", async (req, res) => {
+    try {
+      // Get the static assets container
+      const containerClient = azureStorageService.getStaticAssetsContainer();
+      
+      // List all blobs in the container
+      const blobs = [];
+      for await (const blob of containerClient.listBlobsFlat()) {
+        const sasToken = await azureStorageService.generateSasToken(blob.name, 'static-assets');
+        const url = `${containerClient.url}/${blob.name}?${sasToken}`;
+        
+        // Map blob names to their URLs
+        if (blob.name === 'favicon.png') {
+          blobs.push({ favicon: url });
+        } else if (blob.name === 'Logo.png') {
+          blobs.push({ logo: url });
+        }
+      }
+      
+      // Combine all asset URLs
+      const assets = blobs.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+      
+      res.json(assets);
+    } catch (error) {
+      console.error('Error getting static assets:', error);
+      res.status(500).json({ 
+        message: error instanceof Error ? error.message : "Failed to get static assets"
+      });
+    }
   });
 
   // Company vehicles

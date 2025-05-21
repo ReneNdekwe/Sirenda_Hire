@@ -19,6 +19,10 @@ import { ProtectedRoute, CompanyRoute, AdminRoute } from "./lib/protected-route"
 import { AuthProvider } from "@/hooks/use-auth";
 import ComingSoonPage from "@/pages/coming-soon-page";
 import SubscriptionPage from "@/pages/rental-company/subscription-page";
+import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
+import { useLocation } from "wouter";
+import StaticAssets from "@/components/layout/static-assets";
 
 function Router() {
   return (
@@ -42,15 +46,36 @@ function Router() {
   );
 }
 
-function App() {
+export default function App() {
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if the user is authenticated
+    const checkAuth = async () => {
+      try {
+        const res = await fetch("/api/user", {
+          credentials: "include",
+        });
+        if (!res.ok) {
+          setLocation("/auth");
+        }
+      } catch (error) {
+        console.error("Error checking auth:", error);
+        setLocation("/auth");
+      }
+    };
+
+    checkAuth();
+  }, [setLocation]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <Router />
+        <StaticAssets />
         <Toaster />
+        <Router />
       </AuthProvider>
     </QueryClientProvider>
   );
 }
-
-export default App;

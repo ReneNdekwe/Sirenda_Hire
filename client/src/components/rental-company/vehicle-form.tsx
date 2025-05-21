@@ -9,7 +9,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useAuth } from "@/hooks/use-auth";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Category } from "@shared/schema";
-import { Image, Upload, X, Plus } from "lucide-react";
+import { Image, Upload, X, Plus, Trash2 } from "lucide-react";
 
 import {
   Form,
@@ -33,6 +33,17 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const extendedVehicleSchema = insertVehicleSchema
   .omit({ ownerId: true })
@@ -58,7 +69,6 @@ export default function VehicleForm({ vehicle, isEdit = false }: VehicleFormProp
   const { toast } = useToast();
   const { user } = useAuth();
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: categories, isLoading: isCategoriesLoading } = useQuery<Category[]>({
@@ -67,43 +77,24 @@ export default function VehicleForm({ vehicle, isEdit = false }: VehicleFormProp
 
   const form = useForm<VehicleFormValues>({
     resolver: zodResolver(extendedVehicleSchema),
-    defaultValues: isEdit && vehicle
-      ? {
-          brand: vehicle.brand,
-          model: vehicle.model,
-          year: vehicle.year,
-          licensePlate: vehicle.licensePlate,
-          description: vehicle.description || "",
-          seats: vehicle.seats,
-          bags: vehicle.bags || undefined,
-          transmission: vehicle.transmission,
-          fuel: vehicle.fuel,
-          pricePerDay: vehicle.pricePerDay,
-          location: vehicle.location,
-          categoryId: Number(vehicle.categoryId) || 0,
-          isFeatured: Boolean(vehicle.isFeatured),
-          availability: Boolean(vehicle.availability),
-          imageUrls: Array.isArray(vehicle.imageUrls) ? vehicle.imageUrls : [],
-          occasions: Array.isArray(vehicle.occasions) ? vehicle.occasions : [],
-        }
-      : {
-          brand: "",
-          model: "",
-          year: new Date().getFullYear(),
-          licensePlate: "",
-          description: "",
-          seats: 4,
-          bags: undefined,
-          transmission: "automatic",
-          fuel: "petrol",
-          pricePerDay: 0,
-          location: "",
-          categoryId: 0,
-          isFeatured: false,
-          availability: true,
-          imageUrls: [],
-          occasions: [],
-        },
+    defaultValues: {
+      brand: isEdit && vehicle ? vehicle.brand : "",
+      model: isEdit && vehicle ? vehicle.model : "",
+      year: isEdit && vehicle ? vehicle.year : new Date().getFullYear(),
+      licensePlate: isEdit && vehicle ? vehicle.licensePlate : "",
+      description: isEdit && vehicle ? vehicle.description || "" : "",
+      seats: isEdit && vehicle ? vehicle.seats : 4,
+      bags: isEdit && vehicle ? vehicle.bags || undefined : undefined,
+      transmission: isEdit && vehicle ? vehicle.transmission : "automatic",
+      fuel: isEdit && vehicle ? vehicle.fuel : "petrol",
+      pricePerDay: isEdit && vehicle ? vehicle.pricePerDay : 0,
+      location: isEdit && vehicle ? vehicle.location : "",
+      categoryId: isEdit && vehicle ? Number(vehicle.categoryId) || 0 : 0,
+      isFeatured: isEdit && vehicle ? Boolean(vehicle.isFeatured) : false,
+      availability: isEdit && vehicle ? Boolean(vehicle.availability) : true,
+      imageUrls: isEdit && vehicle && Array.isArray(vehicle.imageUrls) ? vehicle.imageUrls : [],
+      occasions: isEdit && vehicle && Array.isArray(vehicle.occasions) ? vehicle.occasions : [],
+    },
   });
 
   const createVehicleMutation = useMutation({
@@ -169,6 +160,39 @@ export default function VehicleForm({ vehicle, isEdit = false }: VehicleFormProp
     },
   });
 
+  const deleteVehicleMutation = useMutation({
+    mutationFn: async () => {
+      if (!vehicle) throw new Error("Vehicle not found");
+      
+      const res = await apiRequest(
+        "DELETE",
+        `/api/vehicles/${vehicle.id}`
+      );
+      
+      // Don't try to parse JSON for 204 response
+      if (res.status === 204) {
+        return null;
+      }
+      
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/my-vehicles'] });
+      toast({
+        title: "Vehicle deleted",
+        description: "Your vehicle has been deleted successfully.",
+      });
+      navigate("/dashboard");
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete vehicle. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
@@ -176,7 +200,9 @@ export default function VehicleForm({ vehicle, isEdit = false }: VehicleFormProp
     const file = files[0];
     
     // Check if we already have 3 images
-    const currentImages = form.getValues('imageUrls');
+    const currentImages = form.getValues('imageUrls') || [];
+    console.log('Current images before upload:', currentImages); // Debug log
+    
     if (currentImages.length >= 3) {
       toast({
         title: "Maximum images reached",
@@ -200,18 +226,29 @@ export default function VehicleForm({ vehicle, isEdit = false }: VehicleFormProp
       });
       
       if (!response.ok) {
-        throw new Error('Failed to upload image');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to upload image');
       }
       
       const result = await response.json();
+      console.log('Upload response:', result); // Debug log
       
-      // Set the upload URL
-      const imageUrl = `${window.location.origin}${result.filePath}`;
+      if (!result.url) {
+        throw new Error('No URL returned from server');
+      }
       
       // Update form with new image URL
-      const updatedImageUrls = [...currentImages, imageUrl];
-      form.setValue('imageUrls', updatedImageUrls);
-      setUploadedImageUrls(updatedImageUrls);
+      const updatedImageUrls = [...(Array.isArray(currentImages) ? currentImages : []), result.url];
+      console.log('Updating imageUrls to:', updatedImageUrls); // Debug log
+      
+      form.setValue('imageUrls', updatedImageUrls, { 
+        shouldValidate: true,
+        shouldDirty: true,
+        shouldTouch: true
+      });
+      
+      // Force a re-render of the form
+      form.trigger('imageUrls');
       
       toast({
         title: 'Image uploaded',
@@ -234,17 +271,26 @@ export default function VehicleForm({ vehicle, isEdit = false }: VehicleFormProp
   };
   
   const removeImage = (index: number) => {
-    const currentImages = form.getValues('imageUrls');
+    const currentImages = form.getValues('imageUrls') || [];
     const updatedImages = currentImages.filter((_, i) => i !== index);
-    form.setValue('imageUrls', updatedImages);
-    setUploadedImageUrls(updatedImages);
+    form.setValue('imageUrls', updatedImages, { shouldValidate: true });
   };
 
   function onSubmit(data: VehicleFormValues) {
+    console.log('Form data before submission:', data); // Debug log
+    
+    // Ensure imageUrls is an array and contains valid URLs
+    const formData = {
+      ...data,
+      imageUrls: Array.isArray(data.imageUrls) ? data.imageUrls.filter(url => typeof url === 'string' && url.length > 0) : []
+    };
+    
+    console.log('Form data after processing:', formData); // Debug log
+
     if (isEdit && vehicle) {
-      updateVehicleMutation.mutate(data);
+      updateVehicleMutation.mutate(formData);
     } else {
-      createVehicleMutation.mutate(data);
+      createVehicleMutation.mutate(formData);
     }
   }
 
@@ -264,9 +310,47 @@ export default function VehicleForm({ vehicle, isEdit = false }: VehicleFormProp
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">
-        {isEdit ? "Edit Vehicle" : "Add New Vehicle"}
-      </h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">
+          {isEdit ? "Edit Vehicle" : "Add New Vehicle"}
+        </h1>
+        
+        {isEdit && vehicle && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm">
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete Vehicle
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the vehicle
+                  and all associated data including images and booking history.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={() => deleteVehicleMutation.mutate()}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  {deleteVehicleMutation.isPending ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    "Delete"
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+      </div>
       
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -482,75 +566,80 @@ export default function VehicleForm({ vehicle, isEdit = false }: VehicleFormProp
             <FormField
               control={form.control}
               name="imageUrls"
-              render={({ field }) => (
-                <FormItem className="col-span-2">
-                  <FormLabel>Vehicle Images (up to 3)</FormLabel>
-                  <div className="space-y-4">
-                    {/* Upload button and preview section */}
-                    <div className="grid grid-cols-1 gap-4">
-                      <div>
-                        <input
-                          type="file"
-                          ref={fileInputRef}
-                          accept="image/*"
-                          className="hidden"
-                          onChange={handleImageUpload}
-                        />
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={handleUploadButtonClick}
-                          className="w-full h-12"
-                          disabled={isUploading || field.value.length >= 3}
-                        >
-                          {isUploading ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          ) : (
-                            <Upload className="mr-2 h-4 w-4" />
-                          )}
-                          {isUploading ? 'Uploading...' : field.value.length >= 3 ? 'Maximum images reached' : 'Upload Image'}
-                        </Button>
+              render={({ field }) => {
+                // Debug log to see what's in the field
+                console.log('Image field value:', field.value);
+                
+                return (
+                  <FormItem className="col-span-2">
+                    <FormLabel>Vehicle Images (up to 3)</FormLabel>
+                    <div className="space-y-4">
+                      {/* Upload button and preview section */}
+                      <div className="grid grid-cols-1 gap-4">
+                        <div>
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleImageUpload}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={handleUploadButtonClick}
+                            className="w-full h-12"
+                            disabled={isUploading || (Array.isArray(field.value) && field.value.length >= 3)}
+                          >
+                            {isUploading ? (
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                              <Upload className="mr-2 h-4 w-4" />
+                            )}
+                            {isUploading ? 'Uploading...' : (Array.isArray(field.value) && field.value.length >= 3) ? 'Maximum images reached' : 'Upload Image'}
+                          </Button>
+                          
+                          <FormDescription className="mt-2">
+                            Upload up to 3 images of your vehicle (recommended size: 1200x800px)
+                          </FormDescription>
+                        </div>
                         
-                        <FormDescription className="mt-2">
-                          Upload up to 3 images of your vehicle (recommended size: 1200x800px)
-                        </FormDescription>
-                      </div>
-                      
-                      {/* Image previews */}
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        {field.value.map((url, index) => (
-                          <div key={index} className="border rounded-md overflow-hidden bg-gray-50 flex items-center justify-center relative aspect-video">
-                            <img
-                              src={url}
-                              alt={`Vehicle preview ${index + 1}`}
-                              className="w-full h-full object-cover"
-                            />
-                            <Button
-                              type="button"
-                              variant="destructive"
-                              size="icon"
-                              className="absolute top-2 right-2 h-8 w-8 rounded-full"
-                              onClick={() => removeImage(index)}
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ))}
-                        
-                        {field.value.length === 0 && (
-                          <div className="col-span-3 border rounded-md overflow-hidden bg-gray-50 flex items-center justify-center py-10">
-                            <div className="text-gray-400 flex flex-col items-center">
-                              <Image className="h-10 w-10 mb-2" />
-                              <span>No images uploaded</span>
+                        {/* Image previews */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          {Array.isArray(field.value) && field.value.map((url, index) => (
+                            <div key={index} className="border rounded-md overflow-hidden bg-gray-50 flex items-center justify-center relative aspect-video">
+                              <img
+                                src={url}
+                                alt={`Vehicle preview ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="icon"
+                                className="absolute top-2 right-2 h-8 w-8 rounded-full"
+                                onClick={() => removeImage(index)}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
                             </div>
-                          </div>
-                        )}
+                          ))}
+                          
+                          {(!Array.isArray(field.value) || field.value.length === 0) && (
+                            <div className="col-span-3 border rounded-md overflow-hidden bg-gray-50 flex items-center justify-center py-10">
+                              <div className="text-gray-400 flex flex-col items-center">
+                                <Image className="h-10 w-10 mb-2" />
+                                <span>No images uploaded</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
+                    <FormMessage />
+                  </FormItem>
+                );
+              }}
             />
           </div>
 

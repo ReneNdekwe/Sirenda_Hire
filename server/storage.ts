@@ -623,8 +623,13 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getVehicle(id: number): Promise<Vehicle | undefined> {
-    const [vehicle] = await db.select().from(vehicles).where(eq(vehicles.id, id));
-    return vehicle;
+    try {
+      const [vehicle] = await db.select().from(vehicles).where(eq(vehicles.id, id));
+      return vehicle;
+    } catch (error) {
+      console.error('Error getting vehicle:', error);
+      return undefined;
+    }
   }
 
   async getVehiclesByOwner(ownerId: number): Promise<Vehicle[]> {
