@@ -391,9 +391,10 @@ export default function AdminDashboardPage() {
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("rw-RW", {
       style: "currency",
-      currency: "USD",
+      currency: "RWF",
+      maximumFractionDigits: 0,
     }).format(price);
   };
 
@@ -414,38 +415,47 @@ export default function AdminDashboardPage() {
     );
   }
 
-  const BookingRow = ({ booking }: { booking: Booking }) => {
-    return (
-      <TableRow>
-        <TableCell>
-          <div className="font-medium">{getUserName(booking.userId)}</div>
-          <div className="text-sm text-muted-foreground">ID: {booking.userId}</div>
+  const BookingRow = ({ booking }: { booking: Booking }) => (
+    <TableRow>
+      <TableCell>
+        <div className="font-medium">{getUserName(booking.userId)}</div>
+        <div className="text-sm text-muted-foreground">ID: {booking.userId}</div>
       </TableCell>
       <TableCell>
-          <div className="font-medium">{getVehicleName(booking.vehicleId)}</div>
-          <div className="text-sm text-muted-foreground">ID: {booking.vehicleId}</div>
+        <div className="font-medium">{getVehicleName(booking.vehicleId)}</div>
+        <div className="text-sm text-muted-foreground">ID: {booking.vehicleId}</div>
       </TableCell>
       <TableCell>
-          <div className="font-medium">{format(new Date(booking.pickupDate), "MMM d, yyyy")}</div>
-          <div className="text-sm text-muted-foreground">{format(new Date(booking.returnDate), "MMM d, yyyy")}</div>
+        <div className="font-medium">{format(new Date(booking.pickupDate), "MMM d, yyyy")}</div>
+        <div className="text-sm text-muted-foreground">{format(new Date(booking.returnDate), "MMM d, yyyy")}</div>
       </TableCell>
       <TableCell>
-          <div className="font-medium">{formatPrice(booking.totalPrice)}</div>
-          <div className="text-sm text-muted-foreground">{booking.paymentStatus}</div>
+        <div className="font-medium">{formatPrice(booking.totalPrice)}</div>
+        <div className="text-sm text-muted-foreground">{booking.paymentStatus}</div>
       </TableCell>
       <TableCell>
-          <Badge variant={getStatusVariant(booking.status)}>
+        <Badge variant={getStatusVariant(booking.status)}>
           {booking.status}
         </Badge>
       </TableCell>
       <TableCell>
-          <span className="text-xs text-gray-500">
-            {format(booking.createdAt ? new Date(booking.createdAt) : new Date(), "MMM d, h:mm a")}
-          </span>
+        <span className="text-xs text-gray-500">
+          {format(booking.createdAt ? new Date(booking.createdAt) : new Date(), "MMM d, h:mm a")}
+        </span>
       </TableCell>
     </TableRow>
   );
-  };
+
+  const renderVehicleRow = (vehicle: Vehicle) => (
+    <TableRow key={vehicle.id}>
+      <TableCell>
+        <div className="font-medium">{vehicle.brand} {vehicle.model}</div>
+      </TableCell>
+      <TableCell>
+        <div className="font-medium">{formatPrice(vehicle.pricePerDay)}/day</div>
+      </TableCell>
+    </TableRow>
+  );
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -575,7 +585,7 @@ export default function AdminDashboardPage() {
                 />
                 <StatCard 
                   title="Total Revenue" 
-                  value={`$${analytics?.totalRevenue || "0"}`} 
+                  value={formatPrice(analytics?.totalRevenue || 0)} 
                   icon={CircleDollarSign} 
                   trend="up" 
                   trendValue="+15% from last month"
@@ -591,7 +601,7 @@ export default function AdminDashboardPage() {
                 />
                 <StatCard 
                   title="Average Booking Value" 
-                  value={`$${Math.round(analytics?.avgBookingValue || 0)}`} 
+                  value={formatPrice(Math.round(analytics?.avgBookingValue || 0))} 
                   icon={CircleDollarSign} 
                   trend="up" 
                   trendValue="+5% from last month"
@@ -987,7 +997,7 @@ export default function AdminDashboardPage() {
                               </Badge>
                             </TableCell>
                             <TableCell>
-                              <div className="font-medium">${vehicle.pricePerDay}/day</div>
+                              <div className="font-medium">{formatPrice(vehicle.pricePerDay)}/day</div>
                             </TableCell>
                             <TableCell>
                               <DropdownMenu>

@@ -38,18 +38,18 @@ export default function BrowseByOccasion() {
           <p className="text-gray-600">Find the perfect vehicle for your needs</p>
         </div>
 
-        <div className="flex justify-center items-center gap-8 flex-wrap">
+        <div className="flex justify-center items-center gap-4 sm:gap-8 flex-wrap">
           {occasions.map((occasion, index) => (
             <Link key={index} href={occasion.href}>
-              <div className="group flex flex-col items-center gap-3">
-                <div className="w-32 h-32 rounded-full bg-white shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-primary/20 overflow-hidden">
+              <div className="group flex flex-col items-center gap-2 sm:gap-3">
+                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-white shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-primary/20 overflow-hidden">
                   <img 
                     src={occasion.image} 
                     alt={occasion.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>
-                <span className="text-base font-medium text-gray-700 group-hover:text-primary transition-colors">
+                <span className="text-sm sm:text-base font-medium text-gray-700 group-hover:text-primary transition-colors">
                   {occasion.title}
                 </span>
               </div>

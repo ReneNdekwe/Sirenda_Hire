@@ -49,8 +49,9 @@ import {
   Menu,
   X
 } from "lucide-react";
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { BookingDetailsModal } from "./booking-details-modal";
+import { formatPrice } from "@/lib/currency";
 
 interface Booking {
   id: number;
@@ -190,7 +191,7 @@ function VehicleCard({ vehicle, onEdit }: { vehicle: Vehicle, onEdit: (id: numbe
             <h3 className="font-semibold">{vehicle.brand} {vehicle.model}</h3>
             <p className="text-sm text-gray-500">{vehicle.year} • {vehicle.location}</p>
           </div>
-          <p className="font-bold text-primary">${vehicle.pricePerDay}<span className="text-xs font-normal text-gray-500">/day</span></p>
+          <p className="font-bold text-primary">{formatPrice(vehicle.pricePerDay)}<span className="text-xs font-normal text-gray-500">/day</span></p>
         </div>
         <div className="flex flex-wrap gap-1 mt-3 mb-4">
           <Badge variant="outline" className="bg-gray-50 font-normal">
@@ -476,16 +477,16 @@ export default function Dashboard() {
         <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
           <div className="flex items-center justify-between p-4">
             <h1 className="text-xl font-bold ml-12 lg:ml-0">
-              {activeTab === "dashboard" && "Dashboard Overview"}
+              {activeTab === "dashboard" && "Dashboard"}
               {activeTab === "vehicles" && "Vehicle Management"}
               {activeTab === "bookings" && "Booking Requests"}
               {activeTab === "analytics" && "Performance Analytics"}
               {activeTab === "customers" && "Customer Management"}
             </h1>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 lg:gap-4">
               <Button 
                 variant="outline" 
-                className="mr-2"
+                className="hidden lg:flex mr-2"
                 onClick={async () => {
                   try {
                     const response = await fetch('/api/vehicles/reset-availability', {
@@ -555,11 +556,19 @@ export default function Dashboard() {
               </Button>
               <Button 
                 variant="outline" 
-                className="gap-2" 
+                className="gap-2 hidden sm:flex" 
                 onClick={() => logoutMutation.mutate()}
               >
                 <LogOut className="h-4 w-4" />
                 Logout
+              </Button>
+              <Button 
+                variant="outline" 
+                size="icon"
+                className="sm:hidden" 
+                onClick={() => logoutMutation.mutate()}
+              >
+                <LogOut className="h-4 w-4" />
               </Button>
               <Link href="/profile">
                 <div className="flex items-center gap-2 cursor-pointer">
@@ -594,7 +603,7 @@ export default function Dashboard() {
                 />
                 <StatCard 
                   title="Total Revenue" 
-                  value={`$${analytics?.totalRevenue || 0}`} 
+                  value={formatPrice(analytics?.totalRevenue || 0)} 
                   icon={CircleDollarSign} 
                   trend={analytics?.revenueTrend > 0 ? "up" : "down"} 
                   trendValue={`${analytics?.revenueTrend || 0}% from last month`}
@@ -613,42 +622,46 @@ export default function Dashboard() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-start gap-4">
-                      <div className="bg-green-100 rounded-full p-2">
-                        <Clock className="h-4 w-4 text-green-700" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-medium">New booking request</h4>
-                          <span className="text-xs text-gray-500">2 hours ago</span>
+                    {bookings?.slice(0, 5).map((booking) => {
+                      const vehicle = vehicles?.find(v => v.id === booking.vehicleId);
+                      const timeAgo = booking.createdAt 
+                        ? formatDistanceToNow(new Date(booking.createdAt), { addSuffix: true })
+                        : 'recently';
+
+                      return (
+                        <div key={booking.id} className="flex items-start gap-4">
+                          <div className={cn(
+                            "rounded-full p-2",
+                            booking.status === 'pending' && "bg-yellow-100",
+                            booking.status === 'confirmed' && "bg-green-100",
+                            booking.status === 'completed' && "bg-blue-100",
+                            booking.status === 'cancelled' && "bg-red-100",
+                            booking.status === 'rejected' && "bg-gray-100"
+                          )}>
+                            {booking.status === 'pending' && <Clock className="h-4 w-4 text-yellow-700" />}
+                            {booking.status === 'confirmed' && <CheckCircle2 className="h-4 w-4 text-green-700" />}
+                            {booking.status === 'completed' && <Calendar className="h-4 w-4 text-blue-700" />}
+                            {booking.status === 'cancelled' && <X className="h-4 w-4 text-red-700" />}
+                            {booking.status === 'rejected' && <AlertCircle className="h-4 w-4 text-gray-700" />}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <h4 className="text-sm font-medium">
+                                {booking.status === 'pending' && 'New booking request'}
+                                {booking.status === 'confirmed' && 'Booking confirmed'}
+                                {booking.status === 'completed' && 'Booking completed'}
+                                {booking.status === 'cancelled' && 'Booking cancelled'}
+                                {booking.status === 'rejected' && 'Booking rejected'}
+                              </h4>
+                              <span className="text-xs text-gray-500">{timeAgo}</span>
+                            </div>
+                            <p className="text-xs text-gray-500">
+                              {vehicle ? `${vehicle.brand} ${vehicle.model}` : 'Vehicle'} • {formatPrice(booking.totalPrice)}
+                            </p>
+                          </div>
                         </div>
-                        <p className="text-xs text-gray-500">New booking request for Mercedes-Benz S-Class</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="bg-blue-100 rounded-full p-2">
-                        <Star className="h-4 w-4 text-blue-700" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-medium">New review received</h4>
-                          <span className="text-xs text-gray-500">1 day ago</span>
-                        </div>
-                        <p className="text-xs text-gray-500">You received a 5-star review for Porsche 911</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-4">
-                      <div className="bg-amber-100 rounded-full p-2">
-                        <CircleDollarSign className="h-4 w-4 text-amber-700" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-sm font-medium">Payment received</h4>
-                          <span className="text-xs text-gray-500">2 days ago</span>
-                        </div>
-                        <p className="text-xs text-gray-500">You received payment of $420 for BMW 4 Series booking</p>
-                      </div>
-                    </div>
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>
@@ -785,7 +798,7 @@ export default function Dashboard() {
                                 )}
                               </div>
                             </TableCell>
-                            <TableCell>${booking.totalPrice}</TableCell>
+                            <TableCell>{formatPrice(booking.totalPrice)}</TableCell>
                             <TableCell>
                               <Button 
                                 variant="ghost" 

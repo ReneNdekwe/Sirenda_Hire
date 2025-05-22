@@ -47,28 +47,6 @@ function Router() {
 }
 
 export default function App() {
-  const [, setLocation] = useLocation();
-  const { toast } = useToast();
-
-  useEffect(() => {
-    // Check if the user is authenticated
-    const checkAuth = async () => {
-      try {
-        const res = await fetch("/api/user", {
-          credentials: "include",
-        });
-        if (!res.ok) {
-          setLocation("/auth");
-        }
-      } catch (error) {
-        console.error("Error checking auth:", error);
-        setLocation("/auth");
-      }
-    };
-
-    checkAuth();
-  }, [setLocation]);
-
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>

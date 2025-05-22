@@ -33,6 +33,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize Azure Storage
   await azureStorageService.initialize();
 
+  // Health check endpoint
+  app.get("/health", (req, res) => {
+    res.status(200).json({ status: "healthy" });
+  });
+
   // Configure multer for file uploads
   const upload = multer({
     storage: multer.memoryStorage(), // Use memory storage instead of disk storage
@@ -172,19 +177,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     console.log('Attempting to delete vehicle:', id); // Debug log
     
     try {
-      const vehicle = await storage.getVehicle(id);
+    const vehicle = await storage.getVehicle(id);
       console.log('Found vehicle:', vehicle); // Debug log
-      
-      if (!vehicle) {
+    
+    if (!vehicle) {
         console.log('Vehicle not found:', id); // Debug log
-        return res.status(404).json({ message: "Vehicle not found" });
-      }
-      
-      if (vehicle.ownerId !== req.user?.id) {
+      return res.status(404).json({ message: "Vehicle not found" });
+    }
+    
+    if (vehicle.ownerId !== req.user?.id) {
         console.log('Unauthorized deletion attempt:', { vehicleOwner: vehicle.ownerId, currentUser: req.user?.id }); // Debug log
-        return res.status(403).json({ message: "Not authorized to delete this vehicle" });
-      }
-      
+      return res.status(403).json({ message: "Not authorized to delete this vehicle" });
+    }
+    
       // Delete associated images from Azure Storage
       if (vehicle.imageUrls && Array.isArray(vehicle.imageUrls)) {
         console.log('Deleting associated images:', vehicle.imageUrls); // Debug log
@@ -210,7 +215,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw new Error('Failed to delete vehicle from database');
       }
       
-      res.status(204).send();
+    res.status(204).send();
     } catch (error) {
       console.error('Error deleting vehicle:', error);
       res.status(500).json({ 
@@ -243,9 +248,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         throw new Error('Failed to get image URL from Azure Storage');
       }
       
-      res.json({ 
-        success: true, 
-        message: "File uploaded successfully",
+    res.json({ 
+      success: true, 
+      message: "File uploaded successfully",
         url: imageUrl
       });
     } catch (error) {

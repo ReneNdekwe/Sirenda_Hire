@@ -388,7 +388,7 @@ export default function AuthPage() {
               </Card>
             </div>
 
-            <div className="lg:order-1 text-center lg:text-left">
+            <div className="hidden lg:block lg:order-1">
               <h2 className="text-3xl font-bold mb-4">
                 {activeTab === "login"
                   ? "Welcome Back to Sirenda"
@@ -405,30 +405,18 @@ export default function AuthPage() {
                     ? "Benefits of Your Sirenda Account"
                     : "Why Join Sirenda?"}
                 </h3>
-                <ul className="space-y-2">
+                <ul className="space-y-3">
                   <li className="flex items-start">
-                    <span className="text-green-500 mr-2">✓</span>
-                    <span>
-                      {activeTab === "login"
-                        ? "Quick booking process with saved information"
-                        : "Access to premium vehicles from trusted providers"}
-                    </span>
+                    <CarFront className="h-5 w-5 text-primary mr-2 mt-0.5" />
+                    <span>Access to premium vehicles</span>
                   </li>
                   <li className="flex items-start">
-                    <span className="text-green-500 mr-2">✓</span>
-                    <span>
-                      {activeTab === "login"
-                        ? "Special offers and loyalty rewards"
-                        : "Simple and secure booking system"}
-                    </span>
+                    <CarFront className="h-5 w-5 text-primary mr-2 mt-0.5" />
+                    <span>Easy booking management</span>
                   </li>
                   <li className="flex items-start">
-                    <span className="text-green-500 mr-2">✓</span>
-                    <span>
-                      {activeTab === "login"
-                        ? "View and manage your booking history"
-                        : "For companies: Showcase your fleet to thousands of clients"}
-                    </span>
+                    <CarFront className="h-5 w-5 text-primary mr-2 mt-0.5" />
+                    <span>Exclusive deals and offers</span>
                   </li>
                 </ul>
               </div>

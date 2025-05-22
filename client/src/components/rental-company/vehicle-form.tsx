@@ -94,7 +94,7 @@ export default function VehicleForm({ vehicle, isEdit = false }: VehicleFormProp
       availability: isEdit && vehicle ? Boolean(vehicle.availability) : true,
       imageUrls: isEdit && vehicle && Array.isArray(vehicle.imageUrls) ? vehicle.imageUrls : [],
       occasions: isEdit && vehicle && Array.isArray(vehicle.occasions) ? vehicle.occasions : [],
-    },
+        },
   });
 
   const createVehicleMutation = useMutation({
@@ -312,8 +312,8 @@ export default function VehicleForm({ vehicle, isEdit = false }: VehicleFormProp
     <div className="max-w-2xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">
-          {isEdit ? "Edit Vehicle" : "Add New Vehicle"}
-        </h1>
+        {isEdit ? "Edit Vehicle" : "Add New Vehicle"}
+      </h1>
         
         {isEdit && vehicle && (
           <AlertDialog>
@@ -526,7 +526,7 @@ export default function VehicleForm({ vehicle, isEdit = false }: VehicleFormProp
               name="pricePerDay"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price Per Day ($)</FormLabel>
+                  <FormLabel>Price Per Day (RWF)</FormLabel>
                   <FormControl>
                     <Input type="number" {...field} />
                   </FormControl>
@@ -571,73 +571,73 @@ export default function VehicleForm({ vehicle, isEdit = false }: VehicleFormProp
                 console.log('Image field value:', field.value);
                 
                 return (
-                  <FormItem className="col-span-2">
-                    <FormLabel>Vehicle Images (up to 3)</FormLabel>
-                    <div className="space-y-4">
-                      {/* Upload button and preview section */}
-                      <div className="grid grid-cols-1 gap-4">
-                        <div>
-                          <input
-                            type="file"
-                            ref={fileInputRef}
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handleImageUpload}
-                          />
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={handleUploadButtonClick}
-                            className="w-full h-12"
+                <FormItem className="col-span-2">
+                  <FormLabel>Vehicle Images (up to 3)</FormLabel>
+                  <div className="space-y-4">
+                    {/* Upload button and preview section */}
+                    <div className="grid grid-cols-1 gap-4">
+                      <div>
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          accept="image/*"
+                          className="hidden"
+                          onChange={handleImageUpload}
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={handleUploadButtonClick}
+                          className="w-full h-12"
                             disabled={isUploading || (Array.isArray(field.value) && field.value.length >= 3)}
-                          >
-                            {isUploading ? (
-                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            ) : (
-                              <Upload className="mr-2 h-4 w-4" />
-                            )}
-                            {isUploading ? 'Uploading...' : (Array.isArray(field.value) && field.value.length >= 3) ? 'Maximum images reached' : 'Upload Image'}
-                          </Button>
-                          
-                          <FormDescription className="mt-2">
-                            Upload up to 3 images of your vehicle (recommended size: 1200x800px)
-                          </FormDescription>
-                        </div>
-                        
-                        {/* Image previews */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                          {Array.isArray(field.value) && field.value.map((url, index) => (
-                            <div key={index} className="border rounded-md overflow-hidden bg-gray-50 flex items-center justify-center relative aspect-video">
-                              <img
-                                src={url}
-                                alt={`Vehicle preview ${index + 1}`}
-                                className="w-full h-full object-cover"
-                              />
-                              <Button
-                                type="button"
-                                variant="destructive"
-                                size="icon"
-                                className="absolute top-2 right-2 h-8 w-8 rounded-full"
-                                onClick={() => removeImage(index)}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          ))}
-                          
-                          {(!Array.isArray(field.value) || field.value.length === 0) && (
-                            <div className="col-span-3 border rounded-md overflow-hidden bg-gray-50 flex items-center justify-center py-10">
-                              <div className="text-gray-400 flex flex-col items-center">
-                                <Image className="h-10 w-10 mb-2" />
-                                <span>No images uploaded</span>
-                              </div>
-                            </div>
+                        >
+                          {isUploading ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          ) : (
+                            <Upload className="mr-2 h-4 w-4" />
                           )}
-                        </div>
+                            {isUploading ? 'Uploading...' : (Array.isArray(field.value) && field.value.length >= 3) ? 'Maximum images reached' : 'Upload Image'}
+                        </Button>
+                        
+                        <FormDescription className="mt-2">
+                          Upload up to 3 images of your vehicle (recommended size: 1200x800px)
+                        </FormDescription>
+                      </div>
+                      
+                      {/* Image previews */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          {Array.isArray(field.value) && field.value.map((url, index) => (
+                          <div key={index} className="border rounded-md overflow-hidden bg-gray-50 flex items-center justify-center relative aspect-video">
+                            <img
+                              src={url}
+                              alt={`Vehicle preview ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-2 right-2 h-8 w-8 rounded-full"
+                              onClick={() => removeImage(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                        
+                          {(!Array.isArray(field.value) || field.value.length === 0) && (
+                          <div className="col-span-3 border rounded-md overflow-hidden bg-gray-50 flex items-center justify-center py-10">
+                            <div className="text-gray-400 flex flex-col items-center">
+                              <Image className="h-10 w-10 mb-2" />
+                              <span>No images uploaded</span>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <FormMessage />
-                  </FormItem>
+                  </div>
+                  <FormMessage />
+                </FormItem>
                 );
               }}
             />

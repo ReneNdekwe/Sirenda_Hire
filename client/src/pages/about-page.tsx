@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
+import { MapPin, Mail, Phone, Clock } from "lucide-react";
 
 export default function AboutPage() {
   return (
@@ -15,15 +16,58 @@ export default function AboutPage() {
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10" />
             <div className="absolute inset-0 bg-grid-pattern opacity-10" />
           </div>
-          <div className="container mx-auto px-4 py-24">
-            <div className="max-w-4xl mx-auto">
-              <div className="text-center">
-                <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
-                  About Sirenda
-                </h1>
-                <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                   <span className="text-primary font-semibold">Born in 2025</span> (yes, we’re younger than your old plugs--yet already shifting gears on Rwanda’s mobility), Sirenda is <span className="font-semibold">Rwanda’s top spot for car rentals</span> that don’t require a dozen phone calls and a cousin who "knows a guy." Our mission? To <span className="text-primary font-semibold">connect car owners and renters</span> without the usual drama. Whether you’re listing your ride or hunting for the perfect wheels to flex at a wedding, Sirenda’s got your back. It’s like <span className="font-semibold">Tinder for cars</span>—just less awkward and way more practical.
-                </p>
+          <div className="container mx-auto px-4 py-16">
+            <div className="max-w-6xl mx-auto">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                <div className="text-center lg:text-left">
+                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+                    About Sirenda
+                  </h1>
+                  <p className="text-lg text-gray-600">
+                    <span className="text-primary font-semibold">Born in 2025</span> (yes, we're younger than your old plugs--yet already shifting gears on Rwanda's mobility), Sirenda is <span className="font-semibold">Rwanda's top spot for car rentals</span> that don't require a dozen phone calls and a cousin who "knows a guy." Our mission? To <span className="text-primary font-semibold">connect car owners and renters</span> without the usual drama. Whether you're listing your ride or hunting for the perfect wheels to flex at a wedding, Sirenda's got your back.
+                  </p>
+                </div>
+                <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                  <h2 className="text-xl font-bold text-gray-900 mb-4">Contact Us</h2>
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <MapPin className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-900">Location</h3>
+                        <p className="text-gray-600">Kigali, Rwanda</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <Mail className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-900">Email</h3>
+                        <p className="text-gray-600">sales@sirenda.rw</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <Phone className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-900">Phone</h3>
+                        <p className="text-gray-600">+250 784 810 776</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <Clock className="h-4 w-4 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-900">Business Hours</h3>
+                        <p className="text-gray-600">24/7</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -101,19 +145,19 @@ export default function AboutPage() {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               <div className="text-center">
-                <div className="text-4xl font-bold text-primary mb-2">100+</div>
+                <div className="text-3xl font-bold text-primary mb-2">100+</div>
                 <div className="text-gray-600">Happy Customers</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-primary mb-2">20+</div>
+                <div className="text-3xl font-bold text-primary mb-2">20+</div>
                 <div className="text-gray-600">Vehicles Available</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-primary mb-2">24/7</div>
+                <div className="text-3xl font-bold text-primary mb-2">24/7</div>
                 <div className="text-gray-600">Customer Support</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-primary mb-2">4.5</div>
+                <div className="text-3xl font-bold text-primary mb-2">4.5</div>
                 <div className="text-gray-600">Average Rating</div>
               </div>
             </div>

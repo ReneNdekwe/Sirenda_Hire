@@ -99,18 +99,8 @@ export default function Hero() {
           {/* Left Column - Hero Content */}
           <div className="space-y-12">
             <div className="text-center">
-              <h1 className="text-4xl sm:text-4xl lg:text-4xl font-extrabold tracking-tight leading-[1.2]">
-                <span 
-                  style={{
-                    background: 'linear-gradient(to left, #00A1DE 0%, #FAD201 33%,rgb(217, 215, 215) 66%, #00A1DE 100%)',
-                    backgroundSize: '200% 100%',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    animation: 'moveGradient 4s linear infinite'
-                  }}
-                >
-                  Rent a car in Rwanda in a few steps!
-                </span>
+              <h1 className="text-4xl sm:text-4xl lg:text-4xl font-extrabold tracking-tight leading-[1.2] text-black">
+              Skip the rental car counter
               </h1>
             </div>
             {/* Modern Process Cards - Hidden on mobile */}
@@ -183,35 +173,25 @@ export default function Hero() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Pick-up Date
                   </label>
-                  <div className="relative">
-                    <DatePicker
-                      date={pickupDate}
-                      setDate={setPickupDate}
-                      placeholder="Add date"
-                      className="border-gray-300 focus:ring-primary/25 focus:border-primary"
-                    />
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                    </div>
-                  </div>
+                  <DatePicker
+                    date={pickupDate}
+                    setDate={setPickupDate}
+                    placeholder="Add date"
+                    className="border-gray-300 focus:ring-primary/25 focus:border-primary"
+                  />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Return Date
                   </label>
-                  <div className="relative">
-                    <DatePicker
-                      date={returnDate}
-                      setDate={setReturnDate}
-                      placeholder="Add date"
-                      fromDate={pickupDate}
-                      className="border-gray-300 focus:ring-primary/25 focus:border-primary"
-                    />
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                      <Calendar className="h-4 w-4 text-gray-400" />
-                    </div>
-                  </div>
+                  <DatePicker
+                    date={returnDate}
+                    setDate={setReturnDate}
+                    placeholder="Add date"
+                    fromDate={pickupDate}
+                    className="border-gray-300 focus:ring-primary/25 focus:border-primary"
+                  />
                 </div>
               </div>
 

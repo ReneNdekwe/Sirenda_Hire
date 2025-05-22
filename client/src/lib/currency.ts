@@ -14,6 +14,5 @@ export function formatRWF(amount: number): string {
 }
 
 export function formatPrice(price: number): string {
-  const rwfAmount = convertToRWF(price);
-  return formatRWF(rwfAmount);
+  return formatRWF(price);
 } 

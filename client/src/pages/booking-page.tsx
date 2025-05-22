@@ -139,9 +139,9 @@ export default function BookingPage() {
 
   const totalDays = pickupDate && returnDate ? differenceInDays(returnDate, pickupDate) : 0;
   const basePrice = vehicle?.pricePerDay ? totalDays * vehicle.pricePerDay : 0;
-  const driverFee = hasDriver ? totalDays * 8 : 0; // 10000 RWF per day for driver
-  const carWashFee = hasCarWash ? 5 : 0; // 5000 RWF flat fee for car wash
-  const deliveryFee = hasHomeDelivery ? 5 : 0; // 5000 RWF flat fee for delivery
+  const driverFee = hasDriver ? totalDays * 10000 : 0; // 10,000 RWF per day for driver
+  const carWashFee = hasCarWash ? 5000 : 0; // 5,000 RWF flat fee for car wash
+  const deliveryFee = hasHomeDelivery ? 5000 : 0; // 5,000 RWF flat fee for delivery
   const totalPrice = basePrice + driverFee + carWashFee + deliveryFee;
 
   // Create booking mutation
@@ -456,7 +456,7 @@ export default function BookingPage() {
 
                           {hasDriver && (
                             <div className="flex justify-between text-sm">
-                              <span>Driver Fee ({formatPrice(8)}/day)</span>
+                              <span>Driver Fee ({formatPrice(10000)}/day)</span>
                               <span>{formatPrice(driverFee)}</span>
                             </div>
                           )}
@@ -488,7 +488,7 @@ export default function BookingPage() {
                                 htmlFor="driver"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                               >
-                                Add Professional Driver ({formatPrice(8)}/day)
+                                Add Professional Driver ({formatPrice(10000)}/day)
                               </label>
                             </div>
 
@@ -502,7 +502,7 @@ export default function BookingPage() {
                                 htmlFor="carWash"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                               >
-                                Add Car Wash Service ({formatPrice(5)})
+                                Add Car Wash Service ({formatPrice(5000)})
                               </label>
                             </div>
 
@@ -522,7 +522,7 @@ export default function BookingPage() {
                                   htmlFor="homeDelivery"
                                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
-                                  Add Home Delivery Service ({formatPrice(5)})
+                                  Add Home Delivery Service ({formatPrice(5000)})
                                 </label>
                               </div>
                               {hasHomeDelivery && (

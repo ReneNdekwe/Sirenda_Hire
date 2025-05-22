@@ -9,7 +9,7 @@ import { apiRequest } from '@/lib/queryClient';
 interface MTNMoMoPaymentProps {
   bookingId: number;
   amount: number;
-  onSuccess: () => void;
+  onSuccess: (data: any) => void;
   onCancel: () => void;
 }
 
@@ -81,46 +81,26 @@ export default function MTNMoMoPayment({ bookingId, amount, onSuccess, onCancel 
     try {
       setLoading(true);
       const response = await apiRequest('POST', '/api/payments/mtn-momo/initiate', {
-        bookingId,
+        amount: amount, // Keep amount in EUR for sandbox
+        currency: "EUR", // Use EUR for sandbox
+        bookingId: bookingId,
         phoneNumber: formattedPhoneNumber,
-        amount,
+        callbackUrl: `${window.location.origin}/payment/callback`,
       });
-      const data = await response.json();
-      setReferenceId(data.referenceId);
 
-      // Start polling for payment status
-      const pollInterval = setInterval(async () => {
-        const statusResponse = await apiRequest('GET', `/api/payments/mtn-momo/status/${data.referenceId}`);
-        const statusData = await statusResponse.json();
-        
-        if (statusData.status === 'SUCCESSFUL') {
-          clearInterval(pollInterval);
-          toast({
-            title: 'Success',
-            description: 'Payment successful!',
-          });
-          onSuccess();
-        } else if (statusData.status === 'FAILED') {
-          clearInterval(pollInterval);
-          toast({
-            title: 'Error',
-            description: 'Payment failed. Please try again.',
-            variant: 'destructive',
-          });
-        }
-      }, 5000); // Poll every 5 seconds
-
-      // Clear interval after 5 minutes (timeout)
-      setTimeout(() => {
-        clearInterval(pollInterval);
-      }, 5 * 60 * 1000);
-
+      if (response.ok) {
+        const data = await response.json();
+        onSuccess(data);
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to initiate payment");
+      }
     } catch (error) {
-      console.error('Error initiating payment:', error);
+      console.error("Error initiating payment:", error);
       toast({
-        title: 'Error',
-        description: 'Failed to initiate payment. Please try again.',
-        variant: 'destructive',
+        title: "Payment Error",
+        description: error instanceof Error ? error.message : "Failed to process payment",
+        variant: "destructive",
       });
     } finally {
       setLoading(false);

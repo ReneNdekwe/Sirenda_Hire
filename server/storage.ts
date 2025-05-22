@@ -624,8 +624,8 @@ export class DatabaseStorage implements IStorage {
 
   async getVehicle(id: number): Promise<Vehicle | undefined> {
     try {
-      const [vehicle] = await db.select().from(vehicles).where(eq(vehicles.id, id));
-      return vehicle;
+    const [vehicle] = await db.select().from(vehicles).where(eq(vehicles.id, id));
+    return vehicle;
     } catch (error) {
       console.error('Error getting vehicle:', error);
       return undefined;
