@@ -6,7 +6,7 @@ export function convertToRWF(usdAmount: number): number {
 }
 
 export function formatRWF(amount: number): string {
-  return new Intl.NumberFormat('rw-RW', {
+  return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'RWF',
     maximumFractionDigits: 0,

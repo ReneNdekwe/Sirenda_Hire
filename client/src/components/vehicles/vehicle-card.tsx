@@ -141,7 +141,7 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
           <div className="flex justify-between items-start mb-3">
             <div>
               <h3 className="font-semibold text-base text-gray-900 group-hover:text-primary transition-colors">
-                {vehicle.brand} {vehicle.model}<span className="text-gray-500 text-xs font-light ml-1">{yearText}</span>
+                {vehicle.brand} {vehicle.model}
               </h3>
               <div className="flex items-center mt-1">
                 <div className="flex text-yellow-500">

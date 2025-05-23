@@ -19,6 +19,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
+import ImageLightbox from "@/components/vehicles/image-lightbox";
 import {
   Heart,
   Star,
@@ -47,6 +48,7 @@ export default function VehicleDetailsPage() {
   const [returnDate, setReturnDate] = useState<Date | undefined>(undefined);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [liked, setLiked] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   // Fetch vehicle details
   const { data: vehicle, isLoading } = useQuery<Vehicle>({
@@ -166,7 +168,10 @@ export default function VehicleDetailsPage() {
                 <div className="lg:col-span-2">
                   <div className="bg-white rounded-xl shadow-sm overflow-hidden">
                     <div className="grid grid-cols-4 gap-2 h-[450px]">
-                      <div className="col-span-4 md:col-span-3 relative h-full bg-gray-100 rounded-lg overflow-hidden">
+                      <div 
+                        className="col-span-4 md:col-span-3 relative h-full bg-gray-100 rounded-lg overflow-hidden cursor-pointer"
+                        onClick={() => setIsLightboxOpen(true)}
+                      >
                         {(vehicle.imageUrls as string[] | null) && 
                          Array.isArray(vehicle.imageUrls) && 
                          (vehicle.imageUrls as string[]).length > currentImageIndex && (
@@ -178,19 +183,24 @@ export default function VehicleDetailsPage() {
                         )}
                         
                         {/* Navigation arrows */}
-                        {(vehicle.imageUrls as string[] | null) && 
-                         Array.isArray(vehicle.imageUrls) && 
+                        {Array.isArray(vehicle.imageUrls) && 
                          (vehicle.imageUrls as string[]).length > 1 && (
                           <>
                             <button
-                              onClick={handlePrevImage}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handlePrevImage();
+                              }}
                               className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full w-10 h-10 flex items-center justify-center shadow hover:shadow-md transition-colors backdrop-blur-sm"
                               aria-label="Previous image"
                             >
                               <ChevronLeft className="h-5 w-5 text-gray-700" />
                             </button>
                             <button
-                              onClick={handleNextImage}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleNextImage();
+                              }}
                               className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full w-10 h-10 flex items-center justify-center shadow hover:shadow-md transition-colors backdrop-blur-sm"
                               aria-label="Next image"
                             >
@@ -522,6 +532,18 @@ export default function VehicleDetailsPage() {
         </div>
       </main>
       <Footer />
+
+      {/* Image Lightbox */}
+      {vehicle && Array.isArray(vehicle.imageUrls) && (
+        <ImageLightbox
+          isOpen={isLightboxOpen}
+          onClose={() => setIsLightboxOpen(false)}
+          images={vehicle.imageUrls}
+          currentIndex={currentImageIndex}
+          onPrev={handlePrevImage}
+          onNext={handleNextImage}
+        />
+      )}
     </div>
   );
 }
