@@ -140,11 +140,65 @@ export default function AuthPage() {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex-grow flex items-center justify-center bg-gray-50 py-12">
+      <main className="flex-grow flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 py-12">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 left-0 w-[500px] h-[500px] rounded-full bg-blue-400/10 blur-[100px] animate-float"></div>
+          <div className="absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full bg-purple-400/10 blur-[100px] animate-float-delayed"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-indigo-400/10 blur-[100px] animate-float"></div>
+        </div>
+
         <div className="container max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+            {/* Left side - Branding and Info */}
+            <div className="hidden lg:block lg:order-1 text-center lg:text-left space-y-8">
+              <div className="space-y-4">
+                <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-black">
+                  Welcome to Sirenda
+                </h1>
+                <p className="text-lg text-gray-600 max-w-lg mx-auto lg:mx-0">
+                  Your premium car rental experience starts here. Join us to discover the perfect ride for your journey.
+                </p>
+              </div>
+
+              {/* Feature highlights */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto lg:mx-0">
+                <div className="flex items-center space-x-3 p-4 rounded-lg bg-white/50 backdrop-blur-sm border border-white/20">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                    <CarFront className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">Premium Vehicles</span>
+                </div>
+                <div className="flex items-center space-x-3 p-4 rounded-lg bg-white/50 backdrop-blur-sm border border-white/20">
+                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">24/7 Support</span>
+                </div>
+                <div className="flex items-center space-x-3 p-4 rounded-lg bg-white/50 backdrop-blur-sm border border-white/20">
+                  <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    </svg>
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">Secure Booking</span>
+                </div>
+                <div className="flex items-center space-x-3 p-4 rounded-lg bg-white/50 backdrop-blur-sm border border-white/20">
+                  <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">Flexible Payments</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right side - Auth Form */}
             <div className="lg:order-2">
-              <Card className="w-full">
+              <Card className="w-full bg-white/80 backdrop-blur-md border-white/20 shadow-xl">
                 <CardHeader>
                   <CardTitle className="text-2xl">
                     {activeTab === "login" ? "Welcome Back" : "Create Account"}
@@ -386,40 +440,6 @@ export default function AuthPage() {
                   </Tabs>
                 </CardContent>
               </Card>
-            </div>
-
-            <div className="hidden lg:block lg:order-1">
-              <h2 className="text-3xl font-bold mb-4">
-                {activeTab === "login"
-                  ? "Welcome Back to Sirenda"
-                  : "Join Our Premium Car Rental Platform"}
-              </h2>
-              <p className="text-gray-600 mb-6">
-                {activeTab === "login"
-                  ? "Access your account to manage your bookings, find premium vehicles, and enjoy exclusive offers."
-                  : "Create an account to start renting your vehicles or showcase your premium car fleet to thousands of customers."}
-              </p>
-              <div className="bg-gray-100 p-6 rounded-lg">
-                <h3 className="font-semibold text-lg mb-3">
-                  {activeTab === "login"
-                    ? "Benefits of Your Sirenda Account"
-                    : "Why Join Sirenda?"}
-                </h3>
-                <ul className="space-y-3">
-                  <li className="flex items-start">
-                    <CarFront className="h-5 w-5 text-primary mr-2 mt-0.5" />
-                    <span>Access to premium vehicles</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CarFront className="h-5 w-5 text-primary mr-2 mt-0.5" />
-                    <span>Easy booking management</span>
-                  </li>
-                  <li className="flex items-start">
-                    <CarFront className="h-5 w-5 text-primary mr-2 mt-0.5" />
-                    <span>Exclusive deals and offers</span>
-                  </li>
-                </ul>
-              </div>
             </div>
           </div>
         </div>
