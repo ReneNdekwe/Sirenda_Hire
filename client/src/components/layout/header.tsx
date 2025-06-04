@@ -121,6 +121,14 @@ export default function Header() {
                     Browse
                   </span>
                 </Link>
+                <Link href="/blog">
+                  <span className={cn(
+                    "font-medium cursor-pointer px-3 py-2",
+                    location === "/blog" ? "text-primary" : "text-gray-600 hover:text-gray-900"
+                  )}>
+                    Blog
+                  </span>
+                </Link>
                 <Link href="/about-page">
                   <span className={cn(
                     "font-medium cursor-pointer px-3 py-2",
@@ -402,6 +410,17 @@ export default function Header() {
                             <div>
                               <p className="font-medium text-gray-900">Browse vehicles</p>
                               <p className="text-xs text-gray-500">Find your perfect ride</p>
+                            </div>
+                          </div>
+                        </Link>
+                        <Link href="/blog" onClick={() => setIsOpen(false)}>
+                          <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <div className="p-2 rounded-lg bg-primary/10">
+                              <Info className="h-4 w-4 text-primary" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">Blog</p>
+                              <p className="text-xs text-gray-500">Read our latest blog posts</p>
                             </div>
                           </div>
                         </Link>

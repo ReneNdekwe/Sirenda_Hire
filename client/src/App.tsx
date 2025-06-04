@@ -15,6 +15,9 @@ import MyBookingsPage from "@/pages/my-bookings-page";
 import ProfilePage from "@/pages/profile-page";
 import AdminDashboardPage from "@/pages/admin-dashboard-page";
 import AboutPage from "@/pages/about-page";
+import BlogList from "@/pages/BlogList";
+import BlogDetail from "@/pages/BlogDetail";
+import BlogManagement from "@/pages/admin/BlogManagement";
 import { ProtectedRoute, CompanyRoute, AdminRoute } from "./lib/protected-route";
 import { AuthProvider } from "@/hooks/use-auth";
 import ComingSoonPage from "@/pages/coming-soon-page";
@@ -33,6 +36,8 @@ function Router() {
       <Route path="/vehicles/:id" component={VehicleDetailsPage} />
       <Route path="/coming-soon" component={ComingSoonPage} />
       <Route path="/about-page" component={AboutPage} />
+      <Route path="/blog" component={BlogList} />
+      <Route path="/blog/:slug" component={BlogDetail} />
       <ProtectedRoute path="/booking/:vehicleId" component={BookingPage} />
       <ProtectedRoute path="/my-bookings" component={MyBookingsPage} />
       <ProtectedRoute path="/profile" component={ProfilePage} />
@@ -41,6 +46,7 @@ function Router() {
       <CompanyRoute path="/edit-vehicle/:id" component={EditVehiclePage} />
       <CompanyRoute path="/subscription" component={SubscriptionPage} />
       <AdminRoute path="/admin" component={AdminDashboardPage} />
+      <AdminRoute path="/admin/blog" component={BlogManagement} />
       <Route component={NotFound} />
     </Switch>
   );

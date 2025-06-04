@@ -20,6 +20,11 @@ import { MTNMoMoService } from "./mtn-momo-service";
 import { MTN_MOMO_CONFIG } from "./config/mtn-momo.config";
 import { v4 as uuidv4 } from 'uuid';
 import { azureStorageService } from './azure-storage-service';
+import { eq, desc, and } from 'drizzle-orm';
+import { blogs } from '../shared/schema';
+import { db } from './db';
+import { authenticateAdmin } from './middleware/auth';
+import { generateSitemap } from './sitemap-generator';
 
 // Helper function to generate UUID
 const generateUUID = () => uuidv4();
@@ -1158,6 +1163,185 @@ export async function registerRoutes(app: Express): Promise<Server> {
     };
     
     res.json(userDetails);
+  });
+
+  // Blog routes
+  app.get("/api/admin/blogs", authenticateAdmin, async (req, res) => {
+    try {
+      const allBlogs = await db.select().from(blogs).orderBy(desc(blogs.createdAt));
+      res.json(allBlogs);
+    } catch (error) {
+      console.error('Error fetching blogs:', error);
+      res.status(500).json({ message: "Failed to fetch blogs" });
+    }
+  });
+
+  app.post("/api/admin/blogs", authenticateAdmin, async (req, res) => {
+    try {
+      const { title, content, excerpt, featuredImage, metaTitle, metaDescription, tags, status } = req.body;
+      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      
+      if (!req.user?.id) {
+        return res.status(401).json({ message: "User ID is required" });
+      }
+
+      const [newBlog] = await db.insert(blogs).values({
+        title,
+        slug,
+        content,
+        excerpt,
+        featuredImage,
+        metaTitle,
+        metaDescription,
+        tags,
+        status,
+        authorId: req.user.id,
+        publishedAt: status === 'published' ? new Date() : null,
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }).returning();
+
+      res.status(201).json(newBlog);
+    } catch (error) {
+      console.error('Error creating blog:', error);
+      res.status(500).json({ message: "Failed to create blog" });
+    }
+  });
+
+  app.put("/api/admin/blogs/:id", authenticateAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { title, content, excerpt, featuredImage, metaTitle, metaDescription, tags, status } = req.body;
+      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+      const [updatedBlog] = await db.update(blogs)
+        .set({
+          title,
+          slug,
+          content,
+          excerpt,
+          featuredImage,
+          metaTitle,
+          metaDescription,
+          tags,
+          status,
+          publishedAt: status === 'published' ? new Date() : null,
+          updatedAt: new Date()
+        })
+        .where(eq(blogs.id, parseInt(id)))
+        .returning();
+
+      if (!updatedBlog) {
+        return res.status(404).json({ message: "Blog not found" });
+      }
+
+      res.json(updatedBlog);
+    } catch (error) {
+      console.error('Error updating blog:', error);
+      res.status(500).json({ message: "Failed to update blog" });
+    }
+  });
+
+  app.delete("/api/admin/blogs/:id", authenticateAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const [deletedBlog] = await db.delete(blogs)
+        .where(eq(blogs.id, parseInt(id)))
+        .returning();
+
+      if (!deletedBlog) {
+        return res.status(404).json({ message: "Blog not found" });
+      }
+
+      res.status(204).send();
+    } catch (error) {
+      console.error('Error deleting blog:', error);
+      res.status(500).json({ message: "Failed to delete blog" });
+    }
+  });
+
+  // Public blog routes
+  app.get("/api/blogs", async (req, res) => {
+    try {
+      const publishedBlogs = await db.select()
+        .from(blogs)
+        .where(eq(blogs.status, 'published'))
+        .orderBy(desc(blogs.publishedAt));
+      res.json(publishedBlogs);
+    } catch (error) {
+      console.error('Error fetching published blogs:', error);
+      res.status(500).json({ message: "Failed to fetch blogs" });
+    }
+  });
+
+  app.get("/api/blogs/:slug", async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const [blog] = await db.select()
+        .from(blogs)
+        .where(and(
+          eq(blogs.slug, slug),
+          eq(blogs.status, 'published')
+        ));
+
+      if (!blog) {
+        return res.status(404).json({ message: "Blog not found" });
+      }
+
+      res.json(blog);
+    } catch (error) {
+      console.error('Error fetching blog:', error);
+      res.status(500).json({ message: "Failed to fetch blog" });
+    }
+  });
+
+  // Blog image upload endpoint
+  app.post("/api/upload/blog-images", upload.single('image'), async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    if (req.user?.userType !== 'admin') {
+      return res.status(403).json({ message: "Only admins can upload blog images" });
+    }
+    
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded or invalid file type" });
+    }
+    
+    try {
+      // Upload to Azure Blob Storage
+      const imageUrl = await azureStorageService.uploadBlogImage(req.file);
+      console.log('Uploaded blog image URL:', imageUrl); // Debug log
+      
+      if (!imageUrl) {
+        throw new Error('Failed to get image URL from Azure Storage');
+      }
+      
+      res.json({ 
+        success: true, 
+        message: "Blog image uploaded successfully",
+        url: imageUrl
+      });
+    } catch (error) {
+      console.error('Error uploading to Azure:', error);
+      res.status(500).json({ 
+        success: false,
+        message: error instanceof Error ? error.message : "Failed to upload file to cloud storage"
+      });
+    }
+  });
+
+  // Add this route before the catch-all route
+  app.get('/sitemap.xml', async (req: Request, res: Response) => {
+    try {
+      const sitemap = await generateSitemap();
+      res.header('Content-Type', 'application/xml');
+      res.send(sitemap);
+    } catch (error) {
+      console.error('Error generating sitemap:', error);
+      res.status(500).send('Error generating sitemap');
+    }
   });
 
   const httpServer = createServer(app);

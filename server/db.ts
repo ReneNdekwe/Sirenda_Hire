@@ -6,8 +6,8 @@ import { CONFIG } from './config';
 
 const client = postgres(CONFIG.DATABASE_URL, {
   max: 10, // Maximum number of connections
-  idle_timeout: 20, // Idle connection timeout in seconds
-  connect_timeout: 10, // Connection timeout in seconds
+  idle_timeout: 30, // Idle connection timeout in seconds
+  connect_timeout: 30, // Connection timeout in seconds
   max_lifetime: 60 * 30, // Maximum lifetime of a connection in seconds (30 minutes)
   ssl: 'require'
 });

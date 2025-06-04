@@ -44,8 +44,10 @@ export function setupAuth(app: Express) {
     saveUninitialized: false,
     store: storage.sessionStore,
     cookie: {
-      secure: false, // Allow cookies in development
+      secure: process.env.NODE_ENV === 'production',
       maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+      domain: '.sirenda.rw', // This will work for both www and non-www
+      sameSite: 'lax'
     }
   };
 

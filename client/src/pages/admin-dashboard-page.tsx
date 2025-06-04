@@ -39,7 +39,8 @@ import {
   Award,
   BarChart,
   ArrowDownUp,
-  UserPlus
+  UserPlus,
+  FileText
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -66,6 +67,7 @@ import Footer from "@/components/layout/footer";
 import { format } from 'date-fns';
 import { apiRequest } from "@/lib/apiRequest";
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import BlogManagement from "@/pages/admin/BlogManagement";
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#0088fe', '#00c49f', '#ffbb28', '#ff8042'];
 
@@ -517,6 +519,12 @@ export default function AdminDashboardPage() {
                 onClick={() => setActiveTab("analytics")}
               />
               <SidebarItem 
+                icon={FileText} 
+                label="Blog" 
+                active={activeTab === "blog"} 
+                onClick={() => setActiveTab("blog")}
+              />
+              <SidebarItem 
                 icon={Settings} 
                 label="Settings" 
                 active={activeTab === "settings"} 
@@ -539,6 +547,7 @@ export default function AdminDashboardPage() {
                 {activeTab === "bookings" && "Booking Management"}
                 {activeTab === "payments" && "Payment History"}
                 {activeTab === "analytics" && "Platform Analytics"}
+                {activeTab === "blog" && "Blog Management"}
                 {activeTab === "settings" && "Platform Settings"}
               </h1>
               <p className="text-gray-500">
@@ -549,6 +558,7 @@ export default function AdminDashboardPage() {
                 {activeTab === "bookings" && "Track and manage booking requests"}
                 {activeTab === "payments" && "Review payment transactions"}
                 {activeTab === "analytics" && "Analyze platform metrics and trends"}
+                {activeTab === "blog" && "Manage blog posts and content"}
                 {activeTab === "settings" && "Configure platform settings"}
               </p>
             </div>
@@ -1071,6 +1081,13 @@ export default function AdminDashboardPage() {
                           </Table>
                 </CardContent>
               </Card>
+            </div>
+          )}
+
+          {/* Blog Management Tab */}
+          {activeTab === "blog" && (
+            <div className="space-y-6">
+              <BlogManagement />
             </div>
           )}
         </div>

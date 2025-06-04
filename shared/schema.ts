@@ -181,6 +181,38 @@ export const notifications = pgTable("notifications", {
 
 export const insertNotificationSchema = createInsertSchema(notifications);
 
+// Blog schema
+export const blogs = pgTable("blogs", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  content: text("content").notNull(),
+  excerpt: text("excerpt"),
+  featuredImage: text("featured_image"),
+  authorId: integer("author_id").notNull().references(() => users.id),
+  status: text("status", { enum: ["draft", "published"] }).notNull().default("draft"),
+  publishedAt: timestamp("published_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  metaTitle: text("meta_title"),
+  metaDescription: text("meta_description"),
+  tags: jsonb("tags").default([]),
+});
+
+export const insertBlogSchema = createInsertSchema(blogs).pick({
+  title: true,
+  slug: true,
+  content: true,
+  excerpt: true,
+  featuredImage: true,
+  authorId: true,
+  status: true,
+  publishedAt: true,
+  metaTitle: true,
+  metaDescription: true,
+  tags: true,
+});
+
 // Export types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -199,6 +231,9 @@ export type Review = typeof reviews.$inferSelect;
 
 export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type Notification = typeof notifications.$inferSelect;
+
+export type InsertBlog = z.infer<typeof insertBlogSchema>;
+export type Blog = typeof blogs.$inferSelect;
 
 // Login schema
 export const loginSchema = z.object({

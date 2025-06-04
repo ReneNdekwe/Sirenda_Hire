@@ -5,6 +5,7 @@ export class AzureStorageService {
   private blobServiceClient: BlobServiceClient;
   private vehicleImagesContainer: ContainerClient;
   private staticAssetsContainer: ContainerClient;
+  private blogImagesContainer: ContainerClient;
 
   constructor() {
     // Get connection string from environment variable
@@ -16,12 +17,14 @@ export class AzureStorageService {
     this.blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
     this.vehicleImagesContainer = this.blobServiceClient.getContainerClient('vehicle-images');
     this.staticAssetsContainer = this.blobServiceClient.getContainerClient('static-assets');
+    this.blogImagesContainer = this.blobServiceClient.getContainerClient('blog-images');
   }
 
   async initialize() {
     // Create containers if they don't exist
     await this.vehicleImagesContainer.createIfNotExists();
     await this.staticAssetsContainer.createIfNotExists();
+    await this.blogImagesContainer.createIfNotExists();
   }
 
   async uploadImage(file: Express.Multer.File): Promise<string> {
@@ -94,6 +97,41 @@ export class AzureStorageService {
     }
   }
 
+  async uploadBlogImage(file: Express.Multer.File): Promise<string> {
+    try {
+      const blobName = `${uuidv4()}-${file.originalname}`;
+      const blockBlobClient = this.blogImagesContainer.getBlockBlobClient(blobName);
+
+      // Upload the file
+      await blockBlobClient.uploadData(file.buffer, {
+        blobHTTPHeaders: {
+          blobContentType: file.mimetype
+        }
+      });
+
+      // Generate a SAS token for temporary access
+      const sasToken = await this.generateSasToken(blobName, 'blog-images');
+      
+      // Get the base URL without any SAS token
+      const baseUrl = blockBlobClient.url;
+      console.log('Base URL:', baseUrl); // Debug log
+      console.log('SAS Token:', sasToken); // Debug log
+      
+      // Return the URL with SAS token
+      const fullUrl = `${baseUrl}?${sasToken}`;
+      console.log('Full URL:', fullUrl); // Debug log
+      
+      if (!fullUrl) {
+        throw new Error('Failed to generate image URL');
+      }
+      
+      return fullUrl;
+    } catch (error) {
+      console.error('Error in uploadBlogImage:', error);
+      throw error;
+    }
+  }
+
   async deleteImage(imageUrl: string): Promise<void> {
     // Extract blob name from URL
     const blobName = imageUrl.split('/').pop()?.split('?')[0];
@@ -113,7 +151,11 @@ export class AzureStorageService {
   // Make generateSasToken public
   async generateSasToken(blobName: string, containerName: string): Promise<string> {
     try {
-      const container = containerName === 'vehicle-images' ? this.vehicleImagesContainer : this.staticAssetsContainer;
+      const container = 
+        containerName === 'vehicle-images' ? this.vehicleImagesContainer :
+        containerName === 'static-assets' ? this.staticAssetsContainer :
+        this.blogImagesContainer;
+      
       const blockBlobClient = container.getBlockBlobClient(blobName);
       const sasOptions = {
         permissions: BlobSASPermissions.parse("r"), // Read only
