@@ -29,6 +29,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByResetToken(token: string): Promise<User | undefined>;
   getAllUsers(filters?: Partial<User>): Promise<User[]>;
   createUser(user: InsertUser): Promise<User>;
   updateUser(id: number, user: Partial<User>): Promise<User | undefined>;
@@ -134,6 +135,29 @@ export class MemStorage implements IStorage {
     );
   }
 
+  async getUserByResetToken(token: string): Promise<User | undefined> {
+    return Array.from(this.users.values()).find(
+      (user) => user.resetToken === token && user.resetTokenExpires && new Date() < user.resetTokenExpires
+    );
+  }
+
+  async getAllUsers(filters?: Partial<User>): Promise<User[]> {
+    let userList = Array.from(this.users.values());
+
+    if (filters) {
+      userList = userList.filter(user => {
+        for (const [key, value] of Object.entries(filters)) {
+          if (user[key as keyof User] !== value) {
+            return false;
+          }
+        }
+        return true;
+      });
+    }
+
+    return userList;
+  }
+
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentId.user++;
     const user: User = { 
@@ -167,23 +191,6 @@ export class MemStorage implements IStorage {
     const updatedUser = { ...user, ...userData };
     this.users.set(id, updatedUser);
     return updatedUser;
-  }
-
-  async getAllUsers(filters?: Partial<User>): Promise<User[]> {
-    let userList = Array.from(this.users.values());
-
-    if (filters) {
-      userList = userList.filter(user => {
-        for (const [key, value] of Object.entries(filters)) {
-          if (user[key as keyof User] !== value) {
-            return false;
-          }
-        }
-        return true;
-      });
-    }
-
-    return userList;
   }
 
   // Category methods
@@ -504,12 +511,16 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
+    const [user] = await db.select()
+      .from(users)
+      .where(sql`LOWER(${users.username}) = LOWER(${username})`);
     return user;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
+    const [user] = await db.select()
+      .from(users)
+      .where(sql`LOWER(${users.email}) = LOWER(${email})`);
     return user;
   }
 
@@ -901,6 +912,16 @@ export class DatabaseStorage implements IStorage {
       .from(bookings)
       .where(eq(bookings.status, 'completed'));
     return { rows: [result] };
+  }
+
+  async getUserByResetToken(token: string): Promise<User | undefined> {
+    const [user] = await db.select()
+      .from(users)
+      .where(and(
+        eq(users.resetToken, token),
+        sql`${users.resetTokenExpires} > NOW()`
+      ));
+    return user;
   }
 }
 

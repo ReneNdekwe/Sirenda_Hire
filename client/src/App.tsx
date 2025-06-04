@@ -26,6 +26,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 import StaticAssets from "@/components/layout/static-assets";
+import ForgotPasswordPage from "@/pages/forgot-password";
+import ResetPasswordPage from "@/pages/reset-password";
 
 function Router() {
   return (
@@ -47,6 +49,8 @@ function Router() {
       <CompanyRoute path="/subscription" component={SubscriptionPage} />
       <AdminRoute path="/admin" component={AdminDashboardPage} />
       <AdminRoute path="/admin/blog" component={BlogManagement} />
+      <Route path="/forgot-password" component={ForgotPasswordPage} />
+      <Route path="/reset-password" component={ResetPasswordPage} />
       <Route component={NotFound} />
     </Switch>
   );

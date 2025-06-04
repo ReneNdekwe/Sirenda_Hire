@@ -3,5 +3,5 @@ Allow: /
 Disallow: /admin/
 Disallow: /private/
 Disallow: /api/
-
+ 
 Sitemap: https://sirenda.rw/sitemap.xml 

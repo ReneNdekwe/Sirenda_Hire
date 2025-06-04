@@ -26,6 +26,7 @@ import {
   Filter as FilterIcon,
 } from "lucide-react";
 import { formatPrice } from "@/lib/currency";
+import { parse } from "date-fns";
 
 export default function VehiclesPage() {
   const [, setLocation] = useLocation();
@@ -49,11 +50,11 @@ export default function VehiclesPage() {
 
   // Parse pickup and return dates from URL if present
   const pickupDate = searchParams.get("pickupDate")
-    ? new Date(searchParams.get("pickupDate")!)
+    ? parse(searchParams.get("pickupDate")!, 'yyyy-MM-dd', new Date())
     : undefined;
 
   const returnDate = searchParams.get("returnDate")
-    ? new Date(searchParams.get("returnDate")!)
+    ? parse(searchParams.get("returnDate")!, 'yyyy-MM-dd', new Date())
     : undefined;
 
   // Prepare API query parameters

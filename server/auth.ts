@@ -24,7 +24,7 @@ declare global {
 
 const scryptAsync = promisify(scrypt);
 
-async function hashPassword(password: string) {
+export async function hashPassword(password: string) {
   const salt = randomBytes(16).toString("hex");
   const buf = (await scryptAsync(password, salt, 64)) as Buffer;
   return `${buf.toString("hex")}.${salt}`;
@@ -46,8 +46,9 @@ export function setupAuth(app: Express) {
     cookie: {
       secure: process.env.NODE_ENV === 'production',
       maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
-      domain: '.sirenda.rw', // This will work for both www and non-www
-      sameSite: 'lax'
+      sameSite: 'lax',
+      // Only set domain in production
+      ...(process.env.NODE_ENV === 'production' ? { domain: '.sirenda.rw' } : {})
     }
   };
 
@@ -58,11 +59,23 @@ export function setupAuth(app: Express) {
 
   passport.use(
     new LocalStrategy(async (username, password, done) => {
-      const user = await storage.getUserByUsername(username);
-      if (!user || !(await comparePasswords(password, user.password))) {
-        return done(null, false);
-      } else {
+      try {
+        // Try to find user by username first
+        let user = await storage.getUserByUsername(username);
+        
+        // If not found by username, try email (case-insensitive)
+        if (!user) {
+          const email = username.toLowerCase(); // Convert to lowercase for email comparison
+          user = await storage.getUserByEmail(email);
+        }
+
+        if (!user || !(await comparePasswords(password, user.password))) {
+          return done(null, false);
+        }
+        
         return done(null, user);
+      } catch (error) {
+        return done(error);
       }
     }),
   );
@@ -111,8 +124,21 @@ export function setupAuth(app: Express) {
   }
 });
 
-  app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    res.status(200).json(req.user);
+  app.post("/api/login", (req, res, next) => {
+    passport.authenticate("local", (err: Error | null, user: SelectUser | false, info: { message: string }) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.status(401).json({ error: "Invalid username or password" });
+      }
+      req.login(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+        res.status(200).json(user);
+      });
+    })(req, res, next);
   });
 
   app.post("/api/logout", (req, res, next) => {

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { insertUserSchema, LoginData } from "@shared/schema";
 import Header from "@/components/layout/header";
@@ -21,6 +21,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import {
   Tabs,
@@ -41,7 +42,7 @@ import { Loader2, CarFront } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const loginSchema = z.object({
-  username: z.string().min(1, "Username is required"),
+  username: z.string().min(1, "Username or email is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
@@ -72,6 +73,17 @@ const registerSchema = insertUserSchema
     {
       message: "Company name is required for rental companies",
       path: ["companyName"],
+    }
+  )
+  .refine(
+    (data) => {
+      // Validate phone number format (Rwandan format)
+      const phoneRegex = /^(?:\+250|0)?[7-8][0-9]{8}$/;
+      return phoneRegex.test(data.phone);
+    },
+    {
+      message: "Please enter a valid Rwandan phone number (e.g., +2507XXXXXXXX or 07XXXXXXXX)",
+      path: ["phone"],
     }
   );
 
@@ -231,9 +243,9 @@ export default function AuthPage() {
                             name="username"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Username</FormLabel>
+                                <FormLabel>Username or Email</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Enter your username" {...field} />
+                                  <Input placeholder="Enter your username or email" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -257,6 +269,15 @@ export default function AuthPage() {
                               </FormItem>
                             )}
                           />
+
+                          <div className="flex items-center justify-end">
+                            <Link
+                              href="/forgot-password"
+                              className="text-sm text-blue-600 hover:text-blue-800"
+                            >
+                              Forgot password?
+                            </Link>
+                          </div>
 
                           <Button
                             type="submit"
@@ -332,9 +353,13 @@ export default function AuthPage() {
                               name="phone"
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel>Phone (Optional)</FormLabel>
+                                  <FormLabel>Phone Number</FormLabel>
                                   <FormControl>
-                                    <Input placeholder="Enter your phone number" {...field} value={field.value ?? ""} />
+                                    <Input 
+                                      placeholder="Enter your phone number (e.g., +2507XXXXXXXX)" 
+                                      {...field} 
+                                      value={field.value ?? ""} 
+                                    />
                                   </FormControl>
                                   <FormMessage />
                                 </FormItem>

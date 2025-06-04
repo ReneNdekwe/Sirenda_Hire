@@ -64,10 +64,20 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
-import { format } from 'date-fns';
+import { format, subDays, startOfWeek, endOfWeek, startOfDay, endOfDay } from "date-fns";
 import { apiRequest } from "@/lib/apiRequest";
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 import BlogManagement from "@/pages/admin/BlogManagement";
+import { BookingDetailsModal } from "@/components/admin/booking-details-modal";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { DateRange } from "react-day-picker";
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#0088fe', '#00c49f', '#ffbb28', '#ff8042'];
 
@@ -315,6 +325,12 @@ export default function AdminDashboardPage() {
   const { user } = useAuth();
   const [, navigate] = useLocation();
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: startOfWeek(new Date()),
+    to: endOfWeek(new Date()),
+  });
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   // Fetch real data from API endpoints
   const { data: analytics, isLoading: isLoadingAnalytics } = useQuery({
@@ -367,6 +383,15 @@ export default function AdminDashboardPage() {
     },
   });
 
+  // Filter bookings based on selected criteria
+  const filteredBookings = bookingsData?.filter((booking) => {
+    const bookingDate = new Date(booking.createdAt || new Date());
+    const isInDateRange = dateRange.from && dateRange.to && 
+      bookingDate >= dateRange.from && bookingDate <= dateRange.to;
+    const matchesStatus = statusFilter === "all" || booking.status === statusFilter;
+    return isInDateRange && matchesStatus;
+  });
+
   const getUserName = (userId: number) => {
     const user = usersData.find((u: User) => u.id === userId);
     return user ? user.username : `User ${userId}`;
@@ -398,6 +423,41 @@ export default function AdminDashboardPage() {
       currency: "RWF",
       maximumFractionDigits: 0,
     }).format(price);
+  };
+
+  // Quick date range presets
+  const setDateRangePreset = (preset: string) => {
+    const today = new Date();
+    switch (preset) {
+      case "today":
+        setDateRange({
+          from: startOfDay(today),
+          to: endOfDay(today),
+        });
+        break;
+      case "week":
+        setDateRange({
+          from: startOfWeek(today),
+          to: endOfWeek(today),
+        });
+        break;
+      case "lastWeek":
+        setDateRange({
+          from: startOfWeek(subDays(today, 7)),
+          to: endOfWeek(subDays(today, 7)),
+        });
+        break;
+      case "month":
+        setDateRange({
+          from: new Date(today.getFullYear(), today.getMonth(), 1),
+          to: new Date(today.getFullYear(), today.getMonth() + 1, 0),
+        });
+        break;
+    }
+  };
+
+  const handleDateRangeChange = (range: DateRange) => {
+    setDateRange(range);
   };
 
   // Route protection
@@ -441,9 +501,13 @@ export default function AdminDashboardPage() {
         </Badge>
       </TableCell>
       <TableCell>
-        <span className="text-xs text-gray-500">
-          {format(booking.createdAt ? new Date(booking.createdAt) : new Date(), "MMM d, h:mm a")}
-        </span>
+        <Button 
+          variant="ghost" 
+          size="sm"
+          onClick={() => setSelectedBooking(booking)}
+        >
+          View Details
+        </Button>
       </TableCell>
     </TableRow>
   );
@@ -1052,33 +1116,93 @@ export default function AdminDashboardPage() {
                   <CardDescription>Track and manage booking requests</CardDescription>
                 </CardHeader>
                 <CardContent>
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Customer</TableHead>
-                              <TableHead>Vehicle</TableHead>
-                              <TableHead>Dates</TableHead>
-                              <TableHead>Amount</TableHead>
-                              <TableHead>Status</TableHead>
+                  {/* Filters */}
+                  <div className="mb-6 space-y-4">
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <div className="flex-1">
+                        <DateRangePicker
+                          value={dateRange}
+                          onChange={handleDateRangeChange}
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setDateRangePreset("today")}
+                        >
+                          Today
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setDateRangePreset("week")}
+                        >
+                          This Week
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setDateRangePreset("lastWeek")}
+                        >
+                          Last Week
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setDateRangePreset("month")}
+                        >
+                          This Month
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="flex gap-4">
+                      <Select
+                        value={statusFilter}
+                        onValueChange={setStatusFilter}
+                      >
+                        <SelectTrigger className="w-[180px]">
+                          <SelectValue placeholder="Filter by status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Statuses</SelectItem>
+                          <SelectItem value="pending">Pending</SelectItem>
+                          <SelectItem value="confirmed">Confirmed</SelectItem>
+                          <SelectItem value="completed">Completed</SelectItem>
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                          <SelectItem value="rejected">Rejected</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Customer</TableHead>
+                        <TableHead>Vehicle</TableHead>
+                        <TableHead>Dates</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Status</TableHead>
                         <TableHead>Actions</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
                       {isLoadingBookings ? (
-                              <TableRow>
+                        <TableRow>
                           <TableCell colSpan={6}>
                             <div className="flex items-center justify-center py-4">
                               <Skeleton className="h-4 w-[250px]" />
                             </div>
                           </TableCell>
-                              </TableRow>
+                        </TableRow>
                       ) : (
-                        bookingsData?.map((booking: Booking) => (
-                                  <BookingRow key={booking.id} booking={booking} />
+                        filteredBookings?.map((booking: Booking) => (
+                          <BookingRow key={booking.id} booking={booking} />
                         ))
                       )}
-                            </TableBody>
-                          </Table>
+                    </TableBody>
+                  </Table>
                 </CardContent>
               </Card>
             </div>
@@ -1093,6 +1217,11 @@ export default function AdminDashboardPage() {
         </div>
       </main>
       <Footer />
+      
+      <BookingDetailsModal 
+        booking={selectedBooking} 
+        onClose={() => setSelectedBooking(null)} 
+      />
     </div>
   );
 }

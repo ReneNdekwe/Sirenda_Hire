@@ -25,6 +25,7 @@ import { blogs } from '../shared/schema';
 import { db } from './db';
 import { authenticateAdmin } from './middleware/auth';
 import { generateSitemap } from './sitemap-generator';
+import { requestPasswordReset, resetPassword } from "./password-reset";
 
 // Helper function to generate UUID
 const generateUUID = () => uuidv4();
@@ -1341,6 +1342,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error generating sitemap:', error);
       res.status(500).send('Error generating sitemap');
+    }
+  });
+
+  // Password reset routes
+  app.post("/api/forgot-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ error: "Email is required" });
+      }
+
+      const success = await requestPasswordReset(email);
+      // Always return success to prevent email enumeration
+      res.json({ message: "If an account exists with this email, you will receive password reset instructions." });
+    } catch (error) {
+      console.error("Error requesting password reset:", error);
+      res.status(500).json({ error: "Failed to process password reset request" });
+    }
+  });
+
+  app.post("/api/reset-password", async (req, res) => {
+    try {
+      const { token, newPassword } = req.body;
+      if (!token || !newPassword) {
+        return res.status(400).json({ error: "Token and new password are required" });
+      }
+
+      const success = await resetPassword(token, newPassword);
+      if (!success) {
+        return res.status(400).json({ error: "Invalid or expired reset token" });
+      }
+
+      res.json({ message: "Password has been reset successfully" });
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      res.status(500).json({ error: "Failed to reset password" });
     }
   });
 

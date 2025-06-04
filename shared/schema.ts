@@ -33,7 +33,7 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   email: text("email").notNull(),
   fullName: text("full_name").notNull(),
-  phone: text("phone"),
+  phone: text("phone").notNull(),
   userType: text("user_type").notNull().default("client"), // 'client', 'company', or 'admin'
   companyName: text("company_name"),
   companyDescription: text("company_description"),
@@ -42,6 +42,9 @@ export const users = pgTable("users", {
   city: text("city"),
   state: text("state"),
   zipCode: text("zip_code"),
+  // Password reset fields
+  resetToken: text("reset_token"),
+  resetTokenExpires: timestamp("reset_token_expires"),
   // Subscription related fields
   createdAt: timestamp("created_at").defaultNow(),
   subscriptionStatus: text("subscription_status").default("trial"), // 'trial', 'active', 'expired'

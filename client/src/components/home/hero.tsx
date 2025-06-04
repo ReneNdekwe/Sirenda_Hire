@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Search, MapPin, Calendar } from "lucide-react";
+import { format } from "date-fns";
 
 const LOCATIONS = [
   "Kigali, RW",
@@ -34,11 +35,11 @@ export default function Hero() {
     }
 
     if (pickupDate) {
-      searchParams.set("pickupDate", pickupDate.toISOString().split("T")[0]);
+      searchParams.set("pickupDate", format(pickupDate, 'yyyy-MM-dd'));
     }
 
     if (returnDate) {
-      searchParams.set("returnDate", returnDate.toISOString().split("T")[0]);
+      searchParams.set("returnDate", format(returnDate, 'yyyy-MM-dd'));
     }
 
     navigate(`/vehicles?${searchParams.toString()}`);
