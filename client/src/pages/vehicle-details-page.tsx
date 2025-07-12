@@ -37,6 +37,12 @@ import {
 import { format, addDays, differenceInDays, parse, startOfDay } from "date-fns";
 import { useAuth } from "@/hooks/use-auth";
 import { formatPrice } from "@/lib/currency";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function VehicleDetailsPage() {
   const params = useParams<{ id: string }>();
@@ -98,7 +104,7 @@ export default function VehicleDetailsPage() {
     navigate(`/booking/${vehicleId}?${searchParams.toString()}`);
   };
 
-  const totalDays = pickupDate && returnDate ? differenceInDays(returnDate, pickupDate) : 0;
+  const totalDays = pickupDate && returnDate ? differenceInDays(returnDate, pickupDate) + 1 : 0;
   const totalPrice = vehicle?.pricePerDay ? totalDays * vehicle.pricePerDay : 0;
 
   const handlePickupDateChange = (date: Date | undefined) => {
@@ -126,6 +132,39 @@ export default function VehicleDetailsPage() {
       const end = startOfDay(new Date(booking.end));
 
       return checkDate >= start && checkDate <= end;
+    });
+  };
+
+  const getNextAvailableDate = (fromDate: Date): Date => {
+    const date = new Date(fromDate);
+    date.setHours(0, 0, 0, 0);
+
+    while (isDateBooked(date)) {
+      date.setDate(date.getDate() + 1);
+    }
+
+    return date;
+  };
+
+  const isDateRangeAvailable = (start: Date, end: Date) => {
+    if (!bookedDates) return true;
+
+    const checkStart = new Date(start);
+    const checkEnd = new Date(end);
+    checkStart.setHours(0, 0, 0, 0);
+    checkEnd.setHours(0, 0, 0, 0);
+
+    return !bookedDates.some(booking => {
+      const bookedStart = new Date(booking.start);
+      const bookedEnd = new Date(booking.end);
+      bookedStart.setHours(0, 0, 0, 0);
+      bookedEnd.setHours(0, 0, 0, 0);
+
+      // Check for any overlap
+      return (
+        (checkStart <= bookedEnd && checkEnd >= bookedStart) ||
+        (bookedStart <= checkEnd && bookedEnd >= checkStart)
+      );
     });
   };
 
@@ -467,24 +506,52 @@ export default function VehicleDetailsPage() {
                       <div className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium mb-1">Pickup Date</label>
-                          <DatePicker
-                            date={pickupDate}
-                            setDate={handlePickupDateChange}
-                            placeholder="Select date"
-                            bookedDates={bookedDates}
-                          />
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div>
+                                  <DatePicker
+                                    date={pickupDate}
+                                    setDate={handlePickupDateChange}
+                                    placeholder="Select date"
+                                    fromDate={new Date()}
+                                    disabled={(date) => {
+                                      const today = new Date();
+                                      const maxDate = new Date();
+                                      maxDate.setDate(today.getDate() + 10);
+                                      return date < today || date > maxDate;
+                                    }}
+                                    bookedDates={bookedDates}
+                                  />
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent className="bg-white border border-gray-200 shadow-lg p-3">
+                                <div className="flex items-center gap-2">
+                                  <Calendar className="h-4 w-4 text-blue-500" />
+                                  <p className="text-sm text-gray-700">Book your pickup date within the next 10 days</p>
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
                         </div>
 
                         <div>
                           <label className="block text-sm font-medium mb-1">Return Date</label>
-                          <DatePicker
-                            date={returnDate}
-                            setDate={setReturnDate}
-                            placeholder="Select date"
-                            fromDate={pickupDate}
-                            bookedDates={bookedDates}
-                          />
+                          <div className="flex-1">
+                            <DatePicker
+                              date={returnDate}
+                              setDate={setReturnDate}
+                              placeholder="Return date"
+                              fromDate={pickupDate ? new Date(pickupDate.getTime() + 24 * 60 * 60 * 1000) : new Date()}
+                              className="border-0 focus:ring-0 focus:ring-offset-0 h-10 text-sm bg-transparent hover:bg-gray-50 rounded-md text-black placeholder:text-black"
+                              disabled={(date) => !pickupDate || date < pickupDate || isDateBooked(date)}
+                              bookedDates={bookedDates}
+                            />
+                          </div>
                         </div>
+                        <p className="text-xs text-gray-500 mt-2 text-center italic">
+                          Book up to 10 days in advance <span className="text-red-500">*</span>
+                        </p>
                       </div>
 
                       {totalDays > 0 && (
@@ -492,6 +559,9 @@ export default function VehicleDetailsPage() {
                           <div className="flex justify-between mb-1">
                             <span>
                               {formatPrice(vehicle.pricePerDay)} × {totalDays} day{totalDays > 1 ? "s" : ""}
+                              <span className="text-sm text-gray-500 ml-1">
+                                ({format(pickupDate!, "MMM d")} - {format(returnDate!, "MMM d")})
+                              </span>
                             </span>
                             <span>{formatPrice(totalPrice)}</span>
                           </div>
@@ -503,7 +573,7 @@ export default function VehicleDetailsPage() {
                         </div>
                       )}
 
-                      </CardContent>
+                    </CardContent>
                     <CardFooter>
                       <Button
                         className="w-full"

@@ -47,11 +47,17 @@ import {
   Clock,
   CheckCircle2,
   Menu,
-  X
+  X,
+  RefreshCw
 } from "lucide-react";
 import { format, formatDistanceToNow } from 'date-fns';
 import { BookingDetailsModal } from "./booking-details-modal";
 import { formatPrice } from "@/lib/currency";
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { Input } from "@/components/ui/input";
+import { DateRange } from "react-day-picker";
 
 interface Booking {
   id: number;
@@ -381,6 +387,12 @@ export default function Dashboard() {
 
   const companyName = user.companyName || user.username;
 
+  // Add these at the top level of the Dashboard component, before the return:
+  const [statusFilters, setStatusFilters] = useState<{ [vehicleId: number]: string }>({});
+  const [dateRanges, setDateRanges] = useState<{ [vehicleId: number]: DateRange }>({});
+  const [minPrices, setMinPrices] = useState<{ [vehicleId: number]: string }>({});
+  const [maxPrices, setMaxPrices] = useState<{ [vehicleId: number]: string }>({});
+
   return (
     <div className="flex flex-col lg:flex-row min-h-screen bg-white">
       {/* Mobile menu button */}
@@ -398,11 +410,15 @@ export default function Dashboard() {
         "fixed lg:static inset-y-0 left-0 z-40 w-64 transform transition-transform duration-200 ease-in-out bg-white border-r border-gray-100",
         isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}>
-        <div className="p-6">
-          <h2 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-            {companyName}
-          </h2>
-          <p className="text-xs text-gray-500 mt-1">Rental Company Dashboard</p>
+        <div className="p-6 flex flex-col items-start gap-3">
+          <Link href="/">
+            <img
+              src="/uploads/Logo.png"
+              alt="Sirenda Hire"
+              className="h-10 w-auto cursor-pointer mb-2"
+              style={{ maxWidth: '120px' }}
+            />
+          </Link>
         </div>
 
         <Separator />
@@ -475,100 +491,62 @@ export default function Dashboard() {
 
       <div className="flex-1 overflow-y-auto bg-gray-50">
         <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
-          <div className="flex items-center justify-between p-4">
-            <h1 className="text-xl font-bold ml-12 lg:ml-0">
-              {activeTab === "dashboard" && "Dashboard"}
-              {activeTab === "vehicles" && "Vehicle Management"}
-              {activeTab === "bookings" && "Booking Requests"}
-              {activeTab === "analytics" && "Performance Analytics"}
-              {activeTab === "customers" && "Customer Management"}
-            </h1>
-            <div className="flex items-center gap-2 lg:gap-4">
-              <Button 
-                variant="outline" 
-                className="hidden lg:flex mr-2"
-                onClick={async () => {
-                  try {
-                    const response = await fetch('/api/vehicles/reset-availability', {
-                      method: 'POST',
-                      credentials: 'include'
-                    });
-                    if (!response.ok) throw new Error('Failed to reset availability');
-                    queryClient.invalidateQueries({ queryKey: ['/api/my-vehicles'] });
-                    toast({
-                      title: "Success",
-                      description: "Vehicle availability has been reset",
-                    });
-                  } catch (error) {
-                    toast({
-                      title: "Error",
-                      description: "Failed to reset vehicle availability",
-                      variant: "destructive"
-                    });
-                  }
-                }}
-              >
-                Reset Availability
-              </Button>
-
-              {/* Add Cancel Booking button when viewing bookings */}
-              {activeTab === "bookings" && selectedBooking && (
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between p-4 gap-2 md:gap-0">
+            <div className="flex flex-col md:flex-row md:items-center w-full">
+              <div className="flex flex-col items-center md:items-start min-w-[180px] md:mr-6">
+                <span className="text-xl font-extrabold leading-tight text-primary text-center md:text-left">{companyName}</span>
+                <span className="text-xs text-gray-500 tracking-wide uppercase mt-1 text-center md:text-left">Rental Company Dashboard</span>
+              </div>
+              <div className="h-0 md:h-10 md:w-px bg-gray-200 md:mx-6" />
+              <h1 className="text-2xl font-bold flex-1 text-gray-900 text-center md:text-left mt-2 md:mt-0">
+                {activeTab === "dashboard" && "Dashboard"}
+                {activeTab === "vehicles" && "Vehicle Management"}
+                {activeTab === "bookings" && "Booking Requests"}
+                {activeTab === "analytics" && "Performance Analytics"}
+                {activeTab === "customers" && "Customer Management"}
+              </h1>
+            </div>
+            <div className="flex items-center justify-center md:justify-end gap-2 lg:gap-4 mt-2 md:mt-0 ml-0 md:ml-4">
+              <div className="flex items-center gap-2 bg-gray-100 rounded-xl px-3 py-2 shadow-sm">
                 <Button 
-                  variant="destructive"
-                  className="ml-2"
+                  variant="ghost" 
+                  className="flex items-center gap-2 text-primary font-medium hover:bg-primary/10 transition-colors"
                   onClick={async () => {
                     try {
-                      const response = await fetch(`/api/bookings/${selectedBooking.id}/status`, {
-                        method: 'PUT',
-                        headers: {
-                          'Content-Type': 'application/json'
-                        },
-                        credentials: 'include',
-                        body: JSON.stringify({ status: 'cancelled' })
+                      const response = await fetch('/api/vehicles/reset-availability', {
+                        method: 'POST',
+                        credentials: 'include'
                       });
-                      
-                      if (!response.ok) throw new Error('Failed to cancel booking');
-                      
-                      queryClient.invalidateQueries({ queryKey: ['/api/rental-company/bookings'] });
+                      if (!response.ok) throw new Error('Failed to reset availability');
                       queryClient.invalidateQueries({ queryKey: ['/api/my-vehicles'] });
-                      
                       toast({
                         title: "Success",
-                        description: "Booking has been cancelled",
+                        description: "Vehicle availability has been reset",
                       });
-                      
-                      setSelectedBooking(null);
                     } catch (error) {
                       toast({
                         title: "Error",
-                        description: "Failed to cancel booking",
+                        description: "Failed to reset vehicle availability",
                         variant: "destructive"
                       });
                     }
                   }}
                 >
-                  Cancel Booking
+                  <RefreshCw className="h-4 w-4 mr-1" />
+                  Reset Availability
                 </Button>
-              )}
+                <Button 
+                  variant="ghost" 
+                  className="flex items-center gap-2 text-destructive font-medium hover:bg-destructive/10 transition-colors"
+                  onClick={() => logoutMutation.mutate()}
+                >
+                  <LogOut className="h-4 w-4 mr-1" />
+                  Logout
+                </Button>
+              </div>
               <Button variant="outline" size="icon" className="rounded-full relative">
                 <Bell className="h-4 w-4" />
                 <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-red-500"></span>
-              </Button>
-              <Button 
-                variant="outline" 
-                className="gap-2 hidden sm:flex" 
-                onClick={() => logoutMutation.mutate()}
-              >
-                <LogOut className="h-4 w-4" />
-                Logout
-              </Button>
-              <Button 
-                variant="outline" 
-                size="icon"
-                className="sm:hidden" 
-                onClick={() => logoutMutation.mutate()}
-              >
-                <LogOut className="h-4 w-4" />
               </Button>
               <Link href="/profile">
                 <div className="flex items-center gap-2 cursor-pointer">
@@ -740,81 +718,166 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              {vehicles?.map((vehicle) => (
-                <Card key={vehicle.id}>
-                  <CardHeader>
-                    <CardTitle>{vehicle.brand} {vehicle.model}</CardTitle>
-                    <CardDescription>Booking history and requests</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Customer</TableHead>
-                          <TableHead>Dates</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead>Price</TableHead>
-                          <TableHead></TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {bookings?.filter((b: Booking) => b.vehicleId === vehicle.id).map((booking: Booking) => (
-                          <TableRow key={booking.id}>
-                            <TableCell>{`User #${booking.userId}`}</TableCell>
-                            <TableCell>
-                              {format(new Date(booking.pickupDate), "MMM d, yyyy")} -{" "}
-                              {format(new Date(booking.returnDate), "MMM d, yyyy")}
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-2">
-                                <Badge 
-                                  className={cn(
-                                    booking.status === "completed" && "bg-green-100 text-green-800",
-                                    booking.status === "confirmed" && "bg-blue-100 text-blue-800",
-                                    booking.status === "pending" && "bg-yellow-100 text-yellow-800",
-                                    booking.status === "cancelled" && "bg-red-100 text-red-800",
-                                    booking.status === "rejected" && "bg-gray-100 text-gray-800"
-                                  )}
-                                >
-                                  {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                                </Badge>
-                                {booking.status === "pending" && (
-                                  <div className="flex items-center gap-2">
-                                    <Button
-                                      size="sm"
-                                      onClick={() => handleStatusChange(booking.id, "confirmed")}
-                                      className="bg-green-500 hover:bg-green-600 text-white"
-                                    >
-                                      Confirm
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      onClick={() => handleStatusChange(booking.id, "cancelled")}
-                                      className="bg-red-500 hover:bg-red-600 text-white"
-                                    >
-                                      Decline
-                                    </Button>
-                                  </div>
-                                )}
+              <Accordion type="multiple" className="w-full">
+                {vehicles?.map((vehicle) => {
+                  // Use state objects for per-vehicle filters
+                  const statusFilter = statusFilters[vehicle.id] || "";
+                  const dateRange = dateRanges[vehicle.id] || { from: undefined, to: undefined };
+                  const minPrice = minPrices[vehicle.id] || "";
+                  const maxPrice = maxPrices[vehicle.id] || "";
+
+                  // Filter bookings for this vehicle
+                  let filteredBookings = bookings?.filter((b: Booking) => b.vehicleId === vehicle.id) || [];
+                  if (statusFilter && statusFilter !== 'all') {
+                    filteredBookings = filteredBookings.filter(b => b.status === statusFilter);
+                  }
+                  if (dateRange.from) {
+                    filteredBookings = filteredBookings.filter(b => new Date(b.pickupDate) >= dateRange.from!);
+                  }
+                  if (dateRange.to) {
+                    filteredBookings = filteredBookings.filter(b => new Date(b.returnDate) <= dateRange.to!);
+                  }
+                  if (minPrice) {
+                    filteredBookings = filteredBookings.filter(b => b.totalPrice >= parseFloat(minPrice));
+                  }
+                  if (maxPrice) {
+                    filteredBookings = filteredBookings.filter(b => b.totalPrice <= parseFloat(maxPrice));
+                  }
+
+                  return (
+                    <AccordionItem key={vehicle.id} value={vehicle.id.toString()}>
+                      <AccordionTrigger>
+                        <div className="flex items-center gap-3">
+                          <span className="font-semibold">{vehicle.brand} {vehicle.model}</span>
+                          <span className="text-xs text-gray-500">({vehicle.year})</span>
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <Card className="mb-4">
+                          <CardHeader>
+                            <CardTitle>Booking history and requests</CardTitle>
+                          </CardHeader>
+                          <CardContent>
+                            {/* Filters */}
+                            <div className="flex flex-wrap gap-4 mb-4 items-end">
+                              <div className="w-40">
+                                <Select value={statusFilter} onValueChange={val => setStatusFilters(f => ({ ...f, [vehicle.id]: val }))}>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Status" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="all">All Statuses</SelectItem>
+                                    <SelectItem value="pending">Pending</SelectItem>
+                                    <SelectItem value="confirmed">Confirmed</SelectItem>
+                                    <SelectItem value="completed">Completed</SelectItem>
+                                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                                    <SelectItem value="rejected">Rejected</SelectItem>
+                                  </SelectContent>
+                                </Select>
                               </div>
-                            </TableCell>
-                            <TableCell>{formatPrice(booking.totalPrice)}</TableCell>
-                            <TableCell>
-                              <Button 
-                                variant="ghost" 
-                                size="sm"
-                                onClick={() => setSelectedBooking(booking)}
-                              >
-                                View Details
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              ))}
+                              <div className="w-64">
+                                <DateRangePicker value={dateRange} onChange={val => setDateRanges(f => ({ ...f, [vehicle.id]: val }))} />
+                              </div>
+                              <div className="flex gap-2 items-center">
+                                <Input
+                                  type="number"
+                                  min={0}
+                                  value={minPrice}
+                                  onChange={e => setMinPrices(f => ({ ...f, [vehicle.id]: e.target.value }))}
+                                  placeholder="Min Price"
+                                  className="w-24"
+                                />
+                                <span className="mx-1 text-gray-400">-</span>
+                                <Input
+                                  type="number"
+                                  min={0}
+                                  value={maxPrice}
+                                  onChange={e => setMaxPrices(f => ({ ...f, [vehicle.id]: e.target.value }))}
+                                  placeholder="Max Price"
+                                  className="w-24"
+                                />
+                              </div>
+                            </div>
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Customer</TableHead>
+                                  <TableHead>Dates</TableHead>
+                                  <TableHead>Status</TableHead>
+                                  <TableHead>Price</TableHead>
+                                  <TableHead></TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {filteredBookings.length === 0 ? (
+                                  <TableRow>
+                                    <TableCell colSpan={5} className="text-center text-gray-400 py-6">
+                                      No bookings for this vehicle with current filters.
+                                    </TableCell>
+                                  </TableRow>
+                                ) : (
+                                  filteredBookings.map((booking: Booking) => (
+                                    <TableRow key={booking.id}>
+                                      <TableCell>{`User #${booking.userId}`}</TableCell>
+                                      <TableCell>
+                                        {format(new Date(booking.pickupDate), "MMM d, yyyy")} -{" "}
+                                        {format(new Date(booking.returnDate), "MMM d, yyyy")}
+                                      </TableCell>
+                                      <TableCell>
+                                        <div className="flex items-center gap-2">
+                                          <Badge 
+                                            className={cn(
+                                              booking.status === "completed" && "bg-green-100 text-green-800",
+                                              booking.status === "confirmed" && "bg-blue-100 text-blue-800",
+                                              booking.status === "pending" && "bg-yellow-100 text-yellow-800",
+                                              booking.status === "cancelled" && "bg-red-100 text-red-800",
+                                              booking.status === "rejected" && "bg-gray-100 text-gray-800"
+                                            )}
+                                          >
+                                            {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                                          </Badge>
+                                          {booking.status === "pending" && (
+                                            <div className="flex items-center gap-2">
+                                              <Button
+                                                size="sm"
+                                                onClick={() => handleStatusChange(booking.id, "confirmed")}
+                                                className="bg-green-500 hover:bg-green-600 text-white"
+                                              >
+                                                Confirm
+                                              </Button>
+                                              <Button
+                                                size="sm"
+                                                onClick={() => handleStatusChange(booking.id, "cancelled")}
+                                                className="bg-red-500 hover:bg-red-600 text-white"
+                                              >
+                                                Decline
+                                              </Button>
+                                            </div>
+                                          )}
+                                        </div>
+                                      </TableCell>
+                                      <TableCell>{formatPrice(booking.totalPrice)}</TableCell>
+                                      <TableCell>
+                                        <Button 
+                                          variant="ghost" 
+                                          size="sm"
+                                          onClick={() => setSelectedBooking(booking)}
+                                        >
+                                          View Details
+                                        </Button>
+                                      </TableCell>
+                                    </TableRow>
+                                  ))
+                                )}
+                              </TableBody>
+                            </Table>
+                          </CardContent>
+                        </Card>
+                      </AccordionContent>
+                    </AccordionItem>
+                  );
+                })}
+              </Accordion>
             </div>
           )}
 

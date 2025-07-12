@@ -1,0 +1,12 @@
+CREATE TABLE IF NOT EXISTS job_listings (
+  id SERIAL PRIMARY KEY,
+  title TEXT NOT NULL,
+  department TEXT NOT NULL,
+  location TEXT NOT NULL,
+  type TEXT NOT NULL,
+  description TEXT NOT NULL,
+  requirements JSONB NOT NULL DEFAULT '[]'::jsonb,
+  posted_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+); 

@@ -93,6 +93,14 @@ export function BookingDetailsModal({ booking, onClose }: BookingDetailsModalPro
               <h4 className="text-sm font-medium text-gray-500">Vehicle ID</h4>
               <p className="mt-1">#{booking.vehicleId}</p>
             </div>
+            <div>
+              <h4 className="text-sm font-medium text-gray-500">Created At</h4>
+              <p className="mt-1">{format(new Date(booking.createdAt || new Date()), "MMM d, yyyy h:mm a")}</p>
+            </div>
+            <div>
+              <h4 className="text-sm font-medium text-gray-500">Last Updated</h4>
+              <p className="mt-1">{format(new Date(booking.updatedAt || new Date()), "MMM d, yyyy h:mm a")}</p>
+            </div>
           </div>
         </div>
       </DialogContent>

@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/currency";
 import { User, Vehicle, Booking } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
+import { User as UserIcon, CarFront, Building2, PlusCircle, Calendar } from "lucide-react";
 
 interface BookingDetailsModalProps {
   booking: Booking | null;
@@ -55,90 +56,102 @@ export function BookingDetailsModal({ booking, onClose }: BookingDetailsModalPro
 
   return (
     <Dialog open={!!booking} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Booking Details</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">Booking Details</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6">
           {/* Customer Information */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Customer Information</h3>
+          <div className="bg-gray-50 rounded-xl p-4">
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <UserIcon className="h-5 w-5 text-primary" />
+              Customer Information
+            </h3>
             {isLoadingUser ? (
               <Skeleton className="h-20" />
             ) : (
-              <div className="grid grid-cols-2 gap-4">
-                <div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-1">
                   <p className="text-sm text-gray-500">Name</p>
-                  <p className="font-medium">{user?.fullName}</p>
+                  <p className="font-medium text-gray-900">{user?.fullName}</p>
                 </div>
-                <div>
+                <div className="space-y-1">
                   <p className="text-sm text-gray-500">Email</p>
-                  <p className="font-medium">{user?.email}</p>
+                  <p className="font-medium text-gray-900">{user?.email}</p>
                 </div>
-                <div>
+                <div className="space-y-1">
                   <p className="text-sm text-gray-500">Phone</p>
-                  <p className="font-medium">{user?.phone}</p>
+                  <p className="font-medium text-gray-900">{user?.phone}</p>
                 </div>
               </div>
             )}
           </div>
 
           {/* Vehicle Information */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Vehicle Information</h3>
+          <div className="bg-gray-50 rounded-xl p-4">
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <CarFront className="h-5 w-5 text-primary" />
+              Vehicle Information
+            </h3>
             {isLoadingVehicle ? (
               <Skeleton className="h-20" />
             ) : (
-              <div className="grid grid-cols-2 gap-4">
-                <div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-1">
                   <p className="text-sm text-gray-500">Vehicle</p>
-                  <p className="font-medium">{vehicle?.brand} {vehicle?.model}</p>
+                  <p className="font-medium text-gray-900">{vehicle?.brand} {vehicle?.model}</p>
                 </div>
-                <div>
+                <div className="space-y-1">
                   <p className="text-sm text-gray-500">Year</p>
-                  <p className="font-medium">{vehicle?.year}</p>
+                  <p className="font-medium text-gray-900">{vehicle?.year}</p>
                 </div>
-                <div>
+                <div className="space-y-1">
                   <p className="text-sm text-gray-500">License Plate</p>
-                  <p className="font-medium">{vehicle?.licensePlate}</p>
+                  <p className="font-medium text-gray-900">{vehicle?.licensePlate}</p>
                 </div>
-                <div>
+                <div className="space-y-1">
                   <p className="text-sm text-gray-500">Location</p>
-                  <p className="font-medium">{vehicle?.location}</p>
+                  <p className="font-medium text-gray-900">{vehicle?.location}</p>
                 </div>
               </div>
             )}
           </div>
 
           {/* Rental Company Information */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Rental Company</h3>
+          <div className="bg-gray-50 rounded-xl p-4">
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-primary" />
+              Rental Company
+            </h3>
             {isLoadingCompany ? (
               <Skeleton className="h-20" />
             ) : (
-              <div className="grid grid-cols-2 gap-4">
-                <div>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="space-y-1">
                   <p className="text-sm text-gray-500">Company Name</p>
-                  <p className="font-medium">{rentalCompany?.companyName}</p>
+                  <p className="font-medium text-gray-900">{rentalCompany?.companyName}</p>
                 </div>
-                <div>
+                <div className="space-y-1">
                   <p className="text-sm text-gray-500">Contact Email</p>
-                  <p className="font-medium">{rentalCompany?.email}</p>
+                  <p className="font-medium text-gray-900">{rentalCompany?.email}</p>
                 </div>
-                <div>
+                <div className="space-y-1">
                   <p className="text-sm text-gray-500">Phone</p>
-                  <p className="font-medium">{rentalCompany?.phone}</p>
+                  <p className="font-medium text-gray-900">{rentalCompany?.phone}</p>
                 </div>
               </div>
             )}
           </div>
 
           {/* Booking Details */}
-          <div>
-            <h3 className="text-lg font-semibold mb-3">Booking Details</h3>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+          <div className="bg-gray-50 rounded-xl p-4">
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-primary" />
+              Booking Details
+            </h3>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-1">
                 <p className="text-sm text-gray-500">Status</p>
                 <Badge 
                   className={cn(
@@ -153,7 +166,7 @@ export function BookingDetailsModal({ booking, onClose }: BookingDetailsModalPro
                   {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
                 </Badge>
               </div>
-              <div>
+              <div className="space-y-1">
                 <p className="text-sm text-gray-500">Payment Status</p>
                 <Badge 
                   className={cn(
@@ -168,46 +181,53 @@ export function BookingDetailsModal({ booking, onClose }: BookingDetailsModalPro
                   {booking.paymentStatus.charAt(0).toUpperCase() + booking.paymentStatus.slice(1)}
                 </Badge>
               </div>
-              <div>
-                <p className="text-sm text-gray-500">Pickup Date</p>
-                <p className="font-medium">{format(new Date(booking.pickupDate), "MMM d, yyyy")}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Return Date</p>
-                <p className="font-medium">{format(new Date(booking.returnDate), "MMM d, yyyy")}</p>
-              </div>
-              <div>
+              <div className="space-y-1">
                 <p className="text-sm text-gray-500">Total Price</p>
-                <p className="font-medium">{formatPrice(booking.totalPrice)}</p>
+                <p className="font-medium text-gray-900">{formatPrice(booking.totalPrice)}</p>
               </div>
-              <div>
+              <div className="space-y-1">
+                <p className="text-sm text-gray-500">Pickup Date</p>
+                <p className="font-medium text-gray-900">{format(new Date(booking.pickupDate), "MMM d, yyyy")}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm text-gray-500">Return Date</p>
+                <p className="font-medium text-gray-900">{format(new Date(booking.returnDate), "MMM d, yyyy")}</p>
+              </div>
+              <div className="space-y-1">
                 <p className="text-sm text-gray-500">Created At</p>
-                <p className="font-medium">{format(new Date(booking.createdAt || new Date()), "MMM d, yyyy h:mm a")}</p>
+                <p className="font-medium text-gray-900">{format(new Date(booking.createdAt || new Date()), "MMM d, yyyy h:mm a")}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-sm text-gray-500">Last Updated</p>
+                <p className="font-medium text-gray-900">{format(new Date(booking.updatedAt || new Date()), "MMM d, yyyy h:mm a")}</p>
               </div>
             </div>
           </div>
 
           {/* Additional Services */}
           {(booking.hasDriver || booking.hasCarWash || booking.hasHomeDelivery) && (
-            <div>
-              <h3 className="text-lg font-semibold mb-3">Additional Services</h3>
-              <div className="grid grid-cols-2 gap-4">
+            <div className="bg-gray-50 rounded-xl p-4">
+              <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                <PlusCircle className="h-5 w-5 text-primary" />
+                Additional Services
+              </h3>
+              <div className="grid grid-cols-3 gap-4">
                 {booking.hasDriver && (
-                  <div>
+                  <div className="space-y-1">
                     <p className="text-sm text-gray-500">Driver</p>
-                    <p className="font-medium">Included</p>
+                    <p className="font-medium text-gray-900">Included</p>
                   </div>
                 )}
                 {booking.hasCarWash && (
-                  <div>
+                  <div className="space-y-1">
                     <p className="text-sm text-gray-500">Car Wash</p>
-                    <p className="font-medium">Included</p>
+                    <p className="font-medium text-gray-900">Included</p>
                   </div>
                 )}
                 {booking.hasHomeDelivery && (
-                  <div>
+                  <div className="space-y-1">
                     <p className="text-sm text-gray-500">Home Delivery</p>
-                    <p className="font-medium">{booking.deliveryAddress}</p>
+                    <p className="font-medium text-gray-900">{booking.deliveryAddress}</p>
                   </div>
                 )}
               </div>

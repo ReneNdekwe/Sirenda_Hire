@@ -10,7 +10,7 @@ interface EmailOptions {
 
 export async function sendEmail({ to, subject, html }: EmailOptions): Promise<void> {
   await resend.emails.send({
-    from: 'Sirenda <noreply@sirenda.rw>',
+    from: 'Sirenda <support@sirenda.rw>',
     to,
     subject,
     html,

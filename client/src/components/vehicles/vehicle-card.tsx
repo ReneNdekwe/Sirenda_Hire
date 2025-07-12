@@ -131,44 +131,48 @@ export default function VehicleCard({ vehicle }: VehicleCardProps) {
         </div>
 
         <div className="p-4">
-          {vehicle.location && (
-            <div className="flex items-center text-gray-500 text-xs mb-2">
-              <MapPin className="h-3 w-3 mr-1 text-primary/70" />
-              <span className="truncate font-light">{vehicle.location}</span>
-            </div>
-          )}
-          
           <div className="flex justify-between items-start mb-3">
             <div>
-              <h3 className="font-semibold text-base text-gray-900 group-hover:text-primary transition-colors">
+              <h3 className="font-semibold text-sm text-gray-900">
                 {vehicle.brand} {vehicle.model}
               </h3>
               <div className="flex items-center mt-1">
-                <div className="flex text-yellow-500">
-                  {Array.from({ length: Math.floor(vehicle.rating || 0) }).map((_, i) => (
-                    <Star key={i} className="h-3 w-3 fill-current" />
-                  ))}
-                  {vehicle.rating && vehicle.rating % 1 > 0 && (
-                    <StarHalf className="h-3 w-3 fill-current" />
-                  )}
-                  {Array.from({ length: Math.max(0, 5 - Math.ceil(vehicle.rating || 0)) }).map((_, i) => (
-                    <Star key={i} className="h-3 w-3 text-gray-200" />
-                  ))}
-                </div>
-                <span className="text-gray-500 text-xs ml-1 font-light">
-                  {vehicle.reviewCount || 0} reviews
-                </span>
+                {(vehicle.rating || 0) > 0 && (
+                  <>
+                    <div className="flex text-yellow-500">
+                      {Array.from({ length: Math.floor(vehicle.rating || 0) }).map((_, i) => (
+                        <Star key={i} className="h-3 w-3 fill-current" />
+                      ))}
+                      {vehicle.rating && vehicle.rating % 1 > 0 && (
+                        <StarHalf className="h-3 w-3 fill-current" />
+                      )}
+                      {Array.from({ length: Math.max(0, 5 - Math.ceil(vehicle.rating || 0)) }).map((_, i) => (
+                        <Star key={i} className="h-3 w-3 text-gray-200" />
+                      ))}
+                    </div>
+                    <span className="text-gray-500 text-xs ml-1 font-light">
+                      {vehicle.reviewCount || 0} reviews
+                    </span>
+                  </>
+                )}
               </div>
             </div>
             <div className="text-right">
               <div className="flex flex-col">
-                <span className="font-bold text-base text-primary">
+                <span className="font-bold text-sm text-primary">
                   {formatPrice(vehicle.pricePerDay)}
                   <span className="text-xs font-light text-gray-500 ml-1">/day</span>
                 </span>
               </div>
             </div>
           </div>
+
+          {vehicle.location && (
+            <div className="flex items-center text-gray-500 text-xs mb-2">
+              <MapPin className="h-3 w-3 mr-1 text-primary/70" />
+              <span className="truncate font-light">{vehicle.location}</span>
+            </div>
+          )}
 
           <div className="flex flex-wrap gap-1 mb-3">
             <Badge variant="outline" className="bg-primary/5 border-primary/10 text-primary hover:bg-primary/10 gap-1 text-xs py-0">

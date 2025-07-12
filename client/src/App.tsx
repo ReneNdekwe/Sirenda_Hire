@@ -18,6 +18,8 @@ import AboutPage from "@/pages/about-page";
 import BlogList from "@/pages/BlogList";
 import BlogDetail from "@/pages/BlogDetail";
 import BlogManagement from "@/pages/admin/BlogManagement";
+import Careers from "@/pages/Careers";
+import JobDetails from "@/pages/JobDetails";
 import { ProtectedRoute, CompanyRoute, AdminRoute } from "./lib/protected-route";
 import { AuthProvider } from "@/hooks/use-auth";
 import ComingSoonPage from "@/pages/coming-soon-page";
@@ -28,6 +30,7 @@ import { useLocation } from "wouter";
 import StaticAssets from "@/components/layout/static-assets";
 import ForgotPasswordPage from "@/pages/forgot-password";
 import ResetPasswordPage from "@/pages/reset-password";
+import TermsPage from "@/pages/terms-page";
 
 function Router() {
   return (
@@ -40,6 +43,9 @@ function Router() {
       <Route path="/about-page" component={AboutPage} />
       <Route path="/blog" component={BlogList} />
       <Route path="/blog/:slug" component={BlogDetail} />
+      <Route path="/terms" component={TermsPage} />
+      <Route path="/careers" component={Careers} />
+      <Route path="/careers/:id" component={JobDetails} />
       <ProtectedRoute path="/booking/:vehicleId" component={BookingPage} />
       <ProtectedRoute path="/my-bookings" component={MyBookingsPage} />
       <ProtectedRoute path="/profile" component={ProfilePage} />

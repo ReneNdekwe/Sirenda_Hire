@@ -551,11 +551,11 @@ export default function VehicleForm({ vehicle, isEdit = false }: VehicleFormProp
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Kigali, RW">Kigali, RW</SelectItem>
-                      <SelectItem value="Musanze, RW">Musanze, RW</SelectItem>
-                      <SelectItem value="Rubavu, RW">Rubavu, RW</SelectItem>
-                      <SelectItem value="Karongi, RW">Karongi, RW</SelectItem>
-                      <SelectItem value="Rusizi, RW">Rusizi, RW</SelectItem>
+                      <SelectItem value="Kigali City Center">Kigali City Center</SelectItem>
+                      <SelectItem value="Kacyiru">Kacyiru</SelectItem>
+                      <SelectItem value="Remera">Remera</SelectItem>
+                      <SelectItem value="Kimironko">Kimironko</SelectItem>
+                      <SelectItem value="Kicukiro">Kicukiro</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -732,24 +732,6 @@ export default function VehicleForm({ vehicle, isEdit = false }: VehicleFormProp
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel>Available for booking</FormLabel>
-                  </div>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="isFeatured"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={Boolean(field.value)}
-                      onCheckedChange={(checked) => field.onChange(Boolean(checked))}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>Featured vehicle</FormLabel>
                   </div>
                 </FormItem>
               )}

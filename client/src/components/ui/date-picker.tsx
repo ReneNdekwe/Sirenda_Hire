@@ -74,7 +74,7 @@ export function DatePicker({
               "w-full justify-start text-left font-normal pl-3 pr-2",
               !date && "text-muted-foreground"
             )}
-            disabled={typeof disabled === 'function' ? (date ? disabled(date) : true) : disabled}
+            disabled={typeof disabled === 'function' ? false : disabled}
           >
             <CalendarIcon className="mr-2 h-4 w-4 flex-shrink-0" />
             <span className="truncate">{date ? format(date, "PPP") : placeholder}</span>

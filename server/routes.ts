@@ -26,6 +26,7 @@ import { db } from './db';
 import { authenticateAdmin } from './middleware/auth';
 import { generateSitemap } from './sitemap-generator';
 import { requestPasswordReset, resetPassword } from "./password-reset";
+import jobsRouter from './src/routes/jobs';
 
 // Helper function to generate UUID
 const generateUUID = () => uuidv4();
@@ -64,6 +65,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Authentication routes (/api/register, /api/login, /api/logout, /api/user)
   setupAuth(app);
+
+  // Register jobs router
+  app.use('/api/jobs', jobsRouter);
 
   // Categories routes
   app.get("/api/categories", async (req, res) => {

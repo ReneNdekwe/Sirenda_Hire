@@ -23,11 +23,11 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 
 const LOCATIONS = [
   "All Locations",
-  "Kigali, RW",
-  "Musanze, RW",
-  "Rubavu, RW",
-  "Karongi, RW",
-  "Rusizi, RW",
+  "Kigali City Center",
+  "Kacyiru",
+  "Remera",
+  "Kimironko",
+  "Kicukiro"
 ];
 
 const SEATS = [

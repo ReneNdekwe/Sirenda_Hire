@@ -45,7 +45,7 @@ export default function AboutPage() {
                       </div>
                       <div>
                         <h3 className="font-medium text-gray-900">Email</h3>
-                        <p className="text-gray-600">sales@sirenda.rw</p>
+                        <p className="text-gray-600">support@sirenda.rw</p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -145,11 +145,11 @@ export default function AboutPage() {
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">100+</div>
+                <div className="text-3xl font-bold text-primary mb-2">50+</div>
                 <div className="text-gray-600">Happy Customers</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">20+</div>
+                <div className="text-3xl font-bold text-primary mb-2">10+</div>
                 <div className="text-gray-600">Vehicles Available</div>
               </div>
               <div className="text-center">

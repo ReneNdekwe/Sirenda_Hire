@@ -367,22 +367,22 @@ export class MemStorage implements IStorage {
   // Initialize with sample data
   private async initSampleData() {
     // Create sample categories
-    const luxurySedan: Category = await this.createCategory({
-      name: "Luxury Sedans",
-      description: "Comfort and elegance for any journey",
+    const sedans: Category = await this.createCategory({
+      name: "Sedans",
+      description: "Comfortable and efficient for daily driving",
       imageUrl: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
       priceFrom: 89
     });
 
     const sportCars: Category = await this.createCategory({
-      name: "Sport Cars",
+      name: "Sport cars",
       description: "Performance and thrill for enthusiasts",
       imageUrl: "https://images.unsplash.com/photo-1553440569-bcc63803a83d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
       priceFrom: 129
     });
 
-    const premiumSUVs: Category = await this.createCategory({
-      name: "Premium SUVs",
+    const suvs: Category = await this.createCategory({
+      name: "SUVs",
       description: "Spacious and versatile for any terrain",
       imageUrl: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80",
       priceFrom: 99

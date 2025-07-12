@@ -1,0 +1,12 @@
+model JobListing {
+  id          String   @id @default(cuid())
+  title       String
+  department  String
+  location    String
+  type        String
+  description String
+  requirements String[]
+  postedDate  DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+} 

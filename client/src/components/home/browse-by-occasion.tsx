@@ -35,21 +35,21 @@ export default function BrowseByOccasion() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">Browse by Occasion</h2>
-          <p className="text-gray-600">Find the perfect vehicle for your needs</p>
+          <p className="text-gray-600">easily find the vehicle for any occasion</p>
         </div>
 
         <div className="flex justify-center items-center gap-4 sm:gap-8 flex-wrap">
           {occasions.map((occasion, index) => (
             <Link key={index} href={occasion.href}>
               <div className="group flex flex-col items-center gap-2 sm:gap-3">
-                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-white shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-primary/20 overflow-hidden">
+                <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-white shadow-sm hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-primary/20 overflow-hidden">
                   <img 
                     src={occasion.image} 
                     alt={occasion.title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>
-                <span className="text-sm sm:text-base font-medium text-gray-700 group-hover:text-primary transition-colors">
+                <span className="text-xs sm:text-sm font-medium text-gray-700 group-hover:text-primary transition-colors">
                   {occasion.title}
                 </span>
               </div>

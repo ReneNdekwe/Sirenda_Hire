@@ -152,6 +152,12 @@ export default function VehiclesPage() {
           return true;
         })
         .sort((a, b) => {
+          if (filters.occasion) {
+            const aHasOccasion = Array.isArray(a.occasions) && a.occasions.includes(filters.occasion);
+            const bHasOccasion = Array.isArray(b.occasions) && b.occasions.includes(filters.occasion);
+            if (aHasOccasion && !bHasOccasion) return -1;
+            if (!aHasOccasion && bHasOccasion) return 1;
+          }
           switch (sortOption) {
             case "price-low":
               return a.pricePerDay - b.pricePerDay;
@@ -210,11 +216,11 @@ export default function VehiclesPage() {
                       <SelectContent>
                         {[
                           "All Locations",
-                          "Kigali, RW",
-                          "Musanze, RW",
-                          "Rubavu, RW",
-                          "Karongi, RW",
-                          "Rusizi, RW",
+                          "Kigali City Center",
+                          "Kacyiru",
+                          "Remera",
+                          "Kimironko",
+                          "Kicukiro"
                         ].map((loc) => (
                           <SelectItem key={loc} value={loc}>
                             {loc}

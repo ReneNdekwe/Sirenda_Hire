@@ -1,0 +1,20 @@
+{
+  "name": "Sirenda - Car Rentals in Rwanda",
+  "short_name": "Sirenda",
+  "icons": [
+    {
+      "src": "https://vehicles.blob.core.windows.net/static-assets/favicon.png?sp=r&st=2025-06-04T17:55:37Z&se=2027-07-01T01:55:37Z&spr=https&sv=2024-11-04&sr=b&sig=bREi6edMsPFD8OnnDAhIicuuO7dWBmTkdyADoN3JFM8%3D",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://vehicles.blob.core.windows.net/static-assets/favicon.png?sp=r&st=2025-06-04T17:55:37Z&se=2027-07-01T01:55:37Z&spr=https&sv=2024-11-04&sr=b&sig=bREi6edMsPFD8OnnDAhIicuuO7dWBmTkdyADoN3JFM8%3D",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/"
+} 

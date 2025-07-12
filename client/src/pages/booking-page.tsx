@@ -28,6 +28,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import MTNMoMoWidget from "@/components/payment/mtn-momo-widget";
 import { CheckCircle2 } from "lucide-react";
 import MTNMoMoPayment from "@/components/payment/mtn-momo-payment";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function BookingPage() {
   const params = useParams<{ vehicleId: string }>();
@@ -137,7 +143,7 @@ export default function BookingPage() {
     queryKey: [`/api/vehicles/${vehicleId}`],
   });
 
-  const totalDays = pickupDate && returnDate ? differenceInDays(returnDate, pickupDate) : 0;
+  const totalDays = pickupDate && returnDate ? differenceInDays(returnDate, pickupDate) + 1 : 0;
   const basePrice = vehicle?.pricePerDay ? totalDays * vehicle.pricePerDay : 0;
   const driverFee = hasDriver ? totalDays * 10000 : 0; // 10,000 RWF per day for driver
   const carWashFee = hasCarWash ? 5000 : 0; // 5,000 RWF flat fee for car wash
@@ -357,15 +363,33 @@ export default function BookingPage() {
                                 <label className="block text-sm font-medium mb-1">
                                   Pickup Date
                                 </label>
-                                <DatePicker
-                                  date={pickupDate}
-                                  setDate={handlePickupDateChange}
-                                  placeholder="Select date"
-                                  disabled={(date: Date): boolean => {
-                                    return date < new Date() || isDateBooked(date);
-                                  }}
-                                  bookedDates={bookedDates}
-                                />
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div>
+                                        <DatePicker
+                                          date={pickupDate}
+                                          setDate={handlePickupDateChange}
+                                          placeholder="Select date"
+                                          fromDate={new Date()}
+                                          disabled={(date) => {
+                                            const today = new Date();
+                                            const maxDate = new Date();
+                                            maxDate.setDate(today.getDate() + 10);
+                                            return date < today || date > maxDate;
+                                          }}
+                                          bookedDates={bookedDates}
+                                        />
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="bg-white border border-gray-200 shadow-lg p-3">
+                                      <div className="flex items-center gap-2">
+                                        <Calendar className="h-4 w-4 text-blue-500" />
+                                        <p className="text-sm text-gray-700">Book your pickup date within the next 10 days</p>
+                                      </div>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
                               </div>
                               <div>
                                 <label className="block text-sm font-medium mb-1">
@@ -375,20 +399,15 @@ export default function BookingPage() {
                                   date={returnDate}
                                   setDate={setReturnDate}
                                   placeholder="Select date"
-                                  fromDate={pickupDate}
-                                  disabled={(date: Date): boolean => {
-                                    if (!pickupDate) return true;
-                                    // Check if any dates between pickup and return are booked
-                                    const checkDate = new Date(date);
-                                    for (let d = new Date(pickupDate); d <= checkDate; d.setDate(d.getDate() + 1)) {
-                                      if (isDateBooked(new Date(d))) return true;
-                                    }
-                                    return false;
-                                  }}
+                                  fromDate={pickupDate ? new Date(pickupDate.getTime() + 24 * 60 * 60 * 1000) : new Date()}
+                                  disabled={(date) => !pickupDate || date < pickupDate || isDateBooked(date)}
                                   bookedDates={bookedDates}
                                 />
                               </div>
                             </div>
+                            <p className="text-sm text-gray-500 mt-2 text-center italic">
+                              Book up to 10 days in advance <span className="text-red-500">*</span>
+                            </p>
 
                             <div className="p-3 bg-blue-50 rounded-md flex items-start text-blue-700">
                               <Calendar className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
@@ -413,7 +432,10 @@ export default function BookingPage() {
                                 htmlFor="terms"
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                               >
-                                Accept terms and conditions
+                                Accept{" "}
+                                <a href="/terms" className="text-primary hover:underline">
+                                  terms and conditions
+                                </a>
                               </label>
                               <p className="text-sm text-gray-500">
                                 I agree to the rental terms and conditions, including the
@@ -439,45 +461,68 @@ export default function BookingPage() {
                         <CardHeader>
                           <CardTitle>Price Summary</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                          <div>
-                            <div className="flex justify-between mb-1">
-                              <span>
-                                {formatPrice(vehicle.pricePerDay)} × {totalDays || 0} day
-                                {totalDays !== 1 ? "s" : ""}
-                              </span>
-                              <span>{formatPrice(basePrice)}</span>
-                            </div>
-                            <div className="flex justify-between text-sm text-gray-500">
-                              <span>Rental Fee</span>
-                              <span>{formatPrice(basePrice)}</span>
+                        <CardContent className="space-y-6">
+                          {/* Base Rental */}
+                          <div className="space-y-2">
+                            <h4 className="font-medium text-sm text-gray-500">Base Rental</h4>
+                            <div className="flex justify-between items-center">
+                              <div className="space-y-1">
+                                <p className="text-sm">
+                                  {formatPrice(vehicle.pricePerDay)} × {totalDays || 0} day{totalDays !== 1 ? "s" : ""}
+                                </p>
+                                <p className="text-xs text-gray-500">Daily rate × Rental duration</p>
+                              </div>
+                              <span className="font-medium">{formatPrice(basePrice)}</span>
                             </div>
                           </div>
 
-                          {hasDriver && (
-                            <div className="flex justify-between text-sm">
-                              <span>Driver Fee ({formatPrice(10000)}/day)</span>
-                              <span>{formatPrice(driverFee)}</span>
-                            </div>
-                          )}
+                          {/* Add-ons */}
+                          {(hasDriver || hasCarWash || hasHomeDelivery) && (
+                            <div className="space-y-2">
+                              <h4 className="font-medium text-sm text-gray-500">Add-ons</h4>
+                              <div className="space-y-2">
+                                {hasDriver && (
+                                  <div className="flex justify-between items-center">
+                                    <div className="space-y-1">
+                                      <p className="text-sm">Professional Driver</p>
+                                      <p className="text-xs text-gray-500">{formatPrice(10000)} per day</p>
+                                    </div>
+                                    <span className="font-medium">{formatPrice(driverFee)}</span>
+                                  </div>
+                                )}
 
-                          {hasCarWash && (
-                            <div className="flex justify-between text-sm">
-                              <span>Car Wash Fee</span>
-                              <span>{formatPrice(carWashFee)}</span>
-                            </div>
-                          )}
+                                {hasCarWash && (
+                                  <div className="flex justify-between items-center">
+                                    <div className="space-y-1">
+                                      <p className="text-sm">Car Wash Service</p>
+                                      <p className="text-xs text-gray-500">One-time service</p>
+                                    </div>
+                                    <span className="font-medium">{formatPrice(carWashFee)}</span>
+                                  </div>
+                                )}
 
-                          {hasHomeDelivery && (
-                            <div className="flex justify-between text-sm">
-                              <span>Delivery Fee</span>
-                              <span>{formatPrice(deliveryFee)}</span>
+                                {hasHomeDelivery && (
+                                  <div className="flex justify-between items-center">
+                                    <div className="space-y-1">
+                                      <p className="text-sm">Home Delivery</p>
+                                      <p className="text-xs text-gray-500">One-time delivery fee</p>
+                                    </div>
+                                    <span className="font-medium">{formatPrice(deliveryFee)}</span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           )}
 
                           <Separator />
 
-                          <div className="space-y-4 mt-4">
+                          {/* Total */}
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-medium">Total Amount</h4>
+                            <span className="text-lg font-semibold text-primary">{formatPrice(totalPrice)}</span>
+                          </div>
+
+                          <div className="space-y-4">
                             <div className="flex items-center space-x-2">
                               <Checkbox
                                 id="driver"
@@ -506,50 +551,34 @@ export default function BookingPage() {
                               </label>
                             </div>
 
-                            <div className="space-y-2">
-                              <div className="flex items-center space-x-2">
-                                <Checkbox
-                                  id="homeDelivery"
-                                  checked={hasHomeDelivery}
-                                  onCheckedChange={(checked) => {
-                                    setHasHomeDelivery(checked as boolean);
-                                    if (!checked) {
-                                      setDeliveryAddress("");
-                                    }
-                                  }}
-                                />
-                                <label
-                                  htmlFor="homeDelivery"
-                                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                                >
-                                  Add Home Delivery Service ({formatPrice(5000)})
-                                </label>
-                              </div>
-                              {hasHomeDelivery && (
-                                <div className="ml-6">
-                                  <Input
-                                    placeholder="Enter delivery address"
-                                    value={deliveryAddress}
-                                    onChange={(e) => setDeliveryAddress(e.target.value)}
-                                    className="w-full"
-                                  />
-                                </div>
-                              )}
+                            <div className="flex items-center space-x-2">
+                              <Checkbox
+                                id="homeDelivery"
+                                checked={hasHomeDelivery}
+                                onCheckedChange={(checked) => {
+                                  setHasHomeDelivery(checked as boolean);
+                                  if (!checked) {
+                                    setDeliveryAddress("");
+                                  }
+                                }}
+                              />
+                              <label
+                                htmlFor="homeDelivery"
+                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                              >
+                                Add Home Delivery Service ({formatPrice(5000)})
+                              </label>
                             </div>
-                          </div>
-
-                          <Separator />
-
-                          <div className="flex justify-between font-bold">
-                            <span>Total</span>
-                            <span>{formatPrice(totalPrice)}</span>
-                          </div>
-
-                          <div className="pt-2 text-xs text-gray-500">
-                            <p>
-                              Prices are in RWF. Additional fees may apply at pickup
-                              (fuel, insurance options, etc).
-                            </p>
+                            {hasHomeDelivery && (
+                              <div className="ml-6">
+                                <Input
+                                  placeholder="Enter delivery address"
+                                  value={deliveryAddress}
+                                  onChange={(e) => setDeliveryAddress(e.target.value)}
+                                  className="w-full"
+                                />
+                              </div>
+                            )}
                           </div>
                         </CardContent>
                       </Card>

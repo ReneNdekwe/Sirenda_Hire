@@ -58,6 +58,9 @@ const registerSchema = insertUserSchema
   })
   .extend({
     confirmPassword: z.string().min(6, "Password confirmation is required"),
+    acceptTerms: z.boolean().refine((val) => val === true, {
+      message: "You must accept the terms and conditions",
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -114,6 +117,7 @@ export default function AuthPage() {
       phone: "",
       userType: "client",
       companyName: "",
+      acceptTerms: false,
     },
   });
 
@@ -131,7 +135,7 @@ export default function AuthPage() {
 
   const onRegisterSubmit = async (data: RegisterFormValues) => {
     try {
-      const { confirmPassword, ...registerData } = data;
+      const { confirmPassword, acceptTerms, ...registerData } = data;
       await registerMutation.mutateAsync(registerData);
     } catch (error) {
       toast({
@@ -448,6 +452,35 @@ export default function AuthPage() {
                               )}
                             />
                           </div>
+
+                          <FormField
+                            control={registerForm.control}
+                            name="acceptTerms"
+                            render={({ field }) => (
+                              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                                <FormControl>
+                                  <input
+                                    type="checkbox"
+                                    className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
+                                    checked={field.value}
+                                    onChange={field.onChange}
+                                  />
+                                </FormControl>
+                                <div className="space-y-1 leading-none">
+                                  <FormLabel>
+                                    By clicking here, you agree to our{" "}
+                                    <Link
+                                      href="/terms"
+                                      className="text-primary hover:underline"
+                                    >
+                                      Terms and Conditions
+                                    </Link>
+                                  </FormLabel>
+                                  <FormMessage />
+                                </div>
+                              </FormItem>
+                            )}
+                          />
 
                           <Button
                             type="submit"

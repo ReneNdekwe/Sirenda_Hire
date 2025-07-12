@@ -82,6 +82,32 @@ const BlogList = () => {
         type="website"
         url="https://sirenda.rw/blog"
       />
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Blog",
+          "name": "Sirenda Blog",
+          "description": "Read the latest news, tips, and insights about car rentals in Rwanda. Find helpful guides and updates from Sirenda.",
+          "url": "https://sirenda.rw/blog",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Sirenda",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://vehicles.blob.core.windows.net/static-assets/Logo.png"
+            }
+          },
+          "blogPost": blogs.map(blog => ({
+            "@type": "BlogPosting",
+            "headline": blog.title,
+            "description": blog.metaDescription || blog.excerpt,
+            "image": blog.featuredImage,
+            "datePublished": blog.publishedAt || blog.createdAt,
+            "dateModified": blog.updatedAt,
+            "url": `https://sirenda.rw/blog/${blog.slug}`
+          }))
+        })}
+      </script>
       <Header />
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-12">

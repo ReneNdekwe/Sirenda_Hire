@@ -40,7 +40,9 @@ import {
   BarChart,
   ArrowDownUp,
   UserPlus,
-  FileText
+  FileText,
+  Menu,
+  Briefcase
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -78,6 +80,7 @@ import {
 } from "@/components/ui/select";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { DateRange } from "react-day-picker";
+import JobListings from './admin/JobListings';
 
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#0088fe', '#00c49f', '#ffbb28', '#ff8042'];
 
@@ -331,12 +334,20 @@ export default function AdminDashboardPage() {
     to: endOfWeek(new Date()),
   });
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Fetch real data from API endpoints
   const { data: analytics, isLoading: isLoadingAnalytics } = useQuery({
-    queryKey: ['/api/admin/analytics'],
+    queryKey: ['/api/admin/analytics', dateRange],
     queryFn: async () => {
-      const response = await fetch('/api/admin/analytics', {
+      const params = new URLSearchParams();
+      if (dateRange.from) {
+        params.append('from', dateRange.from.toISOString());
+      }
+      if (dateRange.to) {
+        params.append('to', dateRange.to.toISOString());
+      }
+      const response = await fetch(`/api/admin/analytics?${params.toString()}`, {
         credentials: 'include',
       });
       if (!response.ok) {
@@ -527,7 +538,133 @@ export default function AdminDashboardPage() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       <main className="flex-1 flex">
-        {/* Sidebar */}
+        {/* Mobile Menu Button */}
+        <div className="lg:hidden fixed top-4 left-4 z-50">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="bg-white"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+        </div>
+
+        {/* Mobile Menu Dropdown */}
+        {isMobileMenuOpen && (
+          <div className="lg:hidden fixed inset-0 z-40 bg-black/50" onClick={() => setIsMobileMenuOpen(false)}>
+            <div 
+              className="fixed inset-y-0 left-0 w-64 bg-white shadow-lg p-4 overflow-y-auto"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="p-4">
+                <h2 className="text-lg font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                  Admin Dashboard
+                </h2>
+                <p className="text-xs text-gray-500 mt-1">Business Operations</p>
+              </div>
+              
+              <Separator />
+              
+              <div className="p-4">
+                <nav className="space-y-1">
+                  <SidebarItem 
+                    icon={Home} 
+                    label="Overview" 
+                    active={activeTab === "overview"} 
+                    onClick={() => {
+                      setActiveTab("overview");
+                      setIsMobileMenuOpen(false);
+                    }}
+                  />
+                  <SidebarItem 
+                    icon={Building2} 
+                    label="Companies" 
+                    active={activeTab === "companies"} 
+                    onClick={() => {
+                      setActiveTab("companies");
+                      setIsMobileMenuOpen(false);
+                    }}
+                  />
+                  <SidebarItem 
+                    icon={Users} 
+                    label="Users" 
+                    active={activeTab === "users"} 
+                    onClick={() => {
+                      setActiveTab("users");
+                      setIsMobileMenuOpen(false);
+                    }}
+                  />
+                  <SidebarItem 
+                    icon={Car} 
+                    label="Vehicles" 
+                    active={activeTab === "vehicles"} 
+                    onClick={() => {
+                      setActiveTab("vehicles");
+                      setIsMobileMenuOpen(false);
+                    }}
+                  />
+                  <SidebarItem 
+                    icon={Calendar} 
+                    label="Bookings" 
+                    active={activeTab === "bookings"} 
+                    onClick={() => {
+                      setActiveTab("bookings");
+                      setIsMobileMenuOpen(false);
+                    }}
+                  />
+                  <SidebarItem 
+                    icon={CircleDollarSign} 
+                    label="Payments" 
+                    active={activeTab === "payments"} 
+                    onClick={() => {
+                      setActiveTab("payments");
+                      setIsMobileMenuOpen(false);
+                    }}
+                  />
+                  <SidebarItem 
+                    icon={BarChart3} 
+                    label="Analytics" 
+                    active={activeTab === "analytics"} 
+                    onClick={() => {
+                      setActiveTab("analytics");
+                      setIsMobileMenuOpen(false);
+                    }}
+                  />
+                  <SidebarItem 
+                    icon={FileText} 
+                    label="Blog" 
+                    active={activeTab === "blog"} 
+                    onClick={() => {
+                      setActiveTab("blog");
+                      setIsMobileMenuOpen(false);
+                    }}
+                  />
+                  <SidebarItem 
+                    icon={Briefcase} 
+                    label="Job Listings" 
+                    active={activeTab === "jobs"} 
+                    onClick={() => {
+                      setActiveTab("jobs");
+                      setIsMobileMenuOpen(false);
+                    }}
+                  />
+                  <SidebarItem 
+                    icon={Settings} 
+                    label="Settings" 
+                    active={activeTab === "settings"} 
+                    onClick={() => {
+                      setActiveTab("settings");
+                      setIsMobileMenuOpen(false);
+                    }}
+                  />
+                </nav>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Desktop Sidebar */}
         <div className="w-64 border-r border-gray-100 min-h-[calc(100vh-64px)] bg-white hidden lg:block">
           <div className="p-6">
             <h2 className="text-lg font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
@@ -589,6 +726,12 @@ export default function AdminDashboardPage() {
                 onClick={() => setActiveTab("blog")}
               />
               <SidebarItem 
+                icon={Briefcase} 
+                label="Job Listings" 
+                active={activeTab === "jobs"} 
+                onClick={() => setActiveTab("jobs")}
+              />
+              <SidebarItem 
                 icon={Settings} 
                 label="Settings" 
                 active={activeTab === "settings"} 
@@ -599,7 +742,7 @@ export default function AdminDashboardPage() {
         </div>
         
         {/* Main content */}
-        <div className="flex-1 p-6 overflow-y-auto">
+        <div className="flex-1 p-6 overflow-y-auto lg:ml-0">
           {/* Page header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
             <div>
@@ -612,6 +755,7 @@ export default function AdminDashboardPage() {
                 {activeTab === "payments" && "Payment History"}
                 {activeTab === "analytics" && "Platform Analytics"}
                 {activeTab === "blog" && "Blog Management"}
+                {activeTab === "jobs" && "Job Listings"}
                 {activeTab === "settings" && "Platform Settings"}
               </h1>
               <p className="text-gray-500">
@@ -623,6 +767,7 @@ export default function AdminDashboardPage() {
                 {activeTab === "payments" && "Review payment transactions"}
                 {activeTab === "analytics" && "Analyze platform metrics and trends"}
                 {activeTab === "blog" && "Manage blog posts and content"}
+                {activeTab === "jobs" && "Manage job listings and applications"}
                 {activeTab === "settings" && "Configure platform settings"}
               </p>
             </div>
@@ -755,10 +900,10 @@ export default function AdminDashboardPage() {
                           <Legend />
                         </PieChart>
                       </ResponsiveContainer>
-                        </div>
+                    </div>
                   </CardContent>
                 </Card>
-                          </div>
+              </div>
 
               {/* Recent Activity */}
               <Card>
@@ -819,9 +964,9 @@ export default function AdminDashboardPage() {
                         </div>
                       </div>
                     ))}
-                    </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
                 
@@ -1212,6 +1357,178 @@ export default function AdminDashboardPage() {
           {activeTab === "blog" && (
             <div className="space-y-6">
               <BlogManagement />
+            </div>
+          )}
+
+          {/* Job Listings Tab */}
+          {activeTab === "jobs" && (
+            <div className="space-y-6">
+              <JobListings />
+            </div>
+          )}
+
+          {/* Analytics Tab */}
+          {activeTab === "analytics" && (
+            <div className="space-y-6">
+              {/* Date Range Controls */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex-1">
+                  <DateRangePicker
+                    value={dateRange}
+                    onChange={handleDateRangeChange}
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDateRangePreset("today")}
+                  >
+                    Today
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDateRangePreset("week")}
+                  >
+                    This Week
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDateRangePreset("month")}
+                  >
+                    This Month
+                  </Button>
+                </div>
+              </div>
+
+              {/* Stats Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard 
+                  title="Total Revenue" 
+                  value={formatPrice(analytics?.totalRevenue || 0)} 
+                  icon={CircleDollarSign} 
+                  trend="up" 
+                  trendValue="+15% from last month"
+                  bgClass="bg-gradient-to-r from-purple-500 to-pink-500"
+                />
+                <StatCard 
+                  title="Monthly Bookings" 
+                  value={analytics?.monthlyBookings || "0"} 
+                  icon={Calendar} 
+                  trend="up" 
+                  trendValue="+20% from last month"
+                  bgClass="bg-gradient-to-r from-cyan-500 to-blue-500"
+                />
+                <StatCard 
+                  title="Average Booking Value" 
+                  value={formatPrice(Math.round(analytics?.avgBookingValue || 0))} 
+                  icon={CircleDollarSign} 
+                  trend="up" 
+                  trendValue="+5% from last month"
+                  bgClass="bg-gradient-to-r from-rose-500 to-pink-500"
+                />
+                <StatCard 
+                  title="Active Listings" 
+                  value={analytics?.activeListings || "0"} 
+                  icon={Car} 
+                  trend="up" 
+                  trendValue="+10% from last month"
+                  bgClass="bg-gradient-to-r from-violet-500 to-purple-500"
+                />
+              </div>
+              
+              {/* Charts */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Revenue Trends</CardTitle>
+                    <CardDescription>Monthly revenue over the past 6 months</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-[300px]">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <RechartsBarChart data={analytics?.monthlyStats}>
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis 
+                            dataKey="month" 
+                            tickFormatter={(value) => format(new Date(value), 'MMM yyyy')}
+                          />
+                          <YAxis />
+                          <Tooltip 
+                            formatter={(value) => [`$${value}`, 'Revenue']}
+                            labelFormatter={(label) => format(new Date(label), 'MMMM yyyy')}
+                          />
+                          <Bar dataKey="revenue" fill="#8884d8" />
+                        </RechartsBarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Booking Distribution</CardTitle>
+                    <CardDescription>Distribution of bookings by vehicle type</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-[300px]">
+                      <ResponsiveContainer width="100%" height={300}>
+                        <PieChart>
+                          <Pie
+                            data={analytics?.bookingDistribution?.rows || []}
+                            dataKey="count"
+                            nameKey="category"
+                            cx="50%"
+                            cy="50%"
+                            outerRadius={80}
+                            label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                          >
+                            {(analytics?.bookingDistribution?.rows || []).map((_: unknown, index: number) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Pie>
+                          <Tooltip 
+                            formatter={(value: number) => [`${value} bookings`, 'Count']}
+                          />
+                          <Legend />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Recent Activity */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recent Activity</CardTitle>
+                  <CardDescription>Latest platform activities and updates</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {bookingsData?.slice(0, 5).map((booking) => (
+                      <div key={booking.id} className="flex items-start gap-4">
+                        <div className="bg-blue-100 rounded-full p-2">
+                          <Calendar className="h-4 w-4 text-blue-700" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-medium">New booking created</h4>
+                            <span className="text-xs text-gray-500">
+                              {format(booking.createdAt ? new Date(booking.createdAt) : new Date(), "MMM d, h:mm a")}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-500">
+                            {getVehicleName(booking.vehicleId)} booked by {getUserName(booking.userId)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
         </div>

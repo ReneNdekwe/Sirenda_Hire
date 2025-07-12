@@ -9,9 +9,9 @@ interface DynamicMetaProps {
 }
 
 export function DynamicMeta({
-  title = "Sirenda - Car Rentals in Rwanda & Kigali",
+  title = "Sirenda - Cars for rent in Rwanda",
   description = "Find affordable car rentals in Rwanda. Book cars in Kigali and across Rwanda. Compare prices, book online, and get the best deals on car hire.",
-  image = "/uploads/og-image.jpg",
+  image = "https://vehicles.blob.core.windows.net/static-assets/Logo.png?sp=r&st=2025-06-04T17:46:26Z&se=2027-07-01T01:46:26Z&spr=https&sv=2024-11-04&sr=b&sig=vOBNhbKd%2BVcoLhiUc%2FsmEMvqzH%2BKEqJYUhRiWp2xO9M%3D",
   type = "website",
   url = "https://sirenda.rw"
 }: DynamicMetaProps) {

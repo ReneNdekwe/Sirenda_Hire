@@ -96,7 +96,7 @@ export async function createBookingRequest(
   }
 
   // Calculate price
-  const totalPrice = vehicle[0].pricePerDay * differenceInDays(returnDate, pickupDate);
+  const totalPrice = vehicle[0].pricePerDay * (differenceInDays(returnDate, pickupDate) + 1);
 
   // Convert dates to ISO strings for database
   const pickupStr = pickupDate.toISOString().split('T')[0];

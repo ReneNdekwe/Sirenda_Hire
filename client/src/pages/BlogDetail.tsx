@@ -78,6 +78,33 @@ const BlogDetail = () => {
         type="article"
         url={`https://sirenda.rw/blog/${blog.slug}`}
       />
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "BlogPosting",
+          "headline": blog.title,
+          "description": blog.metaDescription || blog.excerpt,
+          "image": blog.featuredImage,
+          "author": {
+            "@type": "Organization",
+            "name": "Sirenda"
+          },
+          "publisher": {
+            "@type": "Organization",
+            "name": "Sirenda",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://vehicles.blob.core.windows.net/static-assets/Logo.png"
+            }
+          },
+          "datePublished": blog.publishedAt || blog.createdAt,
+          "dateModified": blog.updatedAt,
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": `https://sirenda.rw/blog/${blog.slug}`
+          }
+        })}
+      </script>
       <Header />
       <main className="flex-grow">
         <article className="container mx-auto px-4 py-12">

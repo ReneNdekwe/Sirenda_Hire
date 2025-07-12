@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import { DatePicker } from "@/components/ui/date-picker";
 import {
@@ -10,14 +10,20 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Search, MapPin, Calendar } from "lucide-react";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const LOCATIONS = [
-  "Kigali, RW",
-  "Musanze, RW",
-  "Rubavu, RW",
-  "Karongi, RW",
-  "Rusizi, RW",
+  "Kigali City Center",
+  "Kacyiru",
+  "Remera",
+  "Kimironko",
+  "Kicukiro"
 ];
 
 export default function Hero() {
@@ -25,6 +31,14 @@ export default function Hero() {
   const [location, setLocation] = useState<string | undefined>(undefined);
   const [pickupDate, setPickupDate] = useState<Date | undefined>(undefined);
   const [returnDate, setReturnDate] = useState<Date | undefined>(undefined);
+
+  // Set default dates when component mounts
+  useEffect(() => {
+    const today = new Date();
+    const tomorrow = addDays(today, 1);
+    setPickupDate(today);
+    setReturnDate(tomorrow);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +60,7 @@ export default function Hero() {
   };
 
   return (
-    <section className="relative isolate overflow-hidden pt-10 pb-6">
+    <section className="relative isolate overflow-hidden pt-6 pb-6">
       <div className="absolute inset-0 -z-10 bg-gradient-to-br from-white via-blue-50/50 to-purple-50/50"></div>
 
       {/* Animated gradient background */}
@@ -128,29 +142,30 @@ export default function Hero() {
 
       {/* Main content */}
       <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center justify-center min-h-[50vh] py-8">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.2] text-black mb-4">
-              Skip the rental car counter
+        <div className="flex flex-col items-center justify-center min-h-[40vh] py-4">
+          <div className="text-center mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.2] text-black mb-3">
+              <span className="block sm:inline">
+                <span className="text-green-600">Book it</span>
+                <span>.</span>
+              </span>
+              <span className="block sm:inline sm:ml-2">Go anywhere.</span>
             </h1>
-            <p className="text-lg sm:text-xl text-gray-600 max-w-2xl mx-auto">
-              Experience premium car rentals with doorstep delivery. Your journey starts here.
+            <p className="text-md sm:text-lg text-gray-600 max-w-2xl mx-auto">
+              Rent a car with doorstep delivery. Your journey starts here.
             </p>
           </div>
 
-          <div className="w-full max-w-2xl bg-white/80 backdrop-blur-md rounded-xl shadow-lg border border-white/20 p-6 hover:bg-white/90 transition-all duration-300">
-            <form onSubmit={handleSearch} className="space-y-8">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Location
-                </label>
+          <div className="w-full max-w-4xl bg-white rounded-lg shadow-sm border border-gray-200 p-3">
+            <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-3 md:gap-1 items-stretch md:items-center">
+              <div className="flex-1 w-full">
                 <Select onValueChange={setLocation}>
-                  <SelectTrigger className="w-full border-gray-300 focus:ring-primary/25 focus:border-primary">
-                    <SelectValue placeholder="Where to?">
+                  <SelectTrigger className="w-full border-0 focus:ring-0 focus:ring-offset-0 h-10 text-sm bg-transparent hover:bg-gray-50 rounded-md">
+                    <SelectValue placeholder="Pick-up location">
                       <div className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-2 text-gray-400" />
-                        <span className="truncate">
-                          {location || "Where to?"}
+                        <MapPin className="h-4 w-4 mr-2 text-gray-500" />
+                        <span className="truncate text-black">
+                          {location || "Pick-up location"}
                         </span>
                       </div>
                     </SelectValue>
@@ -165,42 +180,51 @@ export default function Hero() {
                 </Select>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Pick-up Date
-                  </label>
-                  <DatePicker
-                    date={pickupDate}
-                    setDate={setPickupDate}
-                    placeholder="Add date"
-                    className="border-gray-300 focus:ring-primary/25 focus:border-primary"
-                  />
-                </div>
+              <div className="w-full h-px md:w-px md:h-6 bg-gray-200 md:mx-1"></div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Return Date
-                  </label>
-                  <DatePicker
-                    date={returnDate}
-                    setDate={setReturnDate}
-                    placeholder="Add date"
-                    fromDate={pickupDate}
-                    className="border-gray-300 focus:ring-primary/25 focus:border-primary"
-                  />
-                </div>
+              <div className="flex-1 w-full">
+                <DatePicker
+                  date={pickupDate}
+                  setDate={setPickupDate}
+                  placeholder="Pick-up date"
+                  className="border-0 focus:ring-0 focus:ring-offset-0 h-10 text-sm bg-transparent hover:bg-gray-50 rounded-md text-black placeholder:text-black"
+                  fromDate={new Date()}
+                  disabled={(date) => {
+                    const today = new Date();
+                    const maxDate = new Date();
+                    maxDate.setDate(today.getDate() + 10);
+                    return date < today || date > maxDate;
+                  }}
+                />
               </div>
+
+              <div className="w-full h-px md:w-px md:h-6 bg-gray-200 md:mx-1"></div>
+
+              <div className="flex-1 w-full">
+                <DatePicker
+                  date={returnDate}
+                  setDate={setReturnDate}
+                  placeholder="Return date"
+                  fromDate={pickupDate ? new Date(pickupDate.getTime() + 24 * 60 * 60 * 1000) : new Date()}
+                  className="border-0 focus:ring-0 focus:ring-offset-0 h-10 text-sm bg-transparent hover:bg-gray-50 rounded-md text-black placeholder:text-black"
+                  disabled={(date) => !pickupDate || date < pickupDate}
+                />
+              </div>
+
+              <div className="w-full h-px md:w-px md:h-6 bg-gray-200 md:mx-1"></div>
 
               <Button
                 type="submit"
-                className="w-full bg-primary hover:bg-primary/90 text-white font-medium py-6"
+                className="bg-primary hover:bg-primary/90 text-white font-medium rounded-md shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center gap-2 px-6 h-10 w-full md:w-auto"
               >
-                <Search className="h-4 w-4 mr-2" />
-                <span>Search Vehicles</span>
+                <Search className="h-4 w-4" />
+                Search
               </Button>
             </form>
           </div>
+          <p className="text-xs text-gray-500 mt-2 text-center italic">
+            Book up to 10 days in advance <span className="text-red-500">*</span>
+          </p>
         </div>
       </div>
 

@@ -216,6 +216,44 @@ export const insertBlogSchema = createInsertSchema(blogs).pick({
   tags: true,
 });
 
+// Job Listings schema
+export const jobListings = pgTable("job_listings", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  department: text("department").notNull(),
+  location: text("location").notNull(),
+  type: text("type").notNull(),
+  description: text("description").notNull(),
+  requirements: jsonb("requirements").notNull().default([]),
+  postedDate: timestamp("posted_date").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertJobListingSchema = createInsertSchema(jobListings).pick({
+  title: true,
+  department: true,
+  location: true,
+  type: true,
+  description: true,
+  requirements: true,
+  postedDate: true,
+});
+
+// Job Applications schema
+export const jobApplications = pgTable('job_applications', {
+  id: serial('id').primaryKey(),
+  jobId: integer('job_id').notNull().references(() => jobListings.id),
+  applicantName: text('applicant_name').notNull(),
+  email: text('email').notNull(),
+  phone: text('phone').notNull(),
+  resumeUrl: text('resume_url').notNull(),
+  coverLetter: text('cover_letter'),
+  status: text('status').notNull().default('pending'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 // Export types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -237,6 +275,9 @@ export type Notification = typeof notifications.$inferSelect;
 
 export type InsertBlog = z.infer<typeof insertBlogSchema>;
 export type Blog = typeof blogs.$inferSelect;
+
+export type InsertJobListing = z.infer<typeof insertJobListingSchema>;
+export type JobListing = typeof jobListings.$inferSelect;
 
 // Login schema
 export const loginSchema = z.object({
