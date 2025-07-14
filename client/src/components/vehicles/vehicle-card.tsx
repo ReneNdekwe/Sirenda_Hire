@@ -6,12 +6,15 @@ import { Badge } from "@/components/ui/badge";
 import { Heart, Star, Users, Cog, Fuel, Briefcase, StarHalf, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatPrice } from "@/lib/currency";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface VehicleCardProps {
-  vehicle: Vehicle;
+  vehicle: Vehicle & { companyName?: string; companyLogo?: string | null };
 }
 
 export default function VehicleCard({ vehicle }: VehicleCardProps) {
+  // Type assertion to allow enriched fields from API
+  const enrichedVehicle = vehicle as Vehicle & { companyName?: string; companyLogo?: string | null };
   const [, navigate] = useLocation();
   const [liked, setLiked] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);

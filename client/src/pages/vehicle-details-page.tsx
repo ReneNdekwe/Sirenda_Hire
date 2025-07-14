@@ -33,6 +33,7 @@ import {
   ChevronRight,
   MapPin,
   StarHalf,
+  Share,
 } from "lucide-react";
 import { format, addDays, differenceInDays, parse, startOfDay } from "date-fns";
 import { useAuth } from "@/hooks/use-auth";
@@ -43,6 +44,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useToast } from "@/hooks/use-toast";
 
 export default function VehicleDetailsPage() {
   const params = useParams<{ id: string }>();
@@ -55,6 +57,7 @@ export default function VehicleDetailsPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [liked, setLiked] = useState(false);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const { toast } = useToast();
 
   // Fetch vehicle details
   const { data: vehicle, isLoading } = useQuery<Vehicle>({
@@ -168,6 +171,27 @@ export default function VehicleDetailsPage() {
     });
   };
 
+  // Share button handler
+  const handleShare = () => {
+    const url = window.location.href;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(() => {
+        if (toast) {
+          toast({ title: "Link copied!", description: "You can now share this car." });
+        } else {
+          alert("Link copied to clipboard!");
+        }
+      });
+    } else {
+      // fallback
+      if (toast) {
+        toast({ title: "Copy failed", description: url });
+      } else {
+        prompt("Copy this link:", url);
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -248,6 +272,7 @@ export default function VehicleDetailsPage() {
                           </>
                         )}
                       </div>
+                      {/* Vertical thumbnails for md+ */}
                       <div className="hidden md:flex md:col-span-1 flex-col gap-2">
                         {(vehicle.imageUrls as string[] | null) && 
                          Array.isArray(vehicle.imageUrls) && 
@@ -287,11 +312,11 @@ export default function VehicleDetailsPage() {
                       )}
                     </div>
 
-                    {/* Image grid instead of thumbnails */}
+                    {/* Horizontal image grid for mobile only */}
                     {(vehicle.imageUrls as string[] | null) && 
                      Array.isArray(vehicle.imageUrls) && 
                      (vehicle.imageUrls as string[]).length > 1 && (
-                      <div className="p-4">
+                      <div className="p-4 md:hidden">
                         <h3 className="font-medium text-sm mb-3 text-gray-700">Vehicle Photos</h3>
                         <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                           {(vehicle.imageUrls as string[]).map((url, index) => (
@@ -315,6 +340,45 @@ export default function VehicleDetailsPage() {
                       </div>
                     )}
                   </div>
+
+                  {/* Hosted by section (styled) */}
+                  {(() => {
+                    const v = vehicle as Vehicle & { company_name?: string; company_logo?: string | null };
+                    return v.company_name ? (
+                      <div className="my-2">
+                        <div className="border-t border-gray-100 mb-2" />
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-gray-50 rounded-xl p-4 shadow-sm">
+                          <div className="flex items-center gap-4">
+                            <Avatar className="h-14 w-14 shadow">
+                              {v.company_logo ? (
+                                <AvatarImage src={v.company_logo} alt={v.company_name} />
+                              ) : (
+                                <AvatarFallback className="text-xl">{v.company_name.charAt(0)}</AvatarFallback>
+                              )}
+                            </Avatar>
+                            <div>
+                              <div className="text-xs font-medium mb-1 text-green-600">Hosted by</div>
+                              <div className="text-lg font-semibold text-gray-800">{v.company_name}</div>
+                            </div>
+                          </div>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button
+                                  onClick={handleShare}
+                                  className="inline-flex items-center justify-center rounded-full p-2 bg-white hover:bg-gray-100 border border-gray-200 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-primary"
+                                  aria-label="Share this car"
+                                >
+                                  <Share className="h-5 w-5 text-gray-500" />
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>Copy link to share</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      </div>
+                    ) : null;
+                  })()}
 
                   {/* Vehicle details tabs */}
                   <div className="mt-8">

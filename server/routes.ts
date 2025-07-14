@@ -105,8 +105,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       filters.availability = available === 'true';
     }
     
+    // Fetch vehicles
     const vehicles = await storage.getVehicles(filters);
-    res.json(vehicles);
+    // Fetch all unique ownerIds
+    const ownerIds = Array.from(new Set(vehicles.map(v => v.ownerId)));
+    // Fetch all owners in one go
+    const owners = await storage.getAllUsers({});
+    const ownersMap = new Map(owners.map(o => [o.id, o]));
+    // Enrich vehicles with companyName and companyLogo
+    const enrichedVehicles = vehicles.map(vehicle => {
+      const owner = ownersMap.get(vehicle.ownerId);
+      return {
+        ...vehicle,
+        companyName: owner?.companyName || owner?.fullName || '',
+        companyLogo: owner?.companyLogo || null
+      };
+    });
+    res.json(enrichedVehicles);
   });
 
   app.get("/api/vehicles/featured", async (req, res) => {
@@ -117,12 +132,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/vehicles/:id", async (req, res) => {
     const id = parseInt(req.params.id);
     const vehicle = await storage.getVehicle(id);
-    
+
     if (!vehicle) {
       return res.status(404).json({ message: "Vehicle not found" });
     }
-    
-    res.json(vehicle);
+
+    // Fetch owner info and enrich vehicle
+    const owner = await storage.getUser(vehicle.ownerId);
+    res.json({
+      ...vehicle,
+      company_name: owner?.companyName || owner?.fullName || '',
+      company_logo: owner?.companyLogo || null
+    });
   });
 
   app.post("/api/vehicles", async (req, res) => {
@@ -1170,6 +1191,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(userDetails);
   });
 
+  // User profile update endpoint
+  app.put("/api/users/:id", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const userId = parseInt(req.params.id);
+    // Only allow user or admin to update
+    if (req.user.id !== userId && req.user.userType !== 'admin') {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    try {
+      const updatedUser = await storage.updateUser(userId, req.body);
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      res.json(updatedUser);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Blog routes
   app.get("/api/admin/blogs", authenticateAdmin, async (req, res) => {
     try {
@@ -1331,6 +1373,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error uploading to Azure:', error);
       res.status(500).json({ 
+        success: false,
+        message: error instanceof Error ? error.message : "Failed to upload file to cloud storage"
+      });
+    }
+  });
+
+  // Profile picture upload endpoint
+  app.post("/api/upload/profile-picture", upload.single('image'), async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded or invalid file type" });
+    }
+    try {
+      // Upload to Azure Blob Storage (profile-pictures container)
+      const imageUrl = await azureStorageService.uploadProfilePicture(req.file);
+      if (!imageUrl) {
+        throw new Error('Failed to get image URL from Azure Storage');
+      }
+      res.json({ success: true, url: imageUrl });
+    } catch (error) {
+      res.status(500).json({
         success: false,
         message: error instanceof Error ? error.message : "Failed to upload file to cloud storage"
       });

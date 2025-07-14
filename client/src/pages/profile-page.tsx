@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/select";
 import { Loader2, User, Building, Mail, Phone, AlertCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { useRef } from "react";
 
 const profileSchema = z.object({
   fullName: z.string().min(2, "Full name is required"),
@@ -58,6 +59,9 @@ export default function ProfilePage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("personal");
+  const [logoUploading, setLogoUploading] = useState(false);
+  const [logoUploadError, setLogoUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
@@ -354,6 +358,42 @@ export default function ProfilePage() {
                             name="companyLogo"
                             render={({ field }) => (
                               <FormItem>
+                                <FormLabel>Company Logo</FormLabel>
+                                <div className="flex items-center gap-4 mb-2">
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    ref={fileInputRef}
+                                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
+                                    onChange={async (e) => {
+                                      const file = e.target.files?.[0];
+                                      if (!file) return;
+                                      setLogoUploading(true);
+                                      setLogoUploadError(null);
+                                      try {
+                                        const formData = new FormData();
+                                        formData.append("image", file);
+                                        const res = await fetch("/api/upload/profile-picture", {
+                                          method: "POST",
+                                          body: formData,
+                                        });
+                                        const data = await res.json();
+                                        if (!data.success || !data.url) {
+                                          throw new Error(data.message || "Upload failed");
+                                        }
+                                        field.onChange(data.url);
+                                        toast({ title: "Logo uploaded!", description: "Your company logo has been updated." });
+                                      } catch (err: any) {
+                                        setLogoUploadError(err.message || "Upload failed");
+                                      } finally {
+                                        setLogoUploading(false);
+                                      }
+                                    }}
+                                    disabled={logoUploading}
+                                  />
+                                  {logoUploading && <Loader2 className="h-5 w-5 animate-spin text-primary" />}
+                                </div>
+                                {logoUploadError && <div className="text-red-500 text-xs mb-2">{logoUploadError}</div>}
                                 <FormLabel>Company Logo URL</FormLabel>
                                 <FormControl>
                                   <Input placeholder="Enter logo URL" {...field} />

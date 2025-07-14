@@ -132,6 +132,21 @@ export class AzureStorageService {
     }
   }
 
+  async uploadProfilePicture(file: Express.Multer.File): Promise<string> {
+    // Use the profile-pictures container
+    const containerClient = this.blobServiceClient.getContainerClient('profile-pictures');
+    const blobName = `${uuidv4()}-${file.originalname}`;
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+    await blockBlobClient.uploadData(file.buffer, {
+      blobHTTPHeaders: { blobContentType: file.mimetype }
+    });
+
+    // Generate a SAS token for temporary access (or use public access if set)
+    const sasToken = await this.generateSasToken(blobName, 'profile-pictures');
+    return `${blockBlobClient.url}?${sasToken}`;
+  }
+
   async deleteImage(imageUrl: string): Promise<void> {
     // Extract blob name from URL
     const blobName = imageUrl.split('/').pop()?.split('?')[0];
@@ -154,7 +169,9 @@ export class AzureStorageService {
       const container = 
         containerName === 'vehicle-images' ? this.vehicleImagesContainer :
         containerName === 'static-assets' ? this.staticAssetsContainer :
-        this.blogImagesContainer;
+        containerName === 'blog-images' ? this.blogImagesContainer :
+        containerName === 'profile-pictures' ? this.blobServiceClient.getContainerClient('profile-pictures') :
+        this.vehicleImagesContainer; // fallback
       
       const blockBlobClient = container.getBlockBlobClient(blobName);
       const sasOptions = {
