@@ -14,8 +14,8 @@ services:
         target: /app/node_modules
     environment:
       - NODE_ENV=development
-      - DATABASE_URL=postgresql://neondb_owner:npg_xKuhYPnEaJ46@ep-polished-pond-a4vuv5zd-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require
-      - SESSION_SECRET=24e76e0d37d14c7716cbd630a531dfd7eaa71d13ddf4bde43a73cdfb97aa89dc
+      - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@db:5432/sirenda_hire}
+      - SESSION_SECRET=${SESSION_SECRET:-change-me-in-env}
       - HOST=0.0.0.0
     depends_on:
       - db
