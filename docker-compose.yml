@@ -15,7 +15,7 @@ services:
     environment:
       - NODE_ENV=development
       - DATABASE_URL=${DATABASE_URL:-postgresql://postgres:postgres@db:5432/sirenda_hire}
-      - SESSION_SECRET=${SESSION_SECRET:?SESSION_SECRET is required}
+      - SESSION_SECRET=${SESSION_SECRET:?SESSION_SECRET must be set in your environment or .env file}
       - HOST=0.0.0.0
     depends_on:
       - db
